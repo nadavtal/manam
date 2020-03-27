@@ -1,0 +1,69 @@
+.bridgePage{
+  /* display: flex; */
+  position: relative;
+}
+
+div.dataTables_wrapper div.dataTables_length select, div.dataTables_wrapper div.dataTables_length input {
+  width: 5rem;
+}
+
+.innerPage {
+  /* width: calc(100% - 4rem); */
+  /* border: 1px solid black; */
+  height: calc(100vh - 5rem);
+}
+
+.fullPage {
+  position: absolute;
+  top: 5rem;
+  left: 0;
+  width: calc(100% - 4rem) !important;
+  height: calc(100vh - 5rem);
+  z-index: 100;
+}
+
+.bridgePage .carousel .controls-top{
+  position: absolute;
+  width: 100%;
+  top: 0;
+}
+.bridgePage .carousel .controls-top .btn-floating[data-slide = "next"]{
+  position: absolute;
+  top: 1rem;
+  right: 1.9rem;
+}
+.bridgePage .carousel .controls-top .btn-floating[data-slide = "prev"]{
+  position: absolute;
+  top: 1rem;
+  left: 0;
+}
+.bridgePage .carousel-multi-item {
+  margin-bottom: 5rem;
+  margin-top: 1rem;
+  width: 100%;
+  /* height: 21vh; */
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.bridgePage .carousel-multi-item .card {
+  height: 20vh;
+}
+
+.ReactModal__Overlay--after-open{
+  left: 3.75rem !important;
+}
+
+.spinner-grow {
+  z-index: 1000;
+}
+
+.image3dWrapper {
+  height: 10rem;
+}
+
+.bridgePage .bottomViewForm  .dropdown-content {
+  /* top: -20rem !important; */
+  /* bottom: 50rem !important; */
+}
+
