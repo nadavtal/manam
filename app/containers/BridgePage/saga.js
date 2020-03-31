@@ -239,6 +239,7 @@ function* createNewBridgeModel(action) {
     // Call our request helper (see 'utils/request')
     const requestResults = yield call(request, url, args);
     console.log(requestResults);
+    
     if (modalOpen) yield put(toggleModal())
     yield put(showNotification({
       message: ``,
@@ -249,7 +250,7 @@ function* createNewBridgeModel(action) {
 
     })
     )
-    // yield put(actions.newBridgeCreated(bridge, requestResults.newBridgeId));
+    yield put(actions.newBridgeModelCreated(bridge));
 
 
 

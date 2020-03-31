@@ -1,7 +1,7 @@
 
 import produce from 'immer';
 import * as actionTypes from './constants';
-import { NODE_SELECTED, UPDATE_RESIUM_MODE, ON_RIGHT_MENU_OPTION_CLICK, ELEMENTS_SELECTED } from '../Resium/constants';
+import { NODE_SELECTED, UPDATE_RESIUM_MODE, ON_RIGHT_MENU_OPTION_CLICK, ELEMENTS_SELECTED, MODEL_SELECTED } from '../Resium/constants';
 import { ORG_TECH_INFO_LOADED } from '../appData/constants'
 // The initial state of the App
 // import { initialState } from 'containers/App/reducer'
@@ -65,6 +65,7 @@ export const initialState = {
     mode: '',
     selectedElement: '',
     selectedObjectIds: [],
+    selectedModels: [],
     boundingSphere: null,
     viewData: null,
     bridgeTiles: [
@@ -191,6 +192,13 @@ const bridgePageReducer = (state = initialState, action) => {
           bridgeLoaded: false
 
         };
+      case actionTypes.NEW_MODEL_CREATED:
+        console.log('BRIDGE_LOADED', action.data)
+        return {
+          ...state,
+          bridgeModels: [...state.bridgeModels, action.data]
+
+        };
       case actionTypes.BRIDGE_LOADED:
         console.log('BRIDGE_LOADED', action.data.models)
         return {
@@ -308,6 +316,15 @@ const bridgePageReducer = (state = initialState, action) => {
         return {
           ...state,
           selectedObjectIds: action.data
+        }
+      case MODEL_SELECTED:
+        console.log('MODEL_SELECTED', action);
+        let selected 
+        if (state.selectedModels == action.data) selected = []
+        else selected = action.data
+        return {
+          ...state,
+          selectedModels: selected
         }
       case ON_RIGHT_MENU_OPTION_CLICK:
         console.log(action)

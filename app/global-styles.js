@@ -145,6 +145,11 @@ const GlobalStyle = createGlobalStyle`
   .faded {
     opacity: 0.5;
   }
+
+  .hide-content *{
+    visibility: hidden;
+    // background-color: #f57c00 !important;
+  }
 `;
 
 export default GlobalStyle;

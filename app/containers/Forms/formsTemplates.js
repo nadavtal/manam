@@ -1021,13 +1021,13 @@ export const forms = {
 
   },
   'loginUserForm':  {
-    userName: {
-      label: 'User name',
+    email: {
+      label: 'Email',
       elementType: 'input',
       elementConfig: {
 
-        type: 'text',
-        placeholder: 'User Name'
+        type: 'email',
+        placeholder: 'Enter email'
       },
       value: '',
       validation: {
@@ -1036,7 +1036,7 @@ export const forms = {
       },
       valid: false,
       touched: false,
-      errMsg: 'Please enter user name!'
+      errMsg: 'Please enter user email!'
     },
 
     password: {

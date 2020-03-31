@@ -50,8 +50,8 @@ export function* getRepos() {
 // }
 export function* login(action) {
   // const username = yield select(makeSelectUsername());
-  // console.log(action);
-  const user = yield call(request, apiUrl + 'users/'+ action.user.userName + '/' + action.user.password);
+  console.log(action);
+  const user = yield call(request, apiUrl + 'users/'+ action.user.email + '/' + action.user.password);
   // console.log(user);
   const userRolesTypes = yield call(request, apiUrl + 'users/'+ user.id + '/roles-types');
   // console.log(userRolesTypes);
@@ -69,6 +69,12 @@ export function* login(action) {
   }
   console.log(userData)
   yield put(userLoaded(userData));
+  if (userOrganizationRoles && userOrganizationRoles.length == 1) {
+    yield put(push('/organizations/'+ userOrganizationRoles[0].org_id));
+  } 
+  // else if (userProviderRoles && userProviderRoles.length == 1) {
+  //   yield put(push('/providers/'+ userProviderRoles[0].provider_id));
+  // }
   // if (userProviderRoles.length || userOrganizationRoles.length) {
   //   // yield put(toggleModal({
   //   //   title: `Hello ${user.first_name}`,

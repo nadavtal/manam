@@ -63,7 +63,7 @@ const AccordionComponent = (props) => {
     else setCollapseID('')
   }
   const handleTitleClick = (data) => {
-    console.log(data, collapseID)
+    // console.log(data, collapseID)
 
     // if (data !== collapseID) setCollapseID(data)
     // else setCollapseID('')
@@ -497,9 +497,7 @@ const AccordionComponent = (props) => {
                     </MDBCol>
                     <MDBCol
                       md="6"
-                      onClick={() =>
-                        handleTitleClick(+item.object_id)
-                      }
+                      onClick={() => handleTitleClick(+item.object_id)}
                     >
                       <span className={`text-${props.textColor}`}>
                         {item.name}
@@ -544,9 +542,9 @@ const AccordionComponent = (props) => {
                         }
                         onClick={() => {
                           collapse(+item.object_id)
-                          handleTitleClick(
-                            +item.object_id
-                          )
+                          // handleTitleClick(
+                          //   +item.object_id
+                          // )
                         }
                         }
                         className={`text-${props.textColor}`}
@@ -616,15 +614,48 @@ const AccordionComponent = (props) => {
                   // className={`${props.selectedObjectIds.includes(item.object_id) ? 'lighten-3' : 'lighten-4'} blue z-depth-1`}
                   className={`${active ? 'lighten-3' : 'lighten-4'} ${props.color} z-depth-1`}
                 >
-                  <MDBRow className="accordionTitleRow">
-               
-                    <MDBCol md='10' onClick={() => handleTitleClick(+item.id)}>
+                  <MDBRow className="accordionTitleRow no-gutters">
+                    <MDBCol md='1' >
+                      <IconButtonToolTip
+                        className=""
+                        iconClassName={`text-${props.textColor}`}
+                        size="sm"
+                        iconName="crosshairs"
+                        toolTipType="info"
+                        toolTipPosition="right"
+                        toolTipEffect="float"
+                        toolTipText={`View model`}
+                        onClickFunction={() => handleTitleClick(item.name)}
+                      />
+                      
+                    </MDBCol>
+                    <MDBCol md='8' onClick={() => {
+                      // handleTitleClick(item.name)
+                      collapse(+item.id)
+                    
+                      }
+                    }
+                    >
                       <span className={`text-${props.textColor}`}>
                         {item.name}
                       </span>
 
                     </MDBCol>
 
+                    <MDBCol md='1' >
+                      <IconButtonToolTip
+                        className="text-center"
+                        iconClassName={`text-danger`}
+                        size="sm"
+                        iconName="trash-alt"
+                        toolTipType="error"
+                        toolTipPosition="left"
+                        toolTipEffect="float"
+                        toolTipText={`Delete model`}
+                        onClickFunction={() => props.toggleModal('deleteModel', item.id)}
+                      />
+                      
+                    </MDBCol>
                     <MDBCol md='1' >
                       <IconButtonToolTip
                         className=""
@@ -635,18 +666,28 @@ const AccordionComponent = (props) => {
                         toolTipPosition="left"
                         toolTipEffect="float"
                         toolTipText={`Edit model info`}
-                        onClickFunction={() => props.toggleModal(item.id)}
+                        onClickFunction={() => props.toggleModal('modalType', item.id)}
                       />
+                      
                     </MDBCol>
-                    <MDBCol md='1' onClick={() => handleTitleClick(+item.id)}>
+                    
+                    <MDBCol md='1' 
+                      className="text-center"
+                      >
                       <MDBIcon
+                        onClick={() => {
+                          // handleTitleClick(+item.id)
+                          collapse(+item.id)
+                        
+                          }
+                        }
                         icon={
                           collapseID === item.id
                             ? "angle-up"
                             : "angle-down"
                           }
-                        className={`text-${props.textColor}`}
-                        style={{ float: "right" }}
+                        className={`text-${props.textColor} float-right mt-1 mr-1`}
+                        // style={{ float: "right" }}
                         size="sm"
                       />
                     </MDBCol>

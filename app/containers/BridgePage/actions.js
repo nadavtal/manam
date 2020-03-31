@@ -53,6 +53,14 @@ export function newBridgeCreated(data, id) {
     id
   };
 }
+export function newModelCreated(data) {
+
+  return {
+    type: actionTypes.NEW_MODEL_CREATED,
+    data,
+    
+  };
+}
 export function editBridge(data, bid) {
   if(data.main_image && data.main_image.length) {
     console.log(typeof(data.main_image))

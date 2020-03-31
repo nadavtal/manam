@@ -1,4 +1,4 @@
-import React, { memo, useRef, useMemo } from 'react';
+import React, { memo, useState, useMemo, useEffect } from 'react';
 import {
   MDBTreeview,
   MDBTreeviewList,
@@ -12,14 +12,18 @@ import Form from '../../containers/Forms/Form';
 import NodeRow from '../../containers/BridgePage/NodeRow/NodeRow';
 import DataComponent from '../../components/DataComponent/DataComponent';
 import styled from 'styled-components';
-import { getAvgOfArray, caculateCompletedPercentage } from '../../utils/mathFunctions'
-const TreeCustom = props => {
-  console.log('Rendering TreeCustom', props);
+import { getAvgOfArray, caculateCompletedPercentage } from '../../utils/mathFunctions';
 
-  const handleClick = value => {
-    console.log(value);
-    // if (value) props.onClick(parseInt(value))
-  };
+const TreeCustom = props => {
+  console.log('Rendering TreeCustom', props.data);
+  const [open, setopen] = useState(false)
+  useEffect(() => {
+    console.log(open)
+    return () => {
+      
+    }
+  }, [open])
+  let treeObj
 
   const getItems = (array, id, identifier) => {
     // console.log(array, id)
@@ -35,25 +39,25 @@ const TreeCustom = props => {
     }
     return 0;
   };
-  const createTreeObj = () => {
+  const createTreeObj = (data) => {
     console.log('createTreeObj')
     let treeObj = {};
-    props.data.level_1.sort(sortBy, 'id');
-    props.data.level_1.map(span => {
+    data.level_1.sort(sortBy, 'id');
+    data.level_1.map(span => {
       treeObj[span.name] = {
         span_id: span.id,
         elements: [],
         children: {},
         completed: []
       };
-      props.data.level_2.map(group => {
+      if (data.level_2) data.level_2.map(group => {
         // console.log(group)
         treeObj[span.name].children[group.name] = {
           elements: [],
           children: {},
           completed: [],
         };
-        props.data.level_3.map(type => {
+        if (data.level_3) data.level_3.map(type => {
           // console.log(type)
           if (type.structure_type_id) {
             if (
@@ -80,8 +84,8 @@ const TreeCustom = props => {
             }
           }
           // if (type.element_group_id == group.id) treeObj[span.name].children[group.name].children[type.name] = [];
-          props.data.level_4.sort(sortBy, 'object_id');
-          props.data.level_4.map(el => {
+          if (data.level_4) data.level_4.sort(sortBy, 'object_id');
+          data.level_4.map(el => {
             if (
               el.element_group_id == group.id &&
               el.element_type_id == type.id &&
@@ -128,21 +132,9 @@ const TreeCustom = props => {
   const addElementsSum = obj => {
     console.log(obj);
   };
-  // const caculateCompletedPercentage = (el) => {
-  //   // console.log(el)
-  //   const keysNum = Object.keys(el).length
-  //   let completed = 0;
-  //   let avg
-  //   for (const key of Object.keys(el)) {
-  //     if(el[key]) completed++
-  //   }
-  //   avg = Math.ceil(completed/keysNum*100)
-  //   return avg
-  // }
-
   
-  const treeObj = useMemo(() => createTreeObj(), [props.data]);
-
+  
+  treeObj = useMemo(() => createTreeObj(props.data), [props.data.level_1, props.data.level_2, props.data.level_3, props.data.level_4, ]);
 
 
   const TreeRowWrapper = styled.span`
@@ -209,118 +201,144 @@ const TreeCustom = props => {
     console.log(elements);
   };
   return (
-    <MDBTreeview
-      theme="colorful"
-      // header={props.header}
-      className={props.className}
-      // getValue={value => handleClick(parseInt(value.value))}
-    >
-      {Object.keys(treeObj).map((key, index) => {
-        const span = treeObj[key];
-        
-        return (
-          <MDBTreeviewList
-            key={index}
-            className=""
-            // opened={selectedEls.length > 0}
-            // icon='envelope-open'
-            title={
-              <TreeRow
-                showEdit={true}
-                showElements={() => props.showElements(span.elements)}
-                editFunction={() => props.editElement('editSpan', span.span_id)}
-                avg={getAvgOfArray(span.completed)}
-              >
-                {`${key} (${span.elements.length})`}
-              </TreeRow>
-            }
-            // onClick={() => showElements(span.elements)}
-            far
-            open
-          >
-            {Object.keys(span.children).map((key, index) => {
-              const group = span.children[key];
-              // console.log(group)
-              if (group.elements.length) {
-                
-                return (
-                  <MDBTreeviewList
-                    key={index}
-                    title={
-                      <TreeRow
-                        showEdit={false}
-                        showElements={() => props.showElements(group.elements)}
-                        avg={getAvgOfArray(group.completed)}
-                      >
-                        {`${key} (${group.elements.length})`}
-                      </TreeRow>
+    <>
+      <div className="d-flex justify-content-between">
+        <IconButtonToolTip
+          className="mx-3"
+          iconClassName="text-blue"
+          size="sm"
+          iconName="expand-alt"
+          toolTipType="info"
+          toolTipPosition="right"
+          toolTipEffect="float"
+          toolTipText={`Expand all`}
+          onClickFunction={() => setopen(true)}
+        />
+        <IconButtonToolTip
+          className="mx-3"
+          iconClassName="text-blue"
+          size="sm"
+          iconName="compress-alt"
+          toolTipType="info"
+          toolTipPosition="left"
+          toolTipEffect="float"
+          toolTipText={`Minimize all`}
+          onClickFunction={() => setopen(false)}
+        />
+      </div>
+      <MDBTreeview
+        theme="colorful"
+        // header={props.header}
+        className={props.className}
+        // getValue={value => handleClick(parseInt(value.value))}
+      >
+        {treeObj &&
+          Object.keys(treeObj).map((key, index) => {
+            const span = treeObj[key];
+
+            return (
+              <MDBTreeviewList
+                key={index}
+                className=""
+                opened={open}
+                // icon='envelope-open'
+                title={
+                  <TreeRow
+                    showEdit={true}
+                    showElements={() => props.showElements(span.elements)}
+                    editFunction={() =>
+                      props.editElement('editSpan', span.span_id)
                     }
-                    // opened={selected.length > 0}
-                    // onClick={() => showElements(group.elements)}
-                    far
+                    avg={getAvgOfArray(span.completed)}
                   >
-                    {Object.keys(group.children).map((key, index) => {
-                      const type = group.children[key];
-                      
-                      if (type.elements.length) {
-                        // let averages = [];
-                        // type.children.forEach(element => {
-                        //   averages.push(caculateCompletedPercentage(element))
-                        // });
-                        // console.log(averages.reduce((a, b) => a + b, 0)/averages.length)
-
-                        return (
-                          <MDBTreeviewList
-                            key={index}
-                            title={
-                              <TreeRow
-                                showEdit={false}
-                                avg={getAvgOfArray(type.children.map(el => caculateCompletedPercentage(el)))}
-                                showElements={() =>
-                                  props.showElements(type.elements)
-                                }
-                              >
-                                {`${key} (${type.elements.length})`}
-                              </TreeRow>
+                    {`${key} (${span.elements.length})`}
+                  </TreeRow>
+                }
+                // onClick={() => showElements(span.elements)}
+                far
+                open
+              >
+                {Object.keys(span.children).map((key, index) => {
+                  const group = span.children[key];
+                  // console.log(group)
+                  if (group.elements.length) {
+                    return (
+                      <MDBTreeviewList
+                        key={index}
+                        title={
+                          <TreeRow
+                            showEdit={false}
+                            showElements={() =>
+                              props.showElements(group.elements)
                             }
-                            // icon='plus'
-                            // opened={elements.length > 0}
-                            far
+                            avg={getAvgOfArray(group.completed)}
                           >
-                            <AccordionTable
-                              data={type.children}
-                              rows={type.children}
-                              dataType="nodes"
-                              onTitleClick={(id, selecteMultiple) =>
-                                props.onClick(id, selecteMultiple)
-                              }
-                              onRowClick={(id, selecteMultiple) =>
-                                props.onClick(id, selecteMultiple)
-                              }
-                              checkBox={true}
-                              selectedObjectIds={props.selectedObjectIds}
-                              selectNodesMode={props.selectNodesMode}
-                              // updateResiumMode={(mode) => props.updateResiumMode(mode)}
-                              editElement={objectId =>
-                                props.editElement('editElement', objectId)
-                              }
-                              color="orange"
-                              textColor="black"
-                            />
-                          </MDBTreeviewList>
-                        );
-                      }
-                    })}
-                  </MDBTreeviewList>
-                );
+                            {`${key} (${group.elements.length})`}
+                          </TreeRow>
+                        }
+                        opened={open}
+                        // onClick={() => showElements(group.elements)}
+                        far
+                      >
+                        {Object.keys(group.children).map((key, index) => {
+                          const type = group.children[key];
 
-              }
-            })}
-            {/* {console.log(spanElementsNum)} */}
-          </MDBTreeviewList>
-        );
-      })}
-    </MDBTreeview>
+                          if (type.elements.length) {
+                            return (
+                              <MDBTreeviewList
+                                key={index}
+                                title={
+                                  <TreeRow
+                                    showEdit={false}
+                                    avg={getAvgOfArray(
+                                      type.children.map(el =>
+                                        caculateCompletedPercentage(el),
+                                      ),
+                                    )}
+                                    showElements={() =>
+                                      props.showElements(type.elements)
+                                    }
+                                  >
+                                    {`${key} (${type.elements.length})`}
+                                  </TreeRow>
+                                }
+                                opened={open}
+                                far
+                              >
+                                <AccordionTable
+                                  data={type.children}
+                                  rows={type.children}
+                                  dataType="nodes"
+                                  onTitleClick={(id, selecteMultiple) =>
+                                    props.onClick(id, selecteMultiple)
+                                  }
+                                  onRowClick={(id, selecteMultiple) =>
+                                    props.onClick(id, selecteMultiple)
+                                  }
+                                  checkBox={true}
+                                  selectedObjectIds={props.selectedObjectIds}
+                                  selectNodesMode={props.selectNodesMode}
+                                  // updateResiumMode={(mode) => props.updateResiumMode(mode)}
+                                  editElement={objectId =>
+                                    props.editElement('editElement', objectId)
+                                  }
+                                  color="orange"
+                                  textColor="black"
+                                />
+                              </MDBTreeviewList>
+                            );
+                          }
+                        })}
+                      </MDBTreeviewList>
+                    );
+                  }
+                })}
+                {/* {console.log(spanElementsNum)} */}
+              </MDBTreeviewList>
+            );
+          })}
+      </MDBTreeview>
+    </>
   );
 };
 

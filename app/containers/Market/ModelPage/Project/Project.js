@@ -36,7 +36,7 @@ import {
   createNewBridgeModel,
 } from '../actions';
 import { toggleModal, showNotification } from '../../App/actions';
-import { nodeSelected, elementsSelected } from '../../Resium/actions';
+import { elementSelected, elementsSelected } from '../../Resium/actions';
 import * as bridgePageSelectors from '../selectors';
 import AccordionTable from '../../AccordionTable/AccordionTable';
 import PhotoSphereViewer from '../PhotoSphereViewer/PhotoSphereViewer';
@@ -630,7 +630,7 @@ const projectData = props => {
                       )
                     }
                     rows={props.bridgeElements}
-                    onRowClick={id => props.nodeSelected(id)}
+                    onRowClick={id => props.elementSelected(id)}
                     structureTypes={props.structureTypes}
                     dataType="spans"
                     selectedObjectIds={props.selectedObjectIds}
@@ -646,7 +646,7 @@ const projectData = props => {
                         )
                       }
                       rows={props.bridgeElements}
-                      onRowClick={id => props.nodeSelected(id)}
+                      onRowClick={id => props.elementSelected(id)}
                       structureTypes={props.structureTypes}
                       dataType="spans"
                       selectedObjectIds={props.selectedObjectIds}
@@ -673,7 +673,7 @@ const projectData = props => {
                     selectNodesMode={props.selectNodesMode}
                     selectedObjectIds={props.selectedObjectIds}
                     onClick={(id, selecteMultiple) =>
-                      props.nodeSelected(id, selecteMultiple)
+                      props.elementSelected(id, selecteMultiple)
                     }
                     editElement={(modalType, objectId) =>
                       toggleModal(modalType, objectId)
@@ -695,7 +695,7 @@ const projectData = props => {
                         type="checkbox"
                         id={`checkBox${el.object_id}`}
                         onChange={() =>
-                          props.nodeSelected(parseInt(el.object_id), true)
+                          props.elementSelected(parseInt(el.object_id), true)
                         }
                       />
                     ),
@@ -705,7 +705,7 @@ const projectData = props => {
                     //   type="checkbox"
                     //   id={`checkBox${el.object_id}`}
                     //   checked={props.selectedObjectIds.includes(parseInt(el.object_id))}
-                    //   onChange={() => props.nodeSelected(el.object_id, selecteMultiple)}
+                    //   onChange={() => props.elementSelected(el.object_id, selecteMultiple)}
                     //   />
                   )}
 
@@ -714,8 +714,8 @@ const projectData = props => {
                   data={props.unAllocatedElements}
                   rows={props.bridgeElements}
                   dataType="nodes"
-                  onTitleClick={(id, selecteMultiple) => props.nodeSelected(id, selecteMultiple)}
-                  onRowClick={(id, selecteMultiple) => props.nodeSelected(id, selecteMultiple)}
+                  onTitleClick={(id, selecteMultiple) => props.elementSelected(id, selecteMultiple)}
+                  onRowClick={(id, selecteMultiple) => props.elementSelected(id, selecteMultiple)}
                   checkBox={true}
                   selectedObjectIds={props.selectedObjectIds}
                   selectNodesMode={props.selectNodesMode}
@@ -756,7 +756,7 @@ export function mapDispatchToProps(dispatch) {
     getSurvey: id => dispatch(getSurvey(id)),
     updateTask: task => dispatch(updateTask(task)),
     // updateResiumMode: (mode) => dispatch(updateResiumMode(mode)),
-    nodeSelected: (id, mode) => dispatch(nodeSelected(id, mode)),
+    elementSelected: (id, mode) => dispatch(elementSelected(id, mode)),
     elementsSelected: ids => dispatch(elementsSelected(ids)),
     updateSpan: formData => dispatch(updateSpan(formData)),
     showInMainView: objectId =>

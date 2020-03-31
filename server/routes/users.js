@@ -110,12 +110,12 @@ app.post("/users/:id/roles", function(req, res){
  });
 
  //GET USER
- app.get("/users/:username/:password", function(req, res){
+ app.get("/users/:email/:password", function(req, res){
   console.log('getting user')
   // var q = `SELECT * FROM db_3dbia.tbl_users u
   // INNER JOIN tbl_users_roletypes ur
-  //   ON ur.userId = u.id where user_name = '${req.params.username}' and password = '${req.params.password}'`
-  var q = `SELECT * FROM db_3dbia.tbl_users where user_name = '${req.params.username}' and password = '${req.params.password}'`
+  //   ON ur.userId = u.id where user_name = '${req.params.email}' and password = '${req.params.password}'`
+  var q = `SELECT * FROM db_3dbia.tbl_users where email = '${req.params.email}' and password = '${req.params.password}'`
 
   connection.query(q, function (error, results) {
   if (error) throw error;

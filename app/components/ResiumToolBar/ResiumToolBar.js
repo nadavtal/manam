@@ -1,10 +1,11 @@
 import React, { useState, useEffect, memo, useMemo, useRef } from 'react';
 import IconButtonToolTip from '../../components/IconButtonToolTip/IconButtonToolTip';
 import Input from '../../components/Input/Input'
-import CustomSlider from '../../components/Slider/Slider'
+import CustomSlider from '../../components/Slider/Slider';
+import Transitioned from '../../components/Transitioned/Transitioned'
 import './ResiumToolBar.css';
 import { MDBBtn, MDBInput, MDBSelect, MDBIcon, MDBAnimation  } from 'mdbreact';
-import ReactCSSTransitionGroup from 'react-transition-group'
+import CSSTransition from 'react-transition-group/CSSTransition';
 import useOutsideAlerter from '../../utils/customHooks/useOutSideClick'
 
 const ResiumToolBar = (props) => {
@@ -823,7 +824,7 @@ const ResiumToolBar = (props) => {
     // console.log('action: ', action)
     console.log('value: ', value);
     if (value !== null && value !== undefined) {
-      console.log('akjhsdkajshdkjashdk')
+      
       switch (action.elementType) {
         case 'slider':
           switch (action.label) {
@@ -866,46 +867,29 @@ const ResiumToolBar = (props) => {
     }
   }
 
-  const topActionGroups = Object.keys(actionGroups).map((actionGroup, index) => {
-    // console.log(actionGroups[actionGroup])
-    // if (actionGroups[actionGroup] !== {}) {
-    //   console.log(actionGroups[actionGroup].name)
-    // }
-    return (
-      <div key={index}>
-        <IconButtonToolTip
-          // key={index}
-          className="resiumToolBar_tool p-1 active align-middle"
-          iconName={actionGroups[actionGroup].iconName}
-          toolTipType="info"
-          toolTipPosition="bottom"
-          toolTipEffect="float"
-          toolTipText={actionGroups[actionGroup].name}
-          onClickFunction={() => onActionGroupClick(actionGroups[actionGroup].name)}
-        />
+  const topActionGroups = Object.keys(actionGroups).map((actionGroup, index) => <IconButtonToolTip
+  key={index}
+  className="resiumToolBar_tool p-1 active align-middle"
+  iconName={actionGroups[actionGroup].iconName}
+  toolTipType="info"
+  toolTipPosition="bottom"
+  toolTipEffect="float"
+  toolTipText={actionGroups[actionGroup].name}
+  onClickFunction={() => onActionGroupClick(actionGroups[actionGroup].name)}
+/>)
 
-     </div>
-    )
-  })
-
-  const sideActionsHtml = sideActions.map((action, index) => {
-    // console.log(action)
-
-    return <div key={index}>
-      <IconButtonToolTip
-          // key={index}
-          className={"resiumToolBar_tool p-1 "}
-          key={index}
-          iconName={action.iconName}
-          iconClassName={action.active ? 'active' : ''}
-          toolTipType="info"
-          toolTipPosition="right"
-          toolTipEffect="float"
-          toolTipText={action.label}
-          onClickFunction={(e) => inputChangedHandler(e, 'sideAction', action)}
-        />
-      </div>
-   })
+  const sideActionsHtml = sideActions.map((action, index) => <IconButtonToolTip
+  key={index}
+  className={"resiumToolBar_tool p-1 "}
+  key={index}
+  iconName={action.iconName}
+  iconClassName={action.active ? 'active' : ''}
+  toolTipType="info"
+  toolTipPosition="right"
+  toolTipEffect="float"
+  toolTipText={action.label}
+  onClickFunction={(e) => inputChangedHandler(e, 'sideAction', action)}
+/>)
 
 
 
@@ -989,11 +973,14 @@ const ResiumToolBar = (props) => {
   const reset = () => {
     props.onAction(value, actionGroup, action.label.toLowerCase())
   }
+  const animationTimings = {
+    enter: 1000,
+    exit: 500
+  }
   const showButtons = actionGroup.toLowerCase() !== 'views'
   return (
     <div className={'resiumToolBar_'+props.position}>
-      <div >
-        <div className="resiumToolBar_corner">
+      <div className="resiumToolBar_corner">
           <IconButtonToolTip
             iconName="globe"
             toolTipType="info"
@@ -1010,28 +997,69 @@ const ResiumToolBar = (props) => {
         <div className="resiumToolBar_sideBar">
           {sideActionsHtml}
         </div>
-        {/* <ReactCSSTransitionGroup
-          transitionName="example"
-          transitionAppear={true}
-          transitionAppearTimeout={500}
-          transitionEnter={false}
-          transitionLeave={false}>
-          <h1>Fading at Initial Mount</h1>
-        </ReactCSSTransitionGroup> */}
-        {open && 
-        //  <ReactCSSTransitionGroup
-        //   transitionName="example"
-        //   transitionEnterTimeout={500}
-        //   transitionLeaveTimeout={300}>
-            <MDBAnimation 
+
+        {/* <div style={{
+              height: '200px',
+              width:  '200px'
+            }}>
+        <Transitioned
+          inProp={open}
+          inClass="boxAnimation_1_top_in"
+          outClass="boxAnimation_1_top_out"
+          animationTimings={animationTimings}
+        > */}
+        <CSSTransition
+            in={open}
+            timeout={400}
+            mountOnEnter
+            unmountOnExit
+            // classNames="boxAnimation_1_top"
+            classNames={{
+                enter: 'hide-content',
+                enterActive: 'boxAnimation_1_top-enter-active',
+                exit: 'hide-content',
+                exitActive: 'boxAnimation_1_top-exit-active',
+                // appear: 'hide-content',
+                // appearActive: 'boxAnimation_1_top-exit-active'
+            }}
+            >
+            <div className={"resiumToolBar_actionsWrapper"}>
+              <IconButtonToolTip
+                        // key={index}
+                className="resiumToolBar_tool p-1 align-middle text-center float-right mt-1"
+                iconName={locked ? 'lock-open' : 'lock'}
+                toolTipType="info"
+                toolTipPosition="left"
+                toolTipEffect="float"
+                toolTipText={locked ? 'Unlock menu' : 'Lock menu'}
+                onClickFunction={() => setLocked(!locked)}
+              />
+              {actionGroups && (actionsHtml)}
+              
+              {showButtons && <>
+                <MDBBtn color="dark-green" size="sm"
+                  onClick={() => props.reset(actionGroup)}>Reset</MDBBtn>
+                <MDBBtn color="primary" size="sm"
+                  onClick={() => props.save(actionGroup)}>Save</MDBBtn>
+                <MDBBtn color="danger" size="sm"
+                  onClick={() => setOpen(false)}>Close</MDBBtn>
+                  </>
+              }
+            </div>
+          </CSSTransition>
+        {/* </Transitioned>
+        </div> */}
+        {/* {open && 
+           <MDBAnimation 
               key={1}
               type={open ? "flipInY" : "flipOutY" } 
               className={"resiumToolBar_actionsWrapper"}
               duration={'500ms'}  
               >
-                {/* <div className={"resiumToolBar_actionsWrapper"}> */}
+            
+                
                   <IconButtonToolTip
-                    // key={index}
+                    
                     className="resiumToolBar_tool p-1 align-middle text-center float-right mt-1"
                     iconName={locked ? 'lock-open' : 'lock'}
                     toolTipType="info"
@@ -1041,7 +1069,7 @@ const ResiumToolBar = (props) => {
                     onClickFunction={() => setLocked(!locked)}
                   />
                   {actionGroups && (actionsHtml)}
-                  {/* {console.log(actionGroup.toLowerCase())} */}
+                  
                   {showButtons && <>
                     <MDBBtn color="dark-green" size="sm"
                       onClick={() => props.reset(actionGroup)}>Reset</MDBBtn>
@@ -1051,13 +1079,11 @@ const ResiumToolBar = (props) => {
                       onClick={() => setOpen(false)}>Close</MDBBtn>
                     </>
                   }
-                {/* </div> */}
+       
             </MDBAnimation>
-      
-        // </ReactCSSTransitionGroup>
-      }
+        } */}
 
-      </div>
+      
 
     </div>
   )

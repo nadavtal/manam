@@ -58,6 +58,7 @@ export const SPAN_UPDATED = 'bridgePage/SPAN_UPDATED';
 export const UPDATE_ELEMENTS = 'bridgePage/UPDATE_ELEMENTS';
 export const ELEMENTS_UPDATED = 'bridgePage/ELEMENTS_UPDATED';
 export const BRIDGE_ELEMENTS_CREATED = 'bridgePage/BRIDGE_ELEMENTS_CREATED';
+export const NEW_MODEL_CREATED = 'bridgePage/NEW_MODEL_CREATED';
 // export const NODE_SELECTED_FROM_PROJECT = 'bridgePage/NODE_SELECTED_FROM_PROJECT';
 
 

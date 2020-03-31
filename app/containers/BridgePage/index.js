@@ -119,7 +119,7 @@ class BridgePage extends Component {
             models = this.props.bridgeModels
 
           }
-          // console.log(models)
+          console.log(this.props.selectedModels)
           return <Resium
                   tiles={this.props.bridgeTiles}
                   models={models}
@@ -128,6 +128,7 @@ class BridgePage extends Component {
                   boundingSphere={this.props.boundingSphere}
                   viewData={this.props.viewData}
                   background={{lon: -123.0744619, lat: 44.0503706, height: 0}}
+                  selectedModels={this.props.selectedModels}
                   />
                   
 
@@ -363,33 +364,6 @@ class BridgePage extends Component {
       });
   
 
-  onKeyDown(e) {
-    // e.preventDefault();
-    console.log(this.props.keyPressed);
-    if (!this.props.keyPressed == 17 && e.keyCode == 17) {
-      return
-    } else {
-      switch (e.keyCode) {
-        case 17:
-          
-            this.props.updateResiumMode('Select elements')
-            this.props.onKeyPress(e.keyCode)
-  
-          break;
-        case 27:
-          
-            this.props.updateResiumMode('Select elements')
-  
-          break;
-      
-        default:
-          break;
-      }
-
-    }
-    
-  }
-
   componentDidMount() {
     console.log('componentDidMount', this.props.models)
     // const bridgeId = this.props.match.params.bridgeId;
@@ -554,6 +528,7 @@ const mapStateToProps = (state) => {
     bridgeElements: bridgePageSelectors.getBridgeElements(state),
     unAllocatedElements: bridgePageSelectors.getUnAllocatedElements(state),
     bridgeNodes: state.bridgePageReducer.bridgeNodes,
+    selectedModels: state.bridgePageReducer.selectedModels,
     // selectedNodes: state.bridgePageReducer.selectedNodes,
     selectedElements: bridgePageSelectors.getSelectedElements(state),
     selectedObjectIds: bridgePageSelectors.getSelectedObjectIds(state),

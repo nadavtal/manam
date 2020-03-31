@@ -36,7 +36,7 @@ import {
   createNewBridgeModel,
 } from '../actions';
 import { toggleModal, showNotification } from '../../App/actions';
-import { nodeSelected, elementsSelected } from '../../Resium/actions';
+import { elementSelected, elementsSelected, receiveAction } from '../../Resium/actions';
 import * as bridgePageSelectors from '../selectors';
 import AccordionTable from '../../AccordionTable/AccordionTable';
 import PhotoSphereViewer from '../PhotoSphereViewer/PhotoSphereViewer';
@@ -294,30 +294,32 @@ const projectData = props => {
 
   const prepareNewBridgeModel = formData => {
     console.log(formData);
-    const promise = Cesium.IonResource.fromAssetId(formData.ion_id)
-      .then(function(resource) {
-        // console.log(resource);
-        let newBridgeModel = {
-          ...formData,
-          models_task_id: null,
-          bid: props.bridge.bid,
-          created_by:
-            props.currentUser.first_name + ' ' + props.currentUser.last_name,
-        };
-        console.log(newBridgeModel);
-        props.createNewBridgeModel(newBridgeModel);
-      })
-      .otherwise(function(error) {
-        console.log(error);
-        props.showNotification({
-          message: ``,
-          title: `${formData.ion_id} resource not found`,
-          icon: 'error',
-          text: '',
-          autohide: 3000
-    
+    let newBridgeModel = {
+      ...formData,
+      models_task_id: null,
+      bid: props.bridge.bid,
+      created_by:
+        props.currentUser.first_name + ' ' + props.currentUser.last_name,
+    };
+    if(formData.ion_id) {
+      const promise = Cesium.IonResource.fromAssetId(formData.ion_id)
+        .then(function(resource) {
+          props.createNewBridgeModel(newBridgeModel);
         })
-      });
+        .otherwise(function(error) {
+          console.log(error);
+          props.showNotification({
+            message: ``,
+            title: `${formData.ion_id} resource not found in Ion`,
+            icon: 'error',
+            text: '',
+            autohide: 3000
+      
+          })
+        });
+    } else {
+      props.createNewBridgeModel(newBridgeModel);
+    }
     // let newBridgeModel = {
     //   ...formData,
     //   models_task_id: null,
@@ -328,7 +330,7 @@ const projectData = props => {
     // props.createNewBridgeModel(newBridgeModel)
   };
   const toggleModal = (modalType, objectId) => {
-    console.log(props.selectedObjectIdsString);
+    console.log(modalType);
     switch (modalType) {
       case 'allocateToSpan':
         props.onToggleModal({
@@ -427,6 +429,18 @@ const projectData = props => {
           confirmFunction: formData => prepareNewBridgeModel(formData),
         });
         break;
+      case 'deleteModel':
+        const model = props.bridgeModels.find(model => model.id == objectId)
+        props.onToggleModal({
+          title: 'Are you sure you want to delete ' + model.name + '?',
+          text: '',
+          confirmButton: 'Delete',
+          cancelButton: 'Cancel',
+          // createFunction={(formData) => this.prepareNewBridgeModel(formData)}
+          // editFunction={(formData) => this.props.editBridge(formData, this.props.bridge.bid)}
+          confirmFunction: () => console.log('DELETE ', model),
+        });
+        break;
     }
   };
 
@@ -453,10 +467,11 @@ const projectData = props => {
       className='py-1'
       />)
   }
+
+
   return (
     <div className="projectTabs">
       <div className="classic-tabs">
-        
         <div className="d-flex justify-content-between nav">
           <Tabs />
         </div>
@@ -491,7 +506,6 @@ const projectData = props => {
 
           {activeItemClassicTabs3 === 2 && (
             <MDBTabPane tabId={2}>
-              {console.log(props.bridgeModels)}
               <IconButtonToolTip
                 className=""
                 iconClassName={`text-${props.textColor}`}
@@ -509,8 +523,10 @@ const projectData = props => {
                 dataType="models"
                 color="blue"
                 textColor="white"
-                toggleModal={modelId => toggleModal('editModel', modelId)}
-                changeDate={(task, value) => console.log(task, value)}
+                toggleModal={(type, modelId) => toggleModal(type, modelId)}
+                onTitleClick={modelId =>
+                  props.sendAction('selectModel', modelId)
+                }
               />
             </MDBTabPane>
           )}
@@ -556,26 +572,34 @@ const projectData = props => {
                 labelLeft=""
                 labelRight={`Show ${showInfo ? 'tree' : 'info'}`}
                 /> */}
-                <span className="projectTabsHeader my-2">
-                  {props.selectedObjectIds.length
-                    ? `Selected Id's: ` + props.selectedObjectIdsString
-                    : `No selected id's`}
-                </span>
-                {props.selectedObjectIds.length ? (
-                  <IconButtonToolTip
-                    className="mt-2"
-                    iconClassName="text-blue"
-                    size="lg"
-                    iconName="plus"
-                    toolTipType="info"
-                    toolTipPosition="left"
-                    toolTipEffect="float"
-                    toolTipText={`Allocate ${props.selectedObjectIds} to span`}
-                    onClickFunction={() => toggleModal('allocateToSpan')}
-                  />
-                ) : (
-                  ''
-                )}
+                <div>
+                  <span className="projectTabsHeader my-2">
+                    {props.selectedObjectIds.length
+                      ? `Selected Ids: `
+                      : `No selected ids`}
+                  </span>
+                  {props.selectedObjectIdsString}
+                </div>
+
+                <div className="d-flex justify-content-between">
+                  {props.selectedObjectIds.length ? (
+                    <IconButtonToolTip
+                      className=" mx-3"
+                      iconClassName="text-blue"
+                      size="lg"
+                      iconName="plus"
+                      toolTipType="info"
+                      toolTipPosition="left"
+                      toolTipEffect="float"
+                      toolTipText={`Allocate ${
+                        props.selectedObjectIds
+                      } to span`}
+                      onClickFunction={() => toggleModal('allocateToSpan')}
+                    />
+                  )
+                : ''}
+                  
+                </div>
               </div>
 
               {showInfo ? (
@@ -588,13 +612,15 @@ const projectData = props => {
                       )
                     }
                     rows={props.bridgeElements}
-                    onRowClick={id => props.nodeSelected(id)}
+                    onRowClick={id => props.elementSelected(id)}
                     structureTypes={props.structureTypes}
                     dataType="spans"
                     selectedObjectIds={props.selectedObjectIds}
                     saveSpan={formData => props.updateSpan(formData)}
                     updateResiumMode={mode => props.updateResiumMode(mode)}
-                    showInMainView={objectId => props.showInMainView(objectId)}
+                    showInMainView={objectId =>
+                      props.showInMainView(objectId)
+                    }
                   >
                     <AccordionTable
                       data={props.elementsGroups}
@@ -604,7 +630,7 @@ const projectData = props => {
                         )
                       }
                       rows={props.bridgeElements}
-                      onRowClick={id => props.nodeSelected(id)}
+                      onRowClick={id => props.elementSelected(id)}
                       structureTypes={props.structureTypes}
                       dataType="spans"
                       selectedObjectIds={props.selectedObjectIds}
@@ -621,7 +647,6 @@ const projectData = props => {
                   <TreeCustom
                     header="Spans"
                     className="customTreeView"
-                    P
                     data={{
                       level_1: props.bridgeSpans,
                       level_2: props.elementsGroups,
@@ -631,12 +656,14 @@ const projectData = props => {
                     selectNodesMode={props.selectNodesMode}
                     selectedObjectIds={props.selectedObjectIds}
                     onClick={(id, selecteMultiple) =>
-                      props.nodeSelected(id, selecteMultiple)
+                      props.elementSelected(id, selecteMultiple)
                     }
                     editElement={(modalType, objectId) =>
                       toggleModal(modalType, objectId)
                     }
-                    showElements={elements => props.elementsSelected(elements)}
+                    showElements={elements =>
+                      props.elementsSelected(elements)
+                    }
                   />
                   <div className="projectTabsHeader mt-2">
                     Un allocated elements:
@@ -644,7 +671,6 @@ const projectData = props => {
                   {props.unAllocatedElements.map(
                     el => (
                       <MDBInput
-                       
                         label={el.name}
                         key={el.name + el.id}
                         checked={props.selectedObjectIds.includes(
@@ -653,7 +679,7 @@ const projectData = props => {
                         type="checkbox"
                         id={`checkBox${el.object_id}`}
                         onChange={() =>
-                          props.nodeSelected(parseInt(el.object_id), true)
+                          props.elementSelected(parseInt(el.object_id), true)
                         }
                       />
                     ),
@@ -663,7 +689,7 @@ const projectData = props => {
                     //   type="checkbox"
                     //   id={`checkBox${el.object_id}`}
                     //   checked={props.selectedObjectIds.includes(parseInt(el.object_id))}
-                    //   onChange={() => props.nodeSelected(el.object_id, selecteMultiple)}
+                    //   onChange={() => props.elementSelected(el.object_id, selecteMultiple)}
                     //   />
                   )}
 
@@ -672,8 +698,8 @@ const projectData = props => {
                   data={props.unAllocatedElements}
                   rows={props.bridgeElements}
                   dataType="nodes"
-                  onTitleClick={(id, selecteMultiple) => props.nodeSelected(id, selecteMultiple)}
-                  onRowClick={(id, selecteMultiple) => props.nodeSelected(id, selecteMultiple)}
+                  onTitleClick={(id, selecteMultiple) => props.elementSelected(id, selecteMultiple)}
+                  onRowClick={(id, selecteMultiple) => props.elementSelected(id, selecteMultiple)}
                   checkBox={true}
                   selectedObjectIds={props.selectedObjectIds}
                   selectNodesMode={props.selectNodesMode}
@@ -714,7 +740,7 @@ export function mapDispatchToProps(dispatch) {
     getSurvey: id => dispatch(getSurvey(id)),
     updateTask: task => dispatch(updateTask(task)),
     // updateResiumMode: (mode) => dispatch(updateResiumMode(mode)),
-    nodeSelected: (id, mode) => dispatch(nodeSelected(id, mode)),
+    elementSelected: (id, mode) => dispatch(elementSelected(id, mode)),
     elementsSelected: ids => dispatch(elementsSelected(ids)),
     updateSpan: formData => dispatch(updateSpan(formData)),
     showInMainView: objectId =>
@@ -725,6 +751,7 @@ export function mapDispatchToProps(dispatch) {
     editSpan: span => dispatch(updateSpan(span)),
     createNewBridgeModel: model => dispatch(createNewBridgeModel(model)),
     showNotification: (data) => dispatch(showNotification(data)),
+    sendAction: (actionType, data) => dispatch(receiveAction(actionType, data))
   };
 }
 

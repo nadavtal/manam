@@ -95,7 +95,7 @@ export function toggleModal(modalData) {
 }
 
 export function showNotification(data) {
-  console.log(data)
+  // console.log(data)
   return {
     type: actionTypes.SHOW_NOTIFICATION,
     data: data

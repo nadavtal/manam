@@ -10,7 +10,7 @@ export function updateResiumMode(data) {
   };
 }
 
-export function nodeSelected(data, selectMultuple) {
+export function elementSelected(data, selectMultuple) {
   // console.log(data)
   return {
     type: actionTypes.NODE_SELECTED,
@@ -25,6 +25,22 @@ export function elementsSelected(data) {
     data,
 
   };
+}
+export function receiveAction(actionType, data) {
+  console.log(actionType, data)
+  switch (actionType) {
+    case 'selectModel':
+      return {
+        type: actionTypes.MODEL_SELECTED,
+        data,
+    
+      };
+      break;
+  
+    default:
+      break;
+  }
+
 }
 
 export function onRightMenuOptionClick(action, data) {

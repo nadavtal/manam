@@ -163,7 +163,7 @@ const resium = props => {
   }, [viewerRef]);
 
   useEffect(() => {
-    console.log('asldkasdlkajsdlkjasd', props.models)
+    
     let calibrationObj = {};
     // console.log(props.models);
     if (props.models.length) setModelsControlerStates(props.models);
@@ -259,23 +259,18 @@ const resium = props => {
       
     }
   }, [polygones])
-  const pickedEntities = new Cesium.EntityCollection();
-  const pickColor = Cesium.Color.YELLOW.withAlpha(0.5);
-  const shift = useKey('shift')
-  const ctrl = useKey('control')
-  const esc = useKey('escape');
-  const keyA = useKey('a')  
+  useEffect(() => {
+    console.log('selectedModels', props.selectedModels)
+    console.log(calibrationState);
+    if (calibrationState) {
+      let updatedCalibrationState = {...calibrationState}
+      let updatedItem = updatedCalibrationState[props.selectedModels];
+      updatedItem.show = !updatedItem.show;
+      updatedCalibrationState[props.selectedModels] = updatedItem;
+      setCalibrationState(updatedCalibrationState);
 
-  // const [polygoneRef, polygoneHovered] = useHover()
-  if (viewerRef.current) {
-    viewer = viewerRef.current.cesiumElement;
-    camera = viewer.camera;
-    scene = viewer.scene;
-    globe = scene.globe;
-    geodesic = new Cesium.EllipsoidGeodesic();
-    ellipsoid = viewer.scene.globe.ellipsoid;
-    
-  }
+    }
+  }, [props.selectedModels])
   useEffect(() => {
     console.log('escape changed')
     setmovingPolylinePositions();
@@ -294,6 +289,24 @@ const resium = props => {
       props.updateMode('')
     }
   }, [keyA]);
+  const pickedEntities = new Cesium.EntityCollection();
+  const pickColor = Cesium.Color.YELLOW.withAlpha(0.5);
+  const shift = useKey('shift')
+  const ctrl = useKey('control')
+  const esc = useKey('escape');
+  const keyA = useKey('a')  
+  
+  // const [polygoneRef, polygoneHovered] = useHover()
+  if (viewerRef.current) {
+    viewer = viewerRef.current.cesiumElement;
+    camera = viewer.camera;
+    scene = viewer.scene;
+    globe = scene.globe;
+    geodesic = new Cesium.EllipsoidGeodesic();
+    ellipsoid = viewer.scene.globe.ellipsoid;
+    
+  }
+  
 
   const setModelsControlerStates = models => {
     console.log('SETTING DATA', models)
@@ -355,18 +368,13 @@ const resium = props => {
     }
   };
 
-  const handleActionFromResiumToolBar = (
-    value,
-    actionGroup,
-    actionName,
-    modelName,
-  ) => {
+  const handleActionFromResiumToolBar = (value, actionGroup, actionName, modelName,) => {
     console.log(
       'handleActionFromResiumToolBar',
-      // value,
+      value,
       actionGroup,
       actionName,
-      // modelName,
+      modelName,
     );
     switch (actionGroup) {
 
@@ -1756,7 +1764,7 @@ export function mapDispatchToProps(dispatch) {
   return {
     updateMode: mode => dispatch(actions.updateResiumMode(mode)),
     onNodeSelected: (node, selectMultiple) =>
-      dispatch(actions.nodeSelected(node.id, selectMultiple)),
+      dispatch(actions.elementSelected(node.id, selectMultiple)),
     onRightMenuOptionClick: (action, data) =>
       dispatch(actions.onRightMenuOptionClick(action, data)),
     editElement: element => dispatch(editElement(element)),

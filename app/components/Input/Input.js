@@ -158,6 +158,7 @@ const input = (props) => {
       inputElement =
         <MDBInput
         label= {props.label}
+        filled
         type="checkbox"
         id={props.label}
         // value={props.value}

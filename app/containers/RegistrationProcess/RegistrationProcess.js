@@ -41,9 +41,14 @@ const RegistrationProcess  = ({
     const [provider, setprovider] = useState({});
     useEffect(() => {
         if (currentUser) {
-            console.log(currentUser)
+            console.log(currentUser);
+            if (currentUser.userProviderRoles && currentUser.userProviderRoles.length == 1) {
+              setprovider(currentUser.userProviderRoles[0])
+              getProviderOrganizations(currentUser.userProviderRoles[0].provider_id)
+            }
             handleNextPrevClick2(3,2)
         }
+        return 
     }, [currentUser])
     let steps;
     if (formModeState == 'register') {
@@ -171,7 +176,7 @@ const RegistrationProcess  = ({
         
         // if (user.userProviderRoles && user.userProviderRoles.length){
             return <>
-            {/* <h5>Providers</h5> */}
+            <h5>Choose provider</h5>
             {userProviderRoles().map(prov => <>
             <HoverableWrapper
                 key={prov.provider_id}
@@ -191,7 +196,7 @@ const RegistrationProcess  = ({
                 {prov.name}
             </h5>
             </HoverableWrapper>
-            {providerOrganizations.length && provider.name == prov.name ? 
+            {/* {providerOrganizations.length && provider.name == prov.name ? 
                             
                 providerOrganizations.map(org => <HoverableWrapper
                     key={org.id}
@@ -216,7 +221,7 @@ const RegistrationProcess  = ({
                     </div>
                     </HoverableWrapper>
                     ) 
-                    : ''}
+                    : ''} */}
                 </>
             )} 
             </>
@@ -246,34 +251,9 @@ const RegistrationProcess  = ({
                 {active.formActivePanel3 === 1 && (
                   <MDBCol md="12" className="login">
                     <Header
-                      text={`Manam ${steps[0].name}`}
+                      text="Please sign in"
                     />
-                    <span className="loginButtons">
-                      {/* <span>Create account</span> */}
-                      <MDBBtn
-                        color="indigo"
-                        rounded
-                        className=""
-                        onClick={() =>
-                          formModeState === 'register'
-                            ? [
-                                setformModeState('login'),
-                                setFormTypeState('loginUserForm'),
-                              ]
-                            : [
-                                setformModeState('register'),
-                                setFormTypeState('userForm'),
-                              ]
-                        }
-                      >
-                        <strong>
-                          {formModeState === 'register'
-                            ? 'Back to login'
-                            : 'Create account'}
-                        </strong>
-                      </MDBBtn>
-                    </span>
-                    <br />
+                    
                     {formModeState == 'register' ?
                      <Form
                         formType={'registerUserUserForm'}
@@ -294,6 +274,43 @@ const RegistrationProcess  = ({
                             // console.log(data, event)
                         }
                     />}
+                    {formModeState !== 'register' && <>
+                    <br/>
+                    <br/>
+                    <hr />
+                    <h4>New User</h4>
+                    <p>Create new account and register according to your role</p>
+                    </>
+                    }
+                    <span className=""> 
+                     
+                      <MDBBtn
+                        color="indigo"
+                        rounded
+                        className={formModeState === 'register' ? "float-left" : "float-right"}
+                        onClick={() =>
+                          formModeState === 'register'
+                            ? [
+                                setformModeState('login'),
+                                setFormTypeState('loginUserForm'),
+                              ]
+                            : [
+                                setformModeState('register'),
+                                setFormTypeState('userForm'),
+                              ]
+                        }
+                      >
+                        {/* <strong>Create account
+                        </strong> */}
+                        <strong>
+                          {formModeState === 'register'
+                            ? 'Back to login'
+                            : 'Create account'}
+                        </strong>
+                      </MDBBtn>
+                    </span>
+                   
+                    
                    {/* <MDBBtn
                       color="mdb-color"
                       rounded
@@ -328,15 +345,15 @@ const RegistrationProcess  = ({
                         )
                         :
                         <>
-                           {/* {currentUser.userOrganiztionRoles && currentUser.userOrganiztionRoles.length && (
-                            <UserOrgRoles user={currentUser}/> 
-                           )}  */}
-                           {currentUser.userProviderRoles && currentUser.userProviderRoles.length && (
+                           {currentUser.userOrganiztionRoles && currentUser.userOrganiztionRoles.length ? 
+                            <UserOrgRoles user={currentUser}/> : ''
+                           } 
+                           {currentUser.userProviderRoles && currentUser.userProviderRoles.length > 1 && (
                             <UserProviderRoles user={currentUser}/> 
                            )} 
-                            {/* {providerOrganizations.length ? 
-                            
-                            providerOrganizations.map(org => <HoverableWrapper
+                            {providerOrganizations.length ? <>
+                            <h5>Choose organization you wish to work on</h5>
+                            {providerOrganizations.map(org => <HoverableWrapper
                                 key={org.id}
                                 bgColor="hsla(10, 100%, 48%, 0.343)"                      
                                 className="text-left p-3"
@@ -358,9 +375,9 @@ const RegistrationProcess  = ({
                                 {org.name}
                                 </h5>
                                 </HoverableWrapper>
-                                ) 
-                             : ''
-                            } */}
+                                ) }
+                            </> : ''
+                            }
                         </>
                         
                     }

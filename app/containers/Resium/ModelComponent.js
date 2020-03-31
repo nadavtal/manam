@@ -226,7 +226,7 @@ const ModelComponent = (props) => {
   }
 
   const handleSelectedNodes = () => {
-    console.log('handleSelectedNodes', props.selectedObjectIds)
+    // console.log('handleSelectedNodes', props.selectedObjectIds)
     if (modelRef.current && cloneModelRef.current) {
       // console.log(cloneModelRef)
       let modelNodes = modelRef.current.cesiumElement._runtime.nodes
@@ -250,7 +250,7 @@ const ModelComponent = (props) => {
 
   const handleSelectedIds = useMemo(() => handleSelectedNodes(), [props.selectedObjectIds])
   const handleModelMouseDown = (m, t) => {
-    console.log(m)
+    // console.log(m)
 
   }
   // console.log(modelResource)
