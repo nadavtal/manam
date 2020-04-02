@@ -3,7 +3,7 @@ import Transition from 'react-transition-group/Transition';
 import CSSTransition from 'react-transition-group/CSSTransition';
 import styled from 'styled-components';
 import { keyframes } from 'styled-components'
-import './animations.css'
+// import './animations.css'
 const breatheAnimation = keyframes`
     0% { height: 100px; width: 100px; }
     30% { height: 400px; width: 400px; opacity: 1 }

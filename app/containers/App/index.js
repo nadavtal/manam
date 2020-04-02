@@ -30,6 +30,7 @@ import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import Modal from '../Modal/Modal'
 import Messages from '../Messages/Messages';
 import Notification from '../../components/Toast/Toast';
+import Alert from '../Alert/Alert'
 import GlobalStyle from '../../global-styles';
 import Categories from '../Market/Categories/Categories'
 import SideNav from '../SideNav/SideNav';
@@ -89,9 +90,12 @@ export default function App() {
           </Switch>
 
         </main>
-        <Modal></Modal>
+        <Modal />
+        <Alert />
         <Notification
-          type="info"/>
+          type="info"
+          />
+          
       <GlobalStyle />
     </AppWrapper>
   );

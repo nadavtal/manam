@@ -22,6 +22,7 @@ import Form from '../../Forms/Form';
 import * as actions from './actions';
 import Projects from '../../Projects/Projects';
 import MegaMenu from '../../../components/MegaMenu/MegaMenu';
+import SideMenu from '../../../components/SideMenu/SideMenu';
 import {  MDBTabPane,
   MDBTabContent,
   MDBNav,
@@ -200,12 +201,36 @@ const ProviderPage = (props) => {
     setSelectedbridge(null)
   }
 
-  const handleMegaMenuSubMenuClick = (name) => {
+  const handleMenuClick = (name) => {
     switch (name) {
       case 'Switch work space':
           props.history.push('/')
         break;
-        case 'Log out':
+        case 'Sign out':
+          props.onToggleModal({
+            title: 'Are you sure you want to log out?',
+            text: '',
+            confirmButton: 'Log out',
+            cancelButton: 'Cancel',
+            
+            confirmFunction: (data) => {
+              props.onLogout()
+              props.history.push('/')
+            }
+          });
+          
+        break;
+    
+      default:
+        break;
+    }
+  }
+  const handleSubMenuClick = (name) => {
+    switch (name) {
+      case 'Switch work space':
+          props.history.push('/')
+        break;
+        case 'Sign out':
           props.onToggleModal({
             title: 'Are you sure you want to log out?',
             text: '',
@@ -227,10 +252,25 @@ const ProviderPage = (props) => {
   return (
 
     <div className="position-relative">
-        <MegaMenu
+        {/* <MegaMenu
           menuType="providerMenu"
           onMenuClick={(name) => toggleClassicTabs3(name)}
-          onSubMenuClick={(name) => handleMegaMenuSubMenuClick(name)}
+          onSubMenuClick={(name) => handleSubMenuClick(name)}
+          linkToProviderPage={(provider_id) => linkToProviderPage(provider_id)}
+          // changeWorkSpace={(orgId) => changeWorkSpace(orgId)}
+          currentUser={props.currentUser}
+          onFinalItemClick={(menuItem, menuType) => {
+            if (menuItem.org_id) changeWorkSpace(menuItem.org_id)
+            else if (menuItem.provider_id) linkToProviderPage(menuItem.provider_id)
+          }}
+ 
+          >
+        
+        </MegaMenu> */}
+        <SideMenu
+          menuType="providerMenu"
+          onMenuClick={(name) => handleMenuClick(name)}
+          onSubMenuClick={(name) => handleSubMenuClick(name)}
           linkToProviderPage={(provider_id) => linkToProviderPage(provider_id)}
           // changeWorkSpace={(orgId) => changeWorkSpace(orgId)}
           currentUser={props.currentUser}
@@ -242,10 +282,10 @@ const ProviderPage = (props) => {
           // onOrganizationClick={(orgId) => changeWorkSpace(orgId)}
           >
         
-        </MegaMenu>
+        </SideMenu>
       <div className="classic-tabs">
-       
-        {!props.loading ? <MDBTabContent className="card" activeItem={activeItemClassicTabs3}>
+        {console.log(activeItemClassicTabs3)}
+        {!props.loading ? <MDBTabContent className="pageContent" activeItem={activeItemClassicTabs3}>
           <MDBTabPane tabId={props.currentUser.userInfo.first_name}>
             <Basic
               item={props.provider}
@@ -283,7 +323,24 @@ const ProviderPage = (props) => {
               : <div>No bridges yet...</div>
               }
             </MDBTabPane>
-            <MDBTabPane tabId="Users">
+            <MDBTabPane tabId="Messages">
+              {/* <TableFilters
+                dataType={'messagesTable'}
+                data={props.messages}
+                // checkBoxFunction={(item) => this.addRemoveItem(item, task.dataType)}
+                // isChecked={(item) => this.isItemInArray(item, task.dataType)}
+                // providers={this.props.providers}
+                tableName={'Messages'}
+                onRowClick={(id) => console.log(id)}
+              /> */}
+
+                </MDBTabPane>
+            <MDBTabPane tabId="Schedule">
+              <Calender />
+
+            </MDBTabPane>
+         
+            <MDBTabPane tabId="Manage roles">
               <MDBBtn
                 color='info'
                 rounded
@@ -297,7 +354,7 @@ const ProviderPage = (props) => {
                 provider={props.provider}
                 />
             </MDBTabPane>
-            <MDBTabPane tabId="Projects">
+            <MDBTabPane tabId="Manage projects">
               <div className='text-center mt-3 mb-5 d-flex justify-content-between'>
                 <h4>
                   <strong>{props.provider.name} projects</strong>
@@ -321,7 +378,7 @@ const ProviderPage = (props) => {
 
 
             </MDBTabPane>
-            <MDBTabPane tabId="Processes">
+            <MDBTabPane tabId="Manage processes">
 
             <MDBSwitch
                 checked={showProviderProcesses}
@@ -357,22 +414,21 @@ const ProviderPage = (props) => {
               />
 
                 </MDBTabPane>
-            <MDBTabPane tabId="Messages">
-              {/* <TableFilters
-                dataType={'messagesTable'}
-                data={props.messages}
-                // checkBoxFunction={(item) => this.addRemoveItem(item, task.dataType)}
-                // isChecked={(item) => this.isItemInArray(item, task.dataType)}
+          
+            <MDBTabPane tabId="Settings">
+              <br />
+              <TableFilters
+                dataType={'organizationsTable'}
+                data={props.organizations}
+                checkBoxFunction={(item) => console.log(item)}
+                isChecked={(item) => {return false}}
                 // providers={this.props.providers}
-                tableName={'Messages'}
-                onRowClick={(id) => console.log(id)}
-              /> */}
+                tableName={'Organizations'}
+                onRowClick={(id) => linkToOrgPage(id)}
+              />
 
                 </MDBTabPane>
-            <MDBTabPane tabId="Calender">
-              <Calender />
-
-            </MDBTabPane>
+          
           </MDBTabContent>
            : <strong>Getting {props.provider.name} data</strong>}
       </div>

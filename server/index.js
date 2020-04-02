@@ -13,6 +13,59 @@ const ngrok =
     : false;
 const { resolve } = require('path');
 
+// var bunyan = require('bunyan');
+// var Bunyan2Loggly = require('bunyan-loggly');
+// var logglyConfig = {
+//     token: '0618ff18-790c-4018-8063-1e36ba16d8d8',
+//     subdomain: 'nadavalmagor',
+// };
+ 
+// var logglyStream = new Bunyan2Loggly(logglyConfig);
+ 
+// create the logger
+// var bunyanLogger = bunyan.createLogger({
+//     name: 'khkhkhkhkhkhkh',
+//     streams: [
+//         {
+//             type: 'raw',
+//             stream: logglyStream,
+//         },
+//     ],
+// });
+// var bunyanLogger = bunyan.createLogger({
+//   name: 'myapp',
+//   streams: [
+//     {
+//       level: 'info',
+//       stream: process.stdout            // log INFO and above to stdout
+//     },
+//     {
+//       level: 'error',
+//       path: '/var/tmp/myapp-error.log'  // log ERROR and above to a file
+//     }
+//   ]
+// });
+// // console.log('bunyanLogger', bunyanLogger)
+// bunyanLogger.info({
+//   logType: 'user signed in'
+// });
+// bunyanLogger.warn({lang: 'en'}, 'ENGLISHHHHHH');
+// // bunyanLogger.info('hi %s', bob, anotherVar); // Uses `util.format` for msg formatting
+
+// function Wuzzle(options) {
+//   this.bunyanLogger = options.log.child({widget_type: 'wuzzle'});
+//   this.bunyanLogger.info('creating a wuzzle')
+// }
+// Wuzzle.prototype.woos = function () {
+//   this.bunyanLogger.warn('This wuzzle is woosey.')
+// }
+
+// bunyanLogger.info('start');
+// var wuzzle = new Wuzzle({log: bunyanLogger});
+// wuzzle.woos();
+// bunyanLogger.info('done');
+
+
 const app = express();
 
 

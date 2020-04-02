@@ -35,7 +35,7 @@ import {
   editElement,
   createNewBridgeModel,
 } from '../actions';
-import { toggleModal, showNotification } from '../../App/actions';
+import { toggleModal, showNotification, toggleAlert } from '../../App/actions';
 import { elementSelected, elementsSelected } from '../../Resium/actions';
 import * as bridgePageSelectors from '../selectors';
 import AccordionTable from '../../AccordionTable/AccordionTable';
@@ -321,7 +321,7 @@ const projectData = props => {
     // props.createNewBridgeModel(newBridgeModel)
   };
   const toggleModal = (modalType, objectId) => {
-    console.log(props.selectedObjectIdsString);
+    // console.log(props.selectedObjectIdsString);
     switch (modalType) {
       case 'allocateToSpan':
         props.onToggleModal({
@@ -422,6 +422,36 @@ const projectData = props => {
     }
   };
 
+  const toggleAlert = (alertType) => {
+    switch (alertType) {
+      case 'delete':
+        this.props.onToggleAlert({
+          title: 'Are you sure',
+          text: 'blah blah blah blah',
+          // confirmButton: 'Create',
+          cancelButton: 'Cancel',
+          
+          confirmFunction: () => console.log('delete')
+        });
+        break
+      case 'Import model':
+        this.props.onToggleModal({
+          title: 'Import model',
+          text: '',
+          // confirmButton: 'Import',
+          cancelButton: 'Cancel',
+          formType: 'modelForm',
+          data: {
+            editMode: 'Import'
+          },
+          // createFunction={(formData) => this.prepareNewBridgeModel(formData)}
+          // editFunction={(formData) => this.props.editBridge(formData, this.props.bridge.bid)}
+          confirmFunction: (formData) => this.prepareNewBridgeModel(formData)
+        });
+        break
+    }
+
+  }
   const findElementByNodeObjectId = objectId => {
     return props.bridgeElements.find(el => el.object_id == objectId);
   };
@@ -552,6 +582,7 @@ const projectData = props => {
                 color="blue"
                 textColor="white"
                 toggleModal={modelId => toggleModal('editModel', modelId)}
+                toggleAlert={() => toggleAlert('delete')}
                 changeDate={(task, value) => console.log(task, value)}
               />
             </MDBTabPane>
@@ -762,6 +793,7 @@ export function mapDispatchToProps(dispatch) {
     showInMainView: objectId =>
       dispatch(showInMainView('ElementForm', 'edit', objectId)),
     onToggleModal: modalData => dispatch(toggleModal(modalData)),
+    onToggleAlert: data => dispatch(toggleAlert(data)),
     updateElements: elements => dispatch(updateElements(elements)),
     editElement: element => dispatch(editElement(element)),
     editSpan: span => dispatch(updateSpan(span)),

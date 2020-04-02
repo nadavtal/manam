@@ -1,0 +1,107 @@
+/* Desktop Main Menu Color */
+
+.smllogo>a {
+  width: 133px;
+  background-image: url(../../images/logo-light.png);
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 29px;
+  display: block;
+}
+
+.wsmenu>.wsmenu-list>li.leftlogo a {
+  width: 240px;
+  background-image: url(../../images/dummy-logo.png);
+  background-position: -7px 15px;
+  background-repeat: no-repeat;
+  height: 142px;
+  display: block;
+  padding: 0px;
+}
+
+.wsmenu>.wsmenu-list>li.leftlogo:hover a {
+  background-color: transparent;
+}
+
+.wsmenu>.wsmenu-list {
+  background-color: #fff;
+}
+
+/* Mobile Header */
+
+.wsmobileheader {
+  background-color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>a {
+  color: #333;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.wsmenu>.wsmenu-list>li>a .wsarrow:after {
+  border-top-color: #b3b3b3;
+}
+
+.wsmenu>.wsmenu-list>li>a:hover .wsarrow:after {
+  border-top-color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>a.active .wsarrow:after {
+  border-top-color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li:hover>a .wsarrow:after {
+  border-top-color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>a>i {
+  color: #55606c;
+}
+
+.wsmenu>.wsmenu-list>li>a.active i {
+  color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li:hover>a>i {
+  color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>a:hover i {
+  color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>.wsmegamenu .menu_form input[type="submit"] {
+  background-color: #fb872b;
+  color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>.wsmegamenu .menu_form input[type="button"] {
+  background-color: #fb872b;
+  color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>a.active {
+  background-color: #fb872b;
+  color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li:hover>a {
+  background-color: #fb872b;
+  color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>ul.sub-menu>li:hover>a {
+  background-color: #fb872b;
+  color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>ul.sub-menu>li>ul.sub-menu>li:hover>a {
+  background-color: #fb872b;
+  color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>ul.sub-menu>li>ul.sub-menu>li>ul.sub-menu>li:hover a {
+  background-color: #fb872b;
+  color: #fff;
+}

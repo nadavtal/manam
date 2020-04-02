@@ -56,23 +56,41 @@ export const menus = {
     {
       name: 'Bridges',
       icon: 'info',
-      type: 'featured-menu',
+      type: 'sub-menu',
       float: 'left'
     },
     {
-      name: 'Users',
+      name: 'Messages',
+      icon: 'envelope',
+      type: 'sub-menu',
+      float: 'right',
+      counter: true,
+      children: [
+        {name: 'Notifications', counter: true},
+        {name: 'Requests', counter: true},
+    ]
+    },
+    {
+      name: 'Schedule',
+      icon: 'calendar-alt',
+      type: 'sub-menu',
+      float: 'right',
+      counter: true,
+    },
+    {
+      name: 'Manage roles',
       icon: 'users',
       type: 'sub-menu',
       float: 'left'
     },
     {
-      name: 'Projects',
+      name: 'Manage projects',
       icon: 'project-diagram',
       type: 'sub-menu',
       float: 'left'
     },
     {
-      name: 'Processes',
+      name: 'Manage processes',
       icon: 'tasks',
       type: 'sub-menu',
       float: 'left'
@@ -84,25 +102,24 @@ export const menus = {
       float: 'left'
     },
     {
+      name: 'Switch work space',
+      icon: 'random',
+      type: 'sub-menu',
+      float: 'left'
+    },
+    {
       name: 'Settings',
       icon: 'cog',
-      type: 'form-menu',
+      type: 'sub-menu',
       float: 'right'
     },
     {
-      name: 'Messages',
-      icon: 'envelope',
-      type: 'icon-menu',
-      float: 'right',
-      counter: true,
+      name: 'Sign out',
+      icon: 'sign-out-alt',
+      type: 'sub-menu',
+      float: 'right'
     },
-    {
-      name: 'Calender',
-      icon: 'calendar-alt',
-      type: 'icon-menu',
-      float: 'right',
-      counter: true,
-    },
+    
   ],
   marketMenu: [
     {

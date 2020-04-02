@@ -35,7 +35,7 @@ import {
   editElement,
   createNewBridgeModel,
 } from '../actions';
-import { toggleModal, showNotification } from '../../App/actions';
+import { toggleModal, showNotification, toggleAlert } from '../../App/actions';
 import { elementSelected, elementsSelected, receiveAction } from '../../Resium/actions';
 import * as bridgePageSelectors from '../selectors';
 import AccordionTable from '../../AccordionTable/AccordionTable';
@@ -329,6 +329,37 @@ const projectData = props => {
     // console.log(newBridgeModel);
     // props.createNewBridgeModel(newBridgeModel)
   };
+  const toggleAlert = (alertType) => {
+
+    switch (alertType) {
+      case 'delete':
+        props.onToggleAlert({
+          title: 'Are you sure',
+          text: 'blah blah blah blah',
+          confirmButton: 'Delete',
+          cancelButton: 'Cancel',
+          
+          confirmFunction: () => console.log('delete')
+        });
+        break
+      case 'Import model':
+        props.onToggleModal({
+          title: 'Import model',
+          text: '',
+          // confirmButton: 'Import',
+          cancelButton: 'Cancel',
+          formType: 'modelForm',
+          data: {
+            editMode: 'Import'
+          },
+          // createFunction={(formData) => prepareNewBridgeModel(formData)}
+          // editFunction={(formData) => props.editBridge(formData, props.bridge.bid)}
+          confirmFunction: (formData) => prepareNewBridgeModel(formData)
+        });
+        break
+    }
+
+  }
   const toggleModal = (modalType, objectId) => {
     console.log(modalType);
     switch (modalType) {
@@ -424,7 +455,7 @@ const projectData = props => {
           data: {
             editMode: 'Import',
           },
-          // createFunction={(formData) => this.prepareNewBridgeModel(formData)}
+          // createFunction={(formData) => prepareNewBridgeModel(formData)}
           // editFunction={(formData) => this.props.editBridge(formData, this.props.bridge.bid)}
           confirmFunction: formData => prepareNewBridgeModel(formData),
         });
@@ -524,6 +555,7 @@ const projectData = props => {
                 color="blue"
                 textColor="white"
                 toggleModal={(type, modelId) => toggleModal(type, modelId)}
+                toggleAlert={(type) => toggleAlert(type)}
                 onTitleClick={modelId =>
                   props.sendAction('selectModel', modelId)
                 }
@@ -746,6 +778,7 @@ export function mapDispatchToProps(dispatch) {
     showInMainView: objectId =>
       dispatch(showInMainView('ElementForm', 'edit', objectId)),
     onToggleModal: modalData => dispatch(toggleModal(modalData)),
+    onToggleAlert: data => dispatch(toggleAlert(data)),
     updateElements: elements => dispatch(updateElements(elements)),
     editElement: element => dispatch(editElement(element)),
     editSpan: span => dispatch(updateSpan(span)),

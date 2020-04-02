@@ -93,6 +93,13 @@ export function toggleModal(modalData) {
     modalData: modalData
   };
 }
+export function toggleAlert(data) {
+  // console.log('alskdjlaskdj')
+  return {
+    type: actionTypes.TOGGLE_ALERT,
+    data: data
+  };
+}
 
 export function showNotification(data) {
   // console.log(data)

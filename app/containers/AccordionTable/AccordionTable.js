@@ -96,7 +96,7 @@ const AccordionComponent = (props) => {
             return (
               <MDBCard key={index} style={{ backgroundColor: 'transparent' }}>
                 <MDBCollapseHeader
-                  onClick={() => handleTitleClick(item.id, index)}
+                  onClick={() => collapse(item.id)}
                   className='blue lighten-3 z-depth-1'
                 >
                   <MDBRow className="no-gutters">
@@ -652,7 +652,7 @@ const AccordionComponent = (props) => {
                         toolTipPosition="left"
                         toolTipEffect="float"
                         toolTipText={`Delete model`}
-                        onClickFunction={() => props.toggleModal('deleteModel', item.id)}
+                        onClickFunction={() => props.toggleAlert('delete')}
                       />
                       
                     </MDBCol>
@@ -666,7 +666,7 @@ const AccordionComponent = (props) => {
                         toolTipPosition="left"
                         toolTipEffect="float"
                         toolTipText={`Edit model info`}
-                        onClickFunction={() => props.toggleModal('modalType', item.id)}
+                        onClickFunction={() => props.toggleModal('editModel', item.id)}
                       />
                       
                     </MDBCol>

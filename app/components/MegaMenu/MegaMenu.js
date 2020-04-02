@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
 import { useHistory } from 'react-router-dom';
-import './webslidemenu.css';
-import './color-skins/grd-orange.css';
+// import './webslidemenu.css';
+// import './color-skins/grd-orange.css';
 // import './color-skins/white-orange.css';
-import './dropdown-effects/fade-down.css';
+// import './dropdown-effects/fade-down.css';
 import { MDBIcon, MDBBtn, MDBInput, MDBSwitch } from 'mdbreact';
 import { menus } from './menu-templates';
 import RolesDropDown from '../RolesDropDown/RolesDropDown';

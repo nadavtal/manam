@@ -24,6 +24,14 @@ export const initialState = {
   modalOpen: false,
   showNotification: false,
   showMessages: false,
+  alertOpen:  false,
+  alertData:  {
+    title: '',
+    text: '',
+    confirmButton: '',
+    cancelButton: '',
+    options: []
+  },
   userData: {
     repositories: false,
   },
@@ -116,6 +124,12 @@ const appReducer = (state = initialState, action) =>
         // console.log('TOGGLE_MODAL', action)
         draft.modalOpen = !state.modalOpen;
         draft.modalData = {...action.modalData}
+
+        break;
+      case actionTypes.TOGGLE_ALERT:
+        console.log('TOGGLE_ALERT', action)
+        draft.alertOpen = !state.alertOpen;
+        draft.alertData = action.data
 
         break;
       case actionTypes.REGISTER_USER:

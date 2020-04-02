@@ -1,0 +1,111 @@
+/* Desktop Main Menu Color */
+
+.smllogo>img {
+  width: 133px;
+  /* background-image: url(../../../images/Logo.svg); */
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 29px;
+  display: block;
+}
+
+.wsmenu>.wsmenu-list>li.leftlogo span {
+  width: 240px;
+  /* background-image: url(../../../images/Logo.svg); */
+  background-position: -7px 15px;
+  background-repeat: no-repeat;
+  height: 4rem;
+  display: block;
+  padding: 0px;
+}
+.wsmenu>.wsmenu-list>li.leftlogo span img{
+  width: 100%;
+  height: 100%;
+}
+
+.wsmenu>.wsmenu-list>li.leftlogo:hover span {
+  background-color: transparent;
+}
+
+.wsmenu>.wsmenu-list {
+  background-color: #fff;
+}
+
+/* Mobile Header */
+
+.wsmobileheader {
+  background-color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>span {
+  color: #333;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.wsmenu>.wsmenu-list>li>span .wsarrow:after {
+  border-top-color: #b3b3b3;
+}
+
+.wsmenu>.wsmenu-list>li>span:hover .wsarrow:after {
+  border-top-color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>span.active .wsarrow:after {
+  border-top-color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li:hover>span .wsarrow:after {
+  border-top-color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>span>i {
+  color: #55606c;
+}
+
+.wsmenu>.wsmenu-list>li>span.active i {
+  color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li:hover>span>i {
+  color: darkorange;
+}
+
+.wsmenu>.wsmenu-list>li>span:hover i {
+  color: darkorange;
+}
+
+.wsmenu>.wsmenu-list>li>.wsmegamenu .menu_form input[type="submit"] {
+  background-color: #d7412e;
+  color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>.wsmegamenu .menu_form input[type="button"] {
+  background-color: #d7412e;
+  color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>span.active {
+  background-color: #d7412e;
+  color: #fff;
+}
+
+/* .wsmenu>.wsmenu-list>li:hover>span {
+  background-color: #d7412e;
+  color: #fff;
+} */
+
+.wsmenu>.wsmenu-list>li>ul.sub-menu>li:hover>span {
+  background-color: #d7412e;
+  color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>ul.sub-menu>li>ul.sub-menu>li:hover>span {
+  background-color: #d7412e;
+  color: #fff;
+}
+
+.wsmenu>.wsmenu-list>li>ul.sub-menu>li>ul.sub-menu>li>ul.sub-menu>li:hover span {
+  background-color: #d7412e;
+  color: #fff;
+}

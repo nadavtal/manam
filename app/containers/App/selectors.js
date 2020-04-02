@@ -80,6 +80,16 @@ const makeSelectModalData = () =>
     selectGlobal,
     globalState => globalState.modalData,
     );
+const makeSelectAlertOpen = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.alertOpen,
+  );
+const makeSelectAlertData = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.alertData,
+    );
 
 const makeSelectShowNotification = () =>
   createSelector(
@@ -143,6 +153,8 @@ export {
   makeSelectProvider,
   makeSelectprocessTemplatesTasks,
   makeSelectKeyPressed,
+  makeSelectAlertOpen,
+makeSelectAlertData,
   getModalOpen,
   getKeyPressed,
 };

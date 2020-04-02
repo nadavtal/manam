@@ -45,7 +45,7 @@ export default function request(url, options) {
     options.headers = {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-      'Authorization' : 'bearer 0618ff18-790c-4018-8063-1e36ba16d8d8'
+      'Authorization' : 'bearer 0618ff18-790c-4018-8063-1e36ba16d8d8git '
     };
 
   }

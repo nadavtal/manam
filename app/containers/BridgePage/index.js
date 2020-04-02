@@ -15,7 +15,7 @@ import { updateResiumMode } from '../Resium/actions'
 import { createStructuredSelector } from 'reselect';
 import { makeSelectCurrentUser, makeSelectUsers, makeSelectLoading, makeSelectError, getKeyPressed, getModalOpen } 
   from 'containers/App/selectors';
-import { toggleModal, keyPressed } from 'containers/App/actions';
+import { toggleModal, keyPressed, toggleAlert } from 'containers/App/actions';
 import { getOrgTechnicalInfo } from '../AppData/actions'
 import { makeSelectRoles } from '../RolesPage/selectors'
 import * as bridgePageSelectors from './selectors'
@@ -379,6 +379,36 @@ class BridgePage extends Component {
     // this.props.bridgeLoaded = false
   }
 
+  toggleAlert = (alertType) => {
+    switch (alertType) {
+      case 'delete':
+        this.props.onToggleAlert({
+          title: 'Are you sure',
+          text: 'blah blah blah blah',
+          // confirmButton: 'Create',
+          cancelButton: 'Cancel',
+          
+          confirmFunction: () => console.log('delete')
+        });
+        break
+      case 'Import model':
+        this.props.onToggleModal({
+          title: 'Import model',
+          text: '',
+          // confirmButton: 'Import',
+          cancelButton: 'Cancel',
+          formType: 'modelForm',
+          data: {
+            editMode: 'Import'
+          },
+          // createFunction={(formData) => this.prepareNewBridgeModel(formData)}
+          // editFunction={(formData) => this.props.editBridge(formData, this.props.bridge.bid)}
+          confirmFunction: (formData) => this.prepareNewBridgeModel(formData)
+        });
+        break
+    }
+
+  }
   toggleModal = (modalType, editMode) => {
     switch (modalType) {
       case 'createProject':
@@ -574,6 +604,7 @@ const mapDispatchToProps = dispatch => {
     onCreateNewProcess: (process) => dispatch(actions.createNewProcess(process)),
     onEditProcess: (process) => dispatch(actions.editProcess(process)),
     onToggleModal: (modalData) => dispatch(toggleModal(modalData)),
+    onToggleAlert: (data) => dispatch(toggleAlert(data)),
     onUpdateModel: (model) => dispatch(actions.updateModel(model)),
     nodesLoaded: (nodes) => dispatch(actions.nodesLoadedFromModel(nodes)),
     createNewBridgeElements: (nodes) => dispatch(actions.createNewBridgeElements(nodes)),

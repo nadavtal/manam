@@ -54,9 +54,9 @@ const RegistrationProcess  = ({
     if (formModeState == 'register') {
         steps =  [
             {name: 'Registration',  icon: 'sign-in-alt'},
-            {name: 'Choose account type',  icon: 'user-cog'},
-            {name: 'Basic info',  icon: 'info'},
-            {name: 'Registration complete',  icon: 'check-circle'},
+            // {name: 'Choose account type',  icon: 'user-cog'},
+            // {name: 'Basic info',  icon: 'info'},
+            // {name: 'Registration complete',  icon: 'check-circle'},
         ]
     } else {
         steps = [
@@ -162,6 +162,10 @@ const RegistrationProcess  = ({
                 hoverEffect="backGroundEnterLeft"
                 onClick={() => {
                     console.log(org)
+                    history.push({
+                      pathname: './organizations/' + org.org_id,
+                     
+                      })
                 }}
                 ><h5>
                 {org.name}
@@ -234,7 +238,7 @@ const RegistrationProcess  = ({
           <MDBCardBody>
             <MDBRow className="pt-5 justify-content-center">
               <MDBCol md="2" className="pl-5 pl-md-0 pb-5">
-                <MDBStepper icon vertical>
+                {/* <MDBStepper icon vertical>
                     {steps.map((step, index) => <MDBStep
                         key={index}
                         className={active.formActivePanel3 == index + 1 ? 'active' : ''}
@@ -244,7 +248,7 @@ const RegistrationProcess  = ({
                         onClick={swapFormActive(3)(index+1)}
                         vertical
                     />)}
-                </MDBStepper>
+                </MDBStepper> */}
               </MDBCol>
 
               <MDBCol md="7">

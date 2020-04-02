@@ -1,5 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
-
+import './animations.css'
 const GlobalStyle = createGlobalStyle`
   html,
   body {
@@ -149,6 +149,57 @@ const GlobalStyle = createGlobalStyle`
   .hide-content *{
     visibility: hidden;
     // background-color: #f57c00 !important;
+  }
+  .overlapblackbgFullScreen {
+    right: 0;
+    width: calc(100vw);
+    height: 100vh;
+    min-height: 100%;
+    position: fixed;
+    top: 0;
+    // opacity: 0;
+    // visibility: hidden;
+    background-color: rgba(0, 0, 0, 0.45);
+    cursor: pointer;
+    z-index: 10;
+  }
+
+
+  .absCenter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+  }
+  .screenCenter {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+  }
+
+  .moveInRight-enter {
+    margin-left: -240px !important;
+  }
+  // .moveInRight-enter-active {
+  //   margin-left: 0 !important;
+  //   transition: .3s all;
+  // }
+  .moveInRight-enter-done {
+    margin-left: 0 !important;
+    transition: .3s all;
+  }
+  .moveInRight-exit {
+    margin-left: 0 !important;
+    
+  }
+  .moveInRight-exit-active {
+    margin-left: -240px !important;
+    transition: .3s all;
+  }
+  .moveInRight-exit-done {
+    margin-left: -240px !important;
+    transition: .3s all;
   }
 `;
 

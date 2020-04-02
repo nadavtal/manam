@@ -2,7 +2,7 @@ import React, { useState, useEffect, memo, useMemo, useRef } from 'react';
 import IconButtonToolTip from '../../components/IconButtonToolTip/IconButtonToolTip';
 import Input from '../../components/Input/Input'
 import CustomSlider from '../../components/Slider/Slider';
-import Transitioned from '../../components/Transitioned/Transitioned'
+
 import './ResiumToolBar.css';
 import { MDBBtn, MDBInput, MDBSelect, MDBIcon, MDBAnimation  } from 'mdbreact';
 import CSSTransition from 'react-transition-group/CSSTransition';
