@@ -56,7 +56,7 @@ const ProviderPage = (props) => {
   useInjectReducer({ key, reducer });
   
 
-  const [activeItemClassicTabs3, setActiveItemClassicTabs3] = useState(localStorage.getItem('activeItemClassicTabs3') ? localStorage.getItem('activeItemClassicTabs3') : 'Bridges');
+  const [activeItemClassicTabs3, setActiveItemClassicTabs3] = useState('Bridges');
   const [showProviderProcesses, setsShowProviderProcesses] = useState(true);
   const [selectedOrganization, setSelectedOrganization] = useState(localStorage.getItem('orgId') ? localStorage.getItem('orgId') : null);
   const [selectedbridge, setSelectedbridge] = useState();
@@ -202,6 +202,7 @@ const ProviderPage = (props) => {
   }
 
   const handleMenuClick = (name) => {
+    toggleClassicTabs3(name)
     switch (name) {
       case 'Switch work space':
           props.history.push('/')
