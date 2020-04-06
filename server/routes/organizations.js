@@ -2,6 +2,8 @@
 var express = require('express');
 var app = module.exports = express();
 const connection = require('../db.js');
+const config = require('../config.js')
+const jwt = require('jsonwebtoken');
 app.get("/organizations", function(req, res){
   console.log('getting organizations');
   var q = 'SELECT * FROM tbl_organizations';
@@ -89,6 +91,7 @@ function updateOrganization(organization, res) {
     res.send(result);
   });
 }
+
 app.get("/organizations/:id/bridges", function(req, res){
   console.log('getting bridges by orgnization: '+ req.params.id);
   var q = 'SELECT * FROM tbl_bridge_list where organization_id = '+req.params.id;

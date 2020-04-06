@@ -29,6 +29,32 @@ function* createMessage(action) {
 
 
 }
+function* sendEmail(action) {
+  console.log(action)
+  const emailData = {
+    name: 'Nadav',
+    company: 'Manam',
+    message: 'this is the first email'
+  }
+  const args = {
+    method: 'POST',
+    body: JSON.stringify(emailData),
+  }
+  // 
+  
+  try {
+    // Call our request helper (see 'utils/request')
+    
+    const email = yield call(request, apiUrl + 'email/send', args);
+    console.log(email)
+    // yield put(usersLoaded(users));
+  } catch (err) {
+    yield put(console.log(err));
+  }
+  
+
+
+}
 
 
 export default function* messagesSaga() {
@@ -38,4 +64,5 @@ export default function* messagesSaga() {
   // It will be cancelled automatically on component unmount
 
   yield takeLatest(actionTypes.CREATE_MESSAGE, createMessage);
+  yield takeLatest(SEND_EMAIL, sendEmail);
 }

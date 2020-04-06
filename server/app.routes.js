@@ -17,14 +17,6 @@ router.get("/", function(req, res){
  res.send("HELLO FROM OUR WEB APP!");
 });
 
-
-function convertToMySqlDateTime(date) {
-
-}
-
-
-
-
 module.exports = router;
 
 

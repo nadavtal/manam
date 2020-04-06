@@ -69,6 +69,17 @@ app.delete("/process-template-tasks/:id", function(req, res){
   });
 
 });
+//get all tasks
+app.get("/tasks/", function(req, res){
+  console.log('getting all', req.params);
+
+  var q = `select * from tbl_tasks`;
+  connection.query(q, function (error, results) {
+  if (error) res.send(error);
+
+  res.send(results);
+  });
+});
 //creating new process-template-task
 app.post("/tasks", function(req, res){
   console.log('creating new task', req.body);
@@ -80,12 +91,12 @@ app.post("/tasks", function(req, res){
 // var data = createProjectUsersArray(project.id, projectUsers);
 // console.log(processes)
 // console.log(convertObjArrayToArray(processes))
-const values = convertObjArrayToArray(tasks)
-connection.query(q, [values], function(err, result) {
-if (err) res.send(err);
+  const values = convertObjArrayToArray(tasks)
+  connection.query(q, [values], function(err, result) {
+  if (err) res.send(err);
 
-res.send(result);
-});
+  res.send(result);
+  });
 
 });
 

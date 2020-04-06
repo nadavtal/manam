@@ -21,6 +21,7 @@
         port: 5300
       },
     },
+    baseUrl: 'http://localhost:3000/',
     secret: 'customSecret2016?!', // BEWARE: this should not goes into repository
     apiRoute: '/api/v1/',
   };

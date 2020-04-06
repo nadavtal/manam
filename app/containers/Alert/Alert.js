@@ -17,8 +17,7 @@ const AlertComponent = ({
 }) => {
   const [showButton, setShowButton] = useState(true);
   const [showMessage, setShowMessage] = useState(false);
-  console.log(alertOpen)
-  console.log(alertData)
+
   return <>
    {alertOpen && <div className="overlapblackbgFullScreen" onClick={onToggleAlert}></div>}
       <CSSTransition

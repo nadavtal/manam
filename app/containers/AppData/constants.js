@@ -16,3 +16,4 @@ export const UPDATE_TASK = 'appData/UPDATE_TASK';
 export const TASK_UPDATED = 'appData/TASK_UPDATED';
 export const GET_ORG_TECH_INFO = 'appData/GET_ORG_TECH_INFO';
 export const ORG_TECH_INFO_LOADED = 'appData/ORG_TECH_INFO_LOADED';
+export const FIND_ENTITY_BY_EMAIL = 'appData/FIND_ENTITY_BY_EMAIL';

@@ -209,13 +209,13 @@ function* createNewBridge(action) {
     method: 'POST',
     body: JSON.stringify(bridge),
   }
-
+  
   try {
     // Call our request helper (see 'utils/request')
     const requestResults = yield call(request, url, args);
     console.log(requestResults);
     yield put(actions.newBridgeCreated(bridge, requestResults.newBridgeId));
-
+    if (modalOpen) yield put(toggleModal())
     yield put(toggleModal())
 
   } catch (err) {

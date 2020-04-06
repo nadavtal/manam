@@ -21,9 +21,9 @@ const Select = ({options, label, value, onChange}) => {
           // getTextContent={(value) => console.log(value)}
           getValue={(e) => {
             // console.log(typeof(e[0]), typeof(value))
-            console.log(e[0], value)
+            // console.log(e[0], value)
             if (e[0] && e[0] !== value) {
-              console.log('FIREEEEEEEEEE')
+              // console.log('FIREEEEEEEEEE')
               onChange(e[0])
             }
           }}

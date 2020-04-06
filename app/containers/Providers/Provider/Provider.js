@@ -281,9 +281,9 @@ const ProviderPage = (props) => {
           }}
           // onProviderClick={(provider_id) => linkToProviderPage(provider_id)}
           // onOrganizationClick={(orgId) => changeWorkSpace(orgId)}
-          >
+          />
         
-        </SideMenu>
+        
       <div className="classic-tabs">
         {console.log(activeItemClassicTabs3)}
         {!props.loading ? <MDBTabContent className="pageContent" activeItem={activeItemClassicTabs3}>

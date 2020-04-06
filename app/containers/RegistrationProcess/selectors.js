@@ -12,5 +12,12 @@ const makeSelectProviderOrganizations = () => {
     registrationProcess => registrationProcess.providerOrganizations,
   );
 }
+const makeSelectMessage = () => {
+  
+  return createSelector(
+    selectRegistrationProcess,
+    registrationProcess => registrationProcess.msg,
+  );
+}
 
-  export { selectRegistrationProcess, makeSelectProviderOrganizations };
+  export { selectRegistrationProcess, makeSelectProviderOrganizations, makeSelectMessage };

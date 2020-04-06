@@ -2,7 +2,7 @@
 
 const express = require('express');
 const logger = require('./logger');
-var config = require('./config.js');
+const config = require('./config.js');
 const argv = require('./argv');
 const port = require('./port');
 const setup = require('./middlewares/frontendMiddleware');
@@ -83,15 +83,17 @@ var rolesRoutes = require('./routes/roles');
 var surveysRoutes = require('./routes/surveys');
 var projectUsersRoutes = require('./routes/project-users');
 var providerUsersRoutes = require('./routes/provider-users');
+var organizationUsersRoutes = require('./routes/organization-users');
 var projectSurveysRoutes = require('./routes/project-surveys');
 var messages = require('./routes/messages');
 var processTemaplateTasksRoutes = require('./routes/process-template-tasks');
 var processesRoutes = require('./routes/processes');
 var tasksRoutes = require('./routes/tasks');
+var emailsRoutes = require('./routes/emails');
 var bodyParser = require('body-parser')
 app.use(bodyParser.json())
 app.use(config.apiRoute, [routes, orgRoutes, userRoutes, providersRoutes, projectsRoutes, bridgesRoutes, surveysRoutes, projectUsersRoutes, projectSurveysRoutes,
-                          providerUsersRoutes, messages, processTemaplateTasksRoutes, rolesRoutes, processesRoutes, tasksRoutes]);
+                          providerUsersRoutes, messages, processTemaplateTasksRoutes, rolesRoutes, processesRoutes, tasksRoutes, emailsRoutes, organizationUsersRoutes]);
 
 
 

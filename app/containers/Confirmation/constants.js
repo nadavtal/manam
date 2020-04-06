@@ -10,5 +10,5 @@
  */
 
 
-
-
+export const SEND_CONFIRMATION = 'confirmation/SEND_CONFIRMATION';
+export const USER_CONFIRMED = 'confirmation/USER_CONFIRMED';

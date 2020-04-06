@@ -292,6 +292,21 @@ function* getOrgTechnicalInfo(action) {
   }
 
 }
+function* findEntityByEmail(action) {
+  console.log('findEntityByEmail', action.data)
+
+  try {
+    // Call our request helper (see 'utils/request')
+
+    const users = yield call(request, apiUrl + 'users/'+ action.data.email);
+    console.log(users)
+   
+    yield put(foundResults(users));
+  } catch (err) {
+    yield put(loadError(err));
+  }
+
+}
 
 
 
@@ -312,4 +327,5 @@ export default function* addDataSaga() {
   yield takeLatest(actionTypes.GET_PROVIDER_ORGANIZATIONS, getProviderOrganizations);
   yield takeLatest(actionTypes.GET_ORG_TECH_INFO, getOrgTechnicalInfo);
   yield takeLatest(actionTypes.GET_USER, getUserById);
+  yield takeLatest(actionTypes.FIND_ENTITY_BY_EMAIL, findEntityByEmail);
 }

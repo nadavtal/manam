@@ -2,8 +2,11 @@
 var express = require('express');
 var app = module.exports = express();
 const connection = require('../db.js');
+const jwt = require('jsonwebtoken');
+const config = require('../config.js')
 
 //USERS ROUTES
+// console.log(config)
 app.get("/users", function(req, res){
   console.log('getting users')
   var q = 'SELECT * FROM tbl_users';
@@ -17,29 +20,77 @@ app.get("/users", function(req, res){
 app.post("/users", function(req, res){
   console.log('creating user', req.body);
   const user = req.body
-  var q = `INSERT INTO tbl_users ( user_name, password, phone, status, remarks, first_name, last_name, date_created, user_image, email, address )
+  const token = jwt.sign({ 
+    email: user.email, password: user.password 
+  }, config.secret);
+  var q = `INSERT INTO tbl_users (
+     user_name, password, phone, status, remarks, first_name, 
+     last_name, date_created, user_image, email, address, confirmation_token )
   VALUES
-  ( '${user.user_name}', '${user.password}', '${user.phone}', 'active', '${user.remarks}', '${user.first_name}', '${user.last_name}', now(), '', '${user.email}', '${user.address}');`
+  ( '${user.user_name}', '${user.password}', '${user.phone}', 'created', '${user.remarks}', 
+  '${user.first_name}', '${user.last_name}', now(), '', '${user.email}', '${user.address}',
+  '${token}');`
   console.log(q)
   connection.query(q, function (error, results) {
   if (error) throw error;
+  
+  user.id = results.insertId
+  res.send({user, token});
+  });
+ });
+ app.post("/users/confirmation", function(req, res){
+  console.log('confirming user', req.body)
+  const decoded = jwt.verify(req.body.token, config.secret)
+  // var q = `SELECT * FROM db_3dbia.tbl_users u
+  // INNER JOIN tbl_users_roletypes ur
+  //   ON ur.userId = u.id where user_name = '${req.params.email}' and password = '${req.params.password}'`
+  var q = `UPDATE tbl_users
+  SET confirmation_token = '',
+      status = 'confirmed'
+  WHERE email = '${decoded.email}';`
 
+  connection.query(q, function (error, results) {
+  if (error) throw error;
+  
   res.send(results);
   });
  });
- app.get("/users/:id", function(req, res){
-  console.log('getting user', req.params.id)
+ app.get("/users/email/:email", function(req, res){
+  console.log('getting user by mail')
   // var q = `SELECT * FROM db_3dbia.tbl_users u
   // INNER JOIN tbl_users_roletypes ur
-  //   ON ur.userId = u.id where user_name = '${req.params.username}' and password = '${req.params.password}'`
-  var q = `SELECT * FROM db_3dbia.tbl_users where id = ${req.params.id}`
-  console.log(q)
-  connection.query(q, function (error, results) {
-  if (error) res.send(error);
+  //   ON ur.userId = u.id where user_name = '${req.params.email}' and password = '${req.params.password}'`
+  var q = `SELECT * FROM db_3dbia.tbl_users where email = '${req.params.email}'`
 
-  res.send(results[0]);
+  connection.query(q, function (error, results) {
+  if (error) throw error;
+  
+  res.send(results);
   });
  });
+ app.get("/users/login/:email/:password", function(req, res){
+  console.log('getting userrrrr');
+  
+  // var q = `SELECT * FROM db_3dbia.tbl_users u
+  // INNER JOIN tbl_users_roletypes ur
+  //   ON ur.userId = u.id where user_name = '${req.params.email}' and password = '${req.params.password}'`
+  var q = `SELECT * FROM db_3dbia.tbl_users where email = '${req.params.email}' and password = '${req.params.password}'`
+
+  connection.query(q, function (error, results) {
+    // console.log(results)
+    if (error) throw error;
+    // jwt.sign({ foo: 'bar' }, 'Manam', { algorithm: 'RS256' }, function(err, token) {
+    //   console.log(token);
+    // });
+    const user = results[0]
+    const token = jwt.sign({ 
+      email: user.email, password: user.password 
+    }, config.secret);
+    // console.log(token)
+    if (token) res.send({user, token});
+  });
+ });
+ 
 app.post("/users/:id/roles", function(req, res){
   console.log('creating user roles', req.body, req.params.id);
   const userRoles = req.body;
@@ -91,6 +142,7 @@ app.post("/users/:id/roles", function(req, res){
   res.send(results);
   });
  });
+
  app.get("/users/:id/provider-roles", function(req, res){
   console.log('getting user provider-roles', req.params.id);
 
@@ -108,21 +160,21 @@ app.post("/users/:id/roles", function(req, res){
   res.send(results);
   });
  });
-
- //GET USER
- app.get("/users/:email/:password", function(req, res){
-  console.log('getting user')
+ app.get("/users/:id", function(req, res){
+  console.log('getting userasdasdasd', req.params.id)
   // var q = `SELECT * FROM db_3dbia.tbl_users u
   // INNER JOIN tbl_users_roletypes ur
-  //   ON ur.userId = u.id where user_name = '${req.params.email}' and password = '${req.params.password}'`
-  var q = `SELECT * FROM db_3dbia.tbl_users where email = '${req.params.email}' and password = '${req.params.password}'`
-
+  //   ON ur.userId = u.id where user_name = '${req.params.username}' and password = '${req.params.password}'`
+  var q = `SELECT * FROM db_3dbia.tbl_users where id = ${req.params.id}`
+  console.log(q)
   connection.query(q, function (error, results) {
-  if (error) throw error;
+  if (error) res.send(error);
 
   res.send(results[0]);
   });
  });
+ //GET USER
+ 
 
 
  app.get("/providers/:id/organizations", function(req, res){

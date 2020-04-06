@@ -8,7 +8,14 @@ import { createStructuredSelector } from 'reselect';
 import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
 import HoverableWrapper from '../../components/Hoverable/Hoverable';
-import { makeSelectProviderOrganizations } from './selectors'
+import { makeSelectProviderOrganizations, makeSelectMessage } from './selectors'
+import {
+  
+  makeSelectLoading,
+  makeSelectError,
+  makeSelectCurrentUser
+} from 'containers/App/selectors';
+import * as actions from './actions'
 import Form from '../Forms/Form';
 import {
     getProviderOrganizations
@@ -26,8 +33,11 @@ const key = 'registrationProcess';
 const RegistrationProcess  = ({
     currentUser,
     onLoginUser,
+    onAuth,
+    onRegisterUser,
     providerOrganizations,
     getProviderOrganizations,
+    msg,
     history = useHistory(),
 }) => {
     useInjectReducer({ key, reducer });
@@ -231,7 +241,7 @@ const RegistrationProcess  = ({
             </>
         // }
     }
-    
+    console.log(msg)
     return (
       <MDBContainer className="registrationProcess">
         <MDBCard>
@@ -260,24 +270,26 @@ const RegistrationProcess  = ({
                     
                     {formModeState == 'register' ?
                      <Form
-                        formType={'registerUserUserForm'}
+                        formType={'registerUserForm'}
                         editMode={formModeState}
                         colWidth={12}
-                        editFunction={(data, event) =>
-                            // onSubmitForm(data, event)
-                            console.log(data, event)
-                        }
+                        editFunction={(data, event) => {
+                          // onAuth(data)
+                          onRegisterUser(data)
+
+                        }}
                         />
                     :
                     <Form
                         formType={'loginUserForm'}
                         editMode={formModeState}
                         colWidth={12}
-                        editFunction={(data, event) =>
-                            onLoginUser(data)
-                            // console.log(data, event)
-                        }
+                        editFunction={(data, event) => {
+                          onLoginUser(data)
+                          // onAuth(data)
+                        }}
                     />}
+                    <div className="message">{msg}</div>
                     {formModeState !== 'register' && <>
                     <br/>
                     <br/>
@@ -506,10 +518,10 @@ const RegistrationProcess  = ({
 };
 
 const mapStateToProps = createStructuredSelector({
-    // currentUser: makeSelectCurrentUser(),
-    // loading: makeSelectLoading(),
-    // error: makeSelectError(),
-    // roles: makeSelectRoles(),
+    currentUser: makeSelectCurrentUser(),
+    loading: makeSelectLoading(),
+    error: makeSelectError(),
+    msg: makeSelectMessage(),
     providerOrganizations: makeSelectProviderOrganizations(),
     // roles: makeSelectRoles(),
   });
@@ -528,19 +540,13 @@ const mapStateToProps = createStructuredSelector({
   
   export function mapDispatchToProps(dispatch) {
     return {
-      onLoginUser: userData => {
-        dispatch(login(userData));
-      },
-      onRegisterUser: data => {
-        dispatch(registerUser(data));
-      },
-      onRegisterProvider: data => {
-        dispatch(registerProvider(data));
-      },
-      onRegisterOrg: data => {
-        dispatch(registerOrg(data));
-      },
-      getProviderOrganizations: providerId => dispatch(getProviderOrganizations(providerId))
+      onAuth: (userData) => dispatch(actions.auth(userData)),
+      onLoginUser: userData => dispatch(login(userData)),
+      onRegisterUser: data => dispatch(registerUser(data)),
+      onRegisterProvider: data => dispatch(registerProvider(data)),
+      onRegisterOrg: data => dispatch(registerOrg(data)),
+      getProviderOrganizations: providerId => dispatch(getProviderOrganizations(providerId)),
+
     };
   }
   

@@ -1057,24 +1057,24 @@ export const forms = {
     },
 
   },
-  'registerUserUserForm':  {
-    userName: {
-      label: 'User name',
-      elementType: 'input',
-      elementConfig: {
+  'registerUserForm':  {
+    // userName: {
+    //   label: 'User name',
+    //   elementType: 'input',
+    //   elementConfig: {
 
-        type: 'text',
-        placeholder: 'User Name'
-      },
-      value: '',
-      validation: {
-        required: true,
-        unique: true
-      },
-      valid: false,
-      touched: false,
-      errMsg: 'Please enter user name!'
-    },
+    //     type: 'text',
+    //     placeholder: 'User Name'
+    //   },
+    //   value: '',
+    //   validation: {
+    //     required: true,
+    //     unique: true
+    //   },
+    //   valid: false,
+    //   touched: false,
+    //   errMsg: 'Please enter user name!'
+    // },
     email: {
       label: 'Email',
       elementType: 'input',

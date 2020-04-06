@@ -154,7 +154,7 @@ const form = (props) => {
   }
 
   const inputChangedHandler = (event, inputIdetifier) => {
-    console.log('inputChangedHandler', event, inputIdetifier)
+    // console.log('inputChangedHandler', event, inputIdetifier)
     // clone 1st order
     const updatedForm = {
       ...formTypeState
@@ -425,6 +425,16 @@ const form = (props) => {
         if (formElement.valid) formTypeState.url.valid = true;
         else {
           if (!formTypeState.url.valid.length) formTypeState.url.valid = false
+        }
+      }
+      if (formElement.label === 'Confirm password') {
+
+        const password = formTypeState['password'].value
+        const confirmPassword = formElement.value;
+        if (password !== confirmPassword) {
+          formElement.valid = false
+          formElement.errMsg = 'Must match password'
+          isValid = false
         }
       }
       return isValid

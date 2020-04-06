@@ -50,17 +50,18 @@ export const initialState = {
     autohide: 3000
 
   },
-  users: [
-    ],
+  users: [],
   organizations: [],
   providers: [],
   projects: [],
+  processes: [],
+  tasks: [],
   roles: [],
   roleTypes: [],
   selectedProvider: {},
   processTemplatesTasks: [],
-  keyPressed: null
-
+  keyPressed: null,
+  newOrg: null
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -232,6 +233,21 @@ const appReducer = (state = initialState, action) =>
         break;
       case PROVIDER_LOADED:
         draft.loading = false
+        break;
+      case actionTypes.ORGANIZATION_ADDED:
+        draft.newOrg = {org: action.org, users: action.users};
+        draft.organizations = [...state.organizations,action.org];
+        
+        break;
+      case actionTypes.ALL_DATA_LOADED:
+        console.log('ALL_DATA_LOADED', action.data)
+        draft.organizations = action.data.organizations;
+        draft.providers = action.data.providers;
+        draft.users = action.data.users;
+        draft.projects = action.data.projects;
+        draft.processes = action.data.processes;
+        draft.tasks = action.data.tasks;
+        
         break;
     }
   });

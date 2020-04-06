@@ -128,4 +128,18 @@ export function orgTechInfoLoaded(data) {
     data,
   };
 }
+export function findEntityByEmail(data) {
+    // console.log('organization')
+  return {
+    type: actionTypes.FIND_ENTITY_BY_EMAIL,
+    data,
+  };
+}
+export function foundResults(data) {
+    // console.log('organization')
+  return {
+    type: actionTypes.FOUND_RESULTS,
+    data,
+  };
+}
 

@@ -21,6 +21,7 @@ export function logout() {
     
   };
 }
+
 /**
  * Load the repositories, this action starts the request saga
  *
@@ -110,10 +111,17 @@ export function showNotification(data) {
 }
 
 export function registerUser(user) {
-  console.log('registerUser')
+  
   return {
     type: actionTypes.REGISTER_USER,
     data: user
+  };
+}
+export function registerUserResponse(data) {
+  
+  return {
+    type: actionTypes.REGISTER_USER_RESPONSE,
+    data
   };
 }
 export function registerProvider(provider) {
@@ -234,7 +242,28 @@ export function keyPressed(data) {
     data
   };
 }
+export function sendEmail(data) {
+  console.log(data)
+  return {
+    type: actionTypes.SEND_EMAIL,
+    data
+  };
+}
 
+export function allDataLoaded(data) {
+  
+  return {
+    type: actionTypes.ALL_DATA_LOADED,
+    data
+  };
+}
 
+export function organizationAdded(org, users) {
+  return {
+    type: actionTypes.ORGANIZATION_ADDED,
+    org,
+    users
+  };
+}
 
 

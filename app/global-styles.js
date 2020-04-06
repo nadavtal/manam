@@ -201,6 +201,7 @@ const GlobalStyle = createGlobalStyle`
     margin-left: -240px !important;
     transition: .3s all;
   }
+  
 `;
 
 export default GlobalStyle;

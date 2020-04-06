@@ -330,8 +330,7 @@ export function HomePage({
       <MDBView>
         <MDBMask className="d-flex justify-content-center" overlay="gradient">
           <MDBContainer className="h-100 d-flex justify-content-center mt-5">
-            <RegistrationProcess 
-              currentUser={currentUser}/>
+            <RegistrationProcess />
 
           </MDBContainer>
 

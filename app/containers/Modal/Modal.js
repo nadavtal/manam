@@ -52,6 +52,7 @@ render() {
             <Form
               formType={modalData.formType}
               editMode={modalData.editMode}
+              colWidth={modalData.colWidth}
               {...modalData.data}
               createFunction= {(data, event) => this.confirm(data, event)}
               editFunction= {(data, event) => this.confirm(data, event)}

@@ -10,7 +10,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
-
+import Confirmation from '../Confirmation/Confirmation'
 import BridgePage from 'containers/BridgePage/Loadable'
 import HomePage from 'containers/HomePage/Loadable';
 import RolesPage from '../RolesPage/index'
@@ -26,6 +26,7 @@ import Processes from '../Processes/Processes';
 import Process from '../Process/Process';
 import AppData from '../AppData/AppData'
 import Admin from '../Admin/Admin';
+import AdminModule from '../AdminModule/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import Modal from '../Modal/Modal'
 import Messages from '../Messages/Messages';
@@ -74,6 +75,7 @@ export default function App() {
             />}
              />
             <Route path="/organizations/:id" component={OrganizationPage} />
+            <Route path="/confirmation/:type/:token" component={Confirmation} />
             <Route path="/organizations" component={OrganizationsPage} />
             <Route path="/providers/:id" component={ProviderPage} />
             <Route path="/providers" component={ProvidersPage} />
@@ -83,7 +85,7 @@ export default function App() {
             <Route path="/proccesses/:id" component={Process} />
             <Route path="/proccesses" component={Processes} />
             <Route path="/messages" component={Messages} />
-            <Route path="/admin" component={Admin} />
+            <Route path="/admin" component={AdminModule} />
             <Route path="/market" component={Market} />
             <Route path="/" component={HomePage} />
             <Route path="" component={NotFoundPage} />

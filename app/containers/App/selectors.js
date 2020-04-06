@@ -35,6 +35,16 @@ const makeSelectProjects = () =>
     selectGlobal,
     globalState => globalState.projects,
   );
+const makeSelectProcesses = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.processes,
+  );
+const makeSelectTasks = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.tasks,
+  );
 const makeSelectRoles = () =>
   createSelector(
     selectGlobal,
@@ -123,6 +133,11 @@ const makeSelectKeyPressed = () =>
     selectGlobal,
     globalState => globalState.geyPressed,
   );
+const makeSelectNewOrg = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.newOrg,
+  );
 
 const getModalOpen = createSelector(
      selectGlobal ,
@@ -154,7 +169,10 @@ export {
   makeSelectprocessTemplatesTasks,
   makeSelectKeyPressed,
   makeSelectAlertOpen,
-makeSelectAlertData,
+  makeSelectAlertData,
+  makeSelectProcesses,
+  makeSelectTasks,
+  makeSelectNewOrg,
   getModalOpen,
   getKeyPressed,
 };

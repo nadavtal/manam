@@ -10,5 +10,13 @@
  */
 
 
+export const DELETE_ORGANIZATION = 'adminModule/DELETE_ORGANIZATION';
+export const UPDATE_ORGANIZATION = 'adminModule/UPDATE_ORGANIZATION';
+export const ADD_ORGANIZATION = 'adminModule/ADD_ORGANIZATION';
+
+export const GET_ALL_DATA = 'adminModule/GET_ALL_DATA';
+export const ALLOCATE_USER_TO_ORG = 'adminModule/ALLOCATE_USER_TO_ORG';
+
+
 
 
