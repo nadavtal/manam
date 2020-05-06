@@ -9,22 +9,7 @@ import { loadError } from 'containers/App/actions';
 
 import { apiUrl } from '../../App/constants';
 
-function* updateOrganization(action) {
-  console.log(action);
-  const url = apiUrl + 'organizations/'+action.id
-  try {
-    const args = {
 
-      method: 'PUT',
-      body: JSON.stringify(action.data),
-    }
-    const org = yield call(request, url, args);
-    console.log(org)
-    // yield put(actions.projectLoaded(project[0]));
-  } catch (err) {
-    yield put(loadError(err));
-  }
-}
 function* updateTask(action) {
   // console.log(action);
   const url = apiUrl + 'tasks/'+action.data.id
@@ -92,7 +77,7 @@ function* getProcessesByProjectId(action) {
 
 export default function* organizationsSaga() {
 
-  yield takeLatest(actionTypes.UPDATE_ORGANIZATION, updateOrganization);
+  
   yield takeLatest(actionTypes.CREATE_PROCESSES_IN_DB, createProcessesInDB);
   yield takeLatest(actionTypes.GET_PROCESSES_BY_PROJECT_ID, getProcessesByProjectId);
   yield takeLatest(actionTypes.CREATE_TASKS_IN_DB, createTasksInDB);

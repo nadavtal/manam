@@ -2,64 +2,79 @@
 import { createSelector } from 'reselect';
 import { initialState } from './reducer';
 
-const selectOrganization = (state) =>
+export const selectOrganization = (state) =>
 {
 
   return state.organization || initialState
 };
 
-const makeSelectOrganization = () =>
+export const makeSelectOrganization = () =>
   createSelector(
     selectOrganization,
     organizationState => organizationState.organization,
   );
-const makeSelectOrganizationProjects = () =>
+export const makeSelectOrganizationProjects = () =>
   createSelector(
     selectOrganization,
     organizationState => organizationState.projects,
   );
-const makeSelectOrganizationBridges = () =>
+export const makeSelectOrganizationBridges = () =>
   createSelector(
     selectOrganization,
     organizationState => organizationState.bridges,
   );
-const makeSelectOrganizationProcessesTemplates = () =>
+export const makeSelectOrganizationProcessesTemplates = () =>
   createSelector(
     selectOrganization,
     organizationState => organizationState.processesTemplates,
   );
-const makeSelectOrganizationProcesses = () =>
+export const makeSelectOrganizationProcesses = () =>
   createSelector(
     selectOrganization,
     organizationState => organizationState.processes,
   );
-const makeSelectOrganizationProcessesTasks = () =>
+export const makeSelectOrganizationProcessesTasks = () =>
   createSelector(
     selectOrganization,
     organizationState => organizationState.processesTasks,
   );
-const makeSelectOrganizationProviders = () =>
+export const makeSelectOrganizationProviders = () =>
   createSelector(
     selectOrganization,
     organizationState => organizationState.providers,
   );
-const makeSelectOrganizationProjectsProcesses = () =>
+export const makeSelectOrganizationProjectsProcesses = () =>
   createSelector(
     selectOrganization,
     organizationState => organizationState.projectsProcesses,
   );
-const makeSelectOrganizationMessages = () =>
+export const makeSelectOrganizationMessages = () =>
   createSelector(
     selectOrganization,
     organizationState => organizationState.messages,
   );
-const makeSelectOrganizationTasks = () =>
+export const makeSelectOrganizationTasks = () =>
   createSelector(
     selectOrganization,
     organizationState => organizationState.tasks,
   );
+export const makeSelectOrganizationUsers = () =>
+  createSelector(
+    selectOrganization,
+    organizationState => organizationState.organizationUsers,
+  );
+export const makeSelectOrganizationRoles = () =>
+  createSelector(
+    selectOrganization,
+    organizationState => organizationState.organizationRoles,
+  );
+export const makeSelectProvidersRoles = () =>
+  createSelector(
+    selectOrganization,
+    organizationState => organizationState.providersRoles,
+  );
 
-export { selectOrganization, makeSelectOrganization, makeSelectOrganizationProjects, makeSelectOrganizationBridges,
-  makeSelectOrganizationProcessesTemplates, makeSelectOrganizationProviders, makeSelectOrganizationProcessesTasks,
-  makeSelectOrganizationMessages, makeSelectOrganizationProcesses, makeSelectOrganizationProjectsProcesses,
-  makeSelectOrganizationTasks };
+// export { selectOrganization, makeSelectOrganization, makeSelectOrganizationProjects, makeSelectOrganizationBridges,
+//   makeSelectOrganizationProcessesTemplates, makeSelectOrganizationProviders, makeSelectOrganizationProcessesTasks,
+//   makeSelectOrganizationMessages, makeSelectOrganizationProcesses, makeSelectOrganizationProjectsProcesses,
+//   makeSelectOrganizationTasks };

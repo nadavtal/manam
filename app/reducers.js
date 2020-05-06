@@ -17,7 +17,6 @@ import resiumReducer from './containers/Resium/reducer';
  * Merges the main reducer with the router state and dynamically injected reducers
  */
 export default function createReducer(injectedReducers = {}) {
-  console.log(injectedReducers)
   const rootReducer = combineReducers({
     global: globalReducer,
     language: languageProviderReducer,

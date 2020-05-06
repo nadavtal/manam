@@ -29,10 +29,7 @@ const confirmationReducer = (state = initialState, action) =>
       default:
         return state
         break;
-      // case PROVIDER_ORGANIZATIONS_LOADED:
-      //   console.log(action.data)
-      //   draft.providerOrganizations = action.data
-      //   break;
+
     }
   });
 

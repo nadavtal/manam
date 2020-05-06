@@ -1,5 +1,42 @@
 import { createGlobalStyle } from 'styled-components';
-import './animations.css'
+import './animations.css';
+export const theme = {
+  green: '#79BC1E',
+  greenLight: '#A2D868',
+  yellow: '#FFFF81',
+  orange: '#FF892F',
+  orange_2: '#FFA159',
+  orange_3: '#FFB882',
+  orange_white: '#FED0AC',
+  cream: '#FFE6D5',
+  turkize: '#66BDC7',
+  turkizeLight: '#B9E0E4',
+  offWhite: '#F1F1F1',
+}
+
+// .green-light {
+//   color: #A2D868;
+// }
+// .green {
+//   color: #79BC1E;
+// }
+// .yellow {
+//   color: #FFFF81;
+// }
+
+// .orange {
+//   color: #FF892F;
+// }
+// .orange-faded {
+//   color: #FFB882;
+// }
+// .orange-faded-plus {
+//   color: #FED0AC;
+// }
+
+// .turkize {
+//   color: #66BDC7
+// }
 const GlobalStyle = createGlobalStyle`
   html,
   body {
@@ -22,6 +59,20 @@ const GlobalStyle = createGlobalStyle`
     min-width: 100%;
   }
 
+  .tableRow .select-dropdown {
+    font-size: .8rem !important;
+    margin: 0 !important;
+    border-bottom: 1px solid blue !important;
+  }
+  .tableRow .md-form {
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+  }
+
+  .tableRow.active {
+      background-color: rgba(255, 140, 0, 0.26);
+  }
+
   p,
   label {
     font-family: Georgia, Times, 'Times New Roman', serif;
@@ -33,6 +84,38 @@ const GlobalStyle = createGlobalStyle`
   }
   .fullWidth{
     width: 100% !important;
+  }
+
+  .registrationProcess .Input{
+    background-color: ${theme.offWhite};
+    height: 3rem;
+    margin-top: 3rem !important;
+  }
+  .registrationProcess label {
+    margin-left: 4.5rem !important;
+  }
+  .registrationProcess .Input input {
+    border-bottom: none !important;
+    color: grey;
+    margin-left: 4.5rem !important;
+  }
+
+  .registrationProcess .Input i {
+    width: 3.5rem;
+    margin: 6px;
+    padding-right: .8rem;
+    padding-left: .8rem;
+    color: lightgrey;
+    font-size: 1.7rem;
+    border-right: 1px solid lightgrey
+  }
+  .registrationProcess button {
+    margin-top: 3rem;
+    margin-left: 1rem !important; 
+    width: 97%;
+    height: 3rem;
+    border-radius: 0 !important;
+    background-color: ${theme.green} !important;
   }
 
   .leftTopCorner {
@@ -137,15 +220,51 @@ const GlobalStyle = createGlobalStyle`
     transition: all .3s;
     background-color: hsla(30, 100%, 48%, 0.562) !important;
   }
-  .tabs-orange .active {
-
-    background-color: #f57c00 !important;
-  }
+ 
 
   .faded {
     opacity: 0.5;
   }
 
+  .bold {
+    font-weight: bold;
+  }
+
+  .background-orange {
+
+    background-color: ${theme.orange} !important;
+  }
+  .background-orange2 {
+
+    background-color: ${theme.orange_2} !important;
+  }
+  .background-white {
+
+    background-color: ${theme.offWhite} !important;
+  }
+  .background-green {
+
+    background-color: ${theme.green} !important;
+  }
+  .background-green-light {
+
+    background-color: ${theme.greenLight} !important;
+  }
+  .background-turkize {
+
+    background-color: ${theme.turkize} !important;
+  }
+
+  .green-gradient {
+    background: linear-gradient(90deg, rgba(162,216,104,1) 0%, rgba(121,188,30,1) 50%);
+  }
+
+  .border-green {
+    border-color: ${theme.green}
+  }
+  .border-bottom-turkize {
+    border-bottom: 1px solid ${theme.turkizeLight}
+  }
   .hide-content *{
     visibility: hidden;
     // background-color: #f57c00 !important;
@@ -164,7 +283,12 @@ const GlobalStyle = createGlobalStyle`
     z-index: 10;
   }
 
-
+  .fullHeight{
+    height: 90%;
+  }
+  .fullWidth{
+    width: 100%;
+  }
   .absCenter {
     position: absolute;
     top: 50%;
@@ -176,6 +300,17 @@ const GlobalStyle = createGlobalStyle`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%)
+  }
+  .screenTopCenter {
+    position: fixed;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+  }
+
+  .toggled {
+    transition: .3s all;
+ 
   }
 
   .moveInRight-enter {
@@ -201,6 +336,45 @@ const GlobalStyle = createGlobalStyle`
     margin-left: -240px !important;
     transition: .3s all;
   }
+
+  .toggleAnimation {
+    height: auto;
+    max-height: 0;
+    transition: .3s all;
+  }
+  
+  .toggleAnimation-appear{
+    opacity:0;
+    max-height: 0;
+  }
+  .toggleAnimation-enter{
+    opacity:0;
+    max-height: 0;
+  }
+  
+  .toggleAnimation-enter-done{
+    /* transform: rotate(720deg) scale(3); */
+    opacity:1;
+    max-height: 60rem;
+    /* transition: transform 1000ms, opacity 1000ms; */
+  }
+  
+  .toggleAnimation-exit{
+    
+    opacity: 1;
+    max-height: 60rem;
+  }
+  
+  .toggleAnimation-exit-active{
+    max-height: 0;
+    /* transform:rotate(0deg) scale(1); */
+    opacity: 0;
+    /* transition: transform 1000ms, opacity 1000ms; */
+  }
+
+
+
+  
   
 `;
 

@@ -9,7 +9,7 @@
 
 import produce from 'immer';
 import * as actionTypes from './constants';
-import { PROVIDER_ORGANIZATIONS_LOADED } from '../AppData/constants'
+
 // The initial state of the App
 export const initialState = {
   // username: '',
@@ -32,10 +32,7 @@ const homeReducer = (state = initialState, action) =>
         console.log(action.mode)
         draft.formMode = action.mode
         break;
-      // case PROVIDER_ORGANIZATIONS_LOADED:
-      //   console.log(action.data)
-      //   draft.providerOrganizations = action.data
-      //   break;
+
     }
   });
 

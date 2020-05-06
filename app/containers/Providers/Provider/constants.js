@@ -12,7 +12,7 @@
 
 export const ALLOCATE_USER_TO_PROVIDER = 'provider/ALLOCATE_USER_TO_PROVIDER';
 export const PROVIDER_LOADED = 'provider/PROVIDER_LOADED';
-export const UPDATE_PROVIDER = 'provider/UPDATE_PROVIDER';
+
 
 
 

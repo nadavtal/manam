@@ -63,14 +63,7 @@ export function getProcessesByProjectId(id) {
   };
 }
 
-export function updateOrg(data, id) {
 
-  return {
-    type: actionTypes.UPDATE_ORGANIZATION,
-    data,
-    id
-  };
-}
 
 
 export function projectProcessesLoaded(data) {

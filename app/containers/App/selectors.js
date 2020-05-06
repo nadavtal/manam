@@ -4,175 +4,225 @@
 
 import { createSelector } from 'reselect';
 import { initialState } from './reducer';
+// import memoize from 'lodash.memoize'
+export const selectGlobal = state => state ? state.global : initialState;
 
-const selectGlobal = state => state.global || initialState;
+export const selectRouter = state => state.router;
 
-const selectRouter = state => state.router;
-
-const makeSelectCurrentUser = () =>
+export const makeSelectCurrentUser = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.currentUser,
   );
+export const makeSelectCurrentUserRole = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.currentUserRole,
+  );
 
-const makeSelectUsers = () =>
+export const makeSelectUsers = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.users,
   );
-const makeSelectOrganizations = () =>
+export const makeSelectOrganizations = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.organizations,
   );
-const makeSelectProviders = () =>
+export const makeSelectProviders = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.providers,
   );
-const makeSelectProjects = () =>
+export const makeSelectProjects = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.projects,
   );
-const makeSelectProcesses = () =>
+export const makeSelectProcesses = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.processes,
   );
-const makeSelectTasks = () =>
+export const makeSelectTasks = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.tasks,
   );
-const makeSelectRoles = () =>
+export const makeSelectRoles = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.roles,
   );
-const makeSelectRoleTypes = () =>
+export const makeSelectRoleTypes = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.roleTypes,
   );
 
-const makeSelectLoading = () =>
+export const makeSelectLoading = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.loading,
   );
 
-const makeSelectError = () =>
+export const makeSelectError = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.error,
   );
 
-const makeSelectRepos = () =>
+export const makeSelectRepos = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.userData.repositories,
   );
 
-const makeSelectLocation = () =>
+export const makeSelectLocation = () =>
   createSelector(
     selectRouter,
     routerState => routerState.location,
   );
 
-const makeSelectModalOpen = () =>
+export const makeSelectModalOpen = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.modalOpen,
   );
-const makeSelectModalData = () =>
+export const makeSelectModalData = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.modalData,
     );
-const makeSelectAlertOpen = () =>
+export const makeSelectAlertOpen = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.alertOpen,
   );
-const makeSelectAlertData = () =>
+export const makeSelectAlertData = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.alertData,
     );
 
-const makeSelectShowNotification = () =>
+export const makeSelectShowNotification = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.showNotification,
     );
 
-const makeSelectNotificationData = () =>
+export const makeSelectNotificationData = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.notificationData,
     );
-const makeSelectShowMessages = () =>
+export const makeSelectShowMessages = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.notificationData,
   );
 
-const makeSelectProvider = () =>
+export const makeSelectProvider = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.selectedProvider,
   );
-const makeSelectprocessTemplatesTasks = () =>
+export const makeSelectprocessTemplatesTasks = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.processTemplatesTasks,
   );
-const makeSelectKeyPressed = () =>
+export const makeSelectKeyPressed = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.geyPressed,
   );
-const makeSelectNewOrg = () =>
+export const makeSelectNewOrg = () =>
   createSelector(
     selectGlobal,
     globalState => globalState.newOrg,
   );
+export const makeSelectOrganizationsAllUsers = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.organizationsUsers,
+  );
+export const makeSelectOrganizationProviders = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.organizationProviders,
+  );
+export const makeSelectProvidersUsers = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.providersUsers,
+  );
+export const makeSelectFoundResults = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.foundResults,
+  );
+export const makeSelectStatuses = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.statuses,
+  );
+export const makeSelectConnectionStatuses = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.connectionStatuses,
+  );
 
-const getModalOpen = createSelector(
+export const getStatuses = createSelector(
+     selectGlobal ,
+    (selectGlobal) => selectGlobal.statuses
+  )
+export const getModalOpen = createSelector(
      selectGlobal ,
     (selectGlobal) => selectGlobal.modalOpen
   )
-const getKeyPressed = createSelector(
+export const getAlertOpen = createSelector(
+     selectGlobal ,
+    (selectGlobal) => selectGlobal.alertOpen
+  )
+export const getKeyPressed = createSelector(
      selectGlobal ,
     (selectGlobal) => selectGlobal.keyPressed
   )
-export {
-  selectGlobal,
-  makeSelectCurrentUser,
-  makeSelectLoading,
-  makeSelectError,
-  makeSelectRepos,
-  makeSelectLocation,
-  makeSelectModalOpen,
-  makeSelectModalData,
-  makeSelectUsers,
-  makeSelectShowMessages,
-  makeSelectProjects,
-  makeSelectShowNotification,
-  makeSelectNotificationData,
-  makeSelectProviders,
-  makeSelectRoles,
-  makeSelectRoleTypes,
-  makeSelectOrganizations,
-  makeSelectProvider,
-  makeSelectprocessTemplatesTasks,
-  makeSelectKeyPressed,
-  makeSelectAlertOpen,
-  makeSelectAlertData,
-  makeSelectProcesses,
-  makeSelectTasks,
-  makeSelectNewOrg,
-  getModalOpen,
-  getKeyPressed,
-};
+export const getCurrentUserFullName = createSelector(
+     selectGlobal ,
+    (selectGlobal) => selectGlobal.currentUser.userInfo.first_name + ' ' + selectGlobal.currentUser.userInfo.last_name 
+  )
+
+// export {
+//   selectGlobal,
+//   makeSelectCurrentUser,
+//   makeSelectLoading,
+//   makeSelectError,
+//   makeSelectRepos,
+//   makeSelectLocation,
+//   makeSelectModalOpen,
+//   makeSelectModalData,
+//   makeSelectUsers,
+//   makeSelectShowMessages,
+//   makeSelectProjects,
+//   makeSelectShowNotification,
+//   makeSelectNotificationData,
+//   makeSelectProviders,
+//   makeSelectRoles,
+//   makeSelectRoleTypes,
+//   makeSelectOrganizations,
+//   makeSelectProvider,
+//   makeSelectprocessTemplatesTasks,
+//   makeSelectKeyPressed,
+//   makeSelectAlertOpen,
+//   makeSelectAlertData,
+//   makeSelectProcesses,
+//   makeSelectTasks,
+//   makeSelectNewOrg,
+//   makeSelectOrganizationsAllUsers,
+//   makeSelectProvidersUsers,
+//   getModalOpen,
+//   getKeyPressed,
+// };

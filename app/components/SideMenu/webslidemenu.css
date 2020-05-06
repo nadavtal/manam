@@ -553,7 +553,7 @@ body.wsactive {
   display: block;
   position: fixed;
   height: 54px;
-  background-color: #eaecf0;
+  background-color: rgba(255, 137, 47, 0.226) !important;
   text-align: center;
   -webkit-transition: all 0.25s ease-in-out;
   -moz-transition: all 0.25s ease-in-out;
@@ -707,7 +707,7 @@ body.wsactive {
   -webkit-overflow-scrolling: touch;
   /* visibility: visible; */
   z-index: 1000;
-  top: 3rem;
+  top: 54px;
 }
 
 .wsactive .wsmenu>.wsmenu-list {
@@ -792,34 +792,5 @@ body.wsactive {
 
 
 
-
-.sideMenuSubMenu-appear{
-  opacity:0;
-  height: 0;
-}
-.sideMenuSubMenu-enter{
-  opacity:0;
-  height: 0;
-}
-
-.sideMenuSubMenu-enter-done{
-  /* transform: rotate(720deg) scale(3); */
-  opacity:1;
-  height: 5rem;
-  /* transition: transform 1000ms, opacity 1000ms; */
-}
-
-.sideMenuSubMenu-exit{
-  background-color: red;
-  opacity: 1;
-  height: 5rem;
-}
-
-.sideMenuSubMenu-exit-active{
-  height: 0;
-  /* transform:rotate(0deg) scale(1); */
-  opacity: 0;
-  /* transition: transform 1000ms, opacity 1000ms; */
-}
 
 

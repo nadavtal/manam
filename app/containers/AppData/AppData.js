@@ -15,7 +15,7 @@ import IconButtonToolTip from '../../components/IconButtonToolTip/IconButtonTool
 import GlobeProjects from '../Resium/GlobeProjects'
 const key = 'appData';
 import saga from './saga';
-
+// localStorage.removeItem('currentUser')
 export function AppData({
 
   currentUser,

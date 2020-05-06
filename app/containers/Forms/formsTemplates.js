@@ -847,23 +847,33 @@ export const forms = {
     // },
   },
   'userForm': {
-    user_name: {
-      label: 'User name',
+    id: {
+      label: 'ID',
       elementType: 'input',
       elementConfig: {
-
-        type: 'text',
-        placeholder: 'User Name'
+        disabled: true
+      },
+      value: '',
+      validation: {},
+      valid: true,
+      hidden: true
+    },
+    email: {
+      label: 'Email',
+      elementType: 'input',
+      elementConfig: {
+        // validate: true,
+        type: 'email',
+        placeholder: 'Email'
       },
       value: '',
       validation: {
         required: true,
-        unique: true,
-        minLength: 6
+        unique: true
       },
       valid: false,
       touched: false,
-      errMsg: 'Please enter user name!'
+      errMsg: 'Please enter email!'
     },
     first_name: {
       label: 'First name',
@@ -916,7 +926,7 @@ export const forms = {
       errMsg: 'Please enter password!'
     },
 
-    rePassword: {
+    confirmPassword: {
       label: 'Confirm password',
       elementType: 'input',
       elementConfig: {
@@ -932,23 +942,6 @@ export const forms = {
       touched: false,
       errMsg: 'Please re-enter password!'
     },
-    email: {
-      label: 'Email',
-      elementType: 'input',
-      elementConfig: {
-        // validate: true,
-        type: 'email',
-        placeholder: 'Email'
-      },
-      value: '',
-      validation: {
-        required: true,
-        unique: true
-      },
-      valid: false,
-      touched: false,
-      errMsg: 'Please enter email!'
-    },
     address: {
       label: 'Address',
       elementType: 'input',
@@ -959,10 +952,10 @@ export const forms = {
       },
       value: '',
       validation: {
-        required: false,
+        required: true,
 
       },
-      valid: true,
+      valid: false,
       touched: false,
       errMsg: 'Please enter address!'
     },
@@ -997,17 +990,17 @@ export const forms = {
       touched: false,
 
     },
-    roles: {
-      label: 'Roles',
-      elementType: 'selectMultiple',
-      elementConfig: {
-        // options: props.roleTypes
-        options: []
-      },
-      value: '',
-      validation: {},
-      valid: true
-    },
+    // roles: {
+    //   label: 'Roles',
+    //   elementType: 'selectMultiple',
+    //   elementConfig: {
+    //     // options: props.roleTypes
+    //     options: []
+    //   },
+    //   value: '',
+    //   validation: {},
+    //   valid: true
+    // },
     user_image: {
       label: 'Profile image',
       elementType: 'file',
@@ -1023,9 +1016,10 @@ export const forms = {
   'loginUserForm':  {
     email: {
       label: 'Email',
+      
       elementType: 'input',
       elementConfig: {
-
+        icon: 'at',
         type: 'email',
         placeholder: 'Enter email'
       },
@@ -1041,9 +1035,10 @@ export const forms = {
 
     password: {
       label: 'Password',
+      
       elementType: 'input',
       elementConfig: {
-
+        icon: 'lock',
         type: 'password',
         placeholder: 'Password'
       },
@@ -1058,23 +1053,17 @@ export const forms = {
 
   },
   'registerUserForm':  {
-    // userName: {
-    //   label: 'User name',
-    //   elementType: 'input',
-    //   elementConfig: {
-
-    //     type: 'text',
-    //     placeholder: 'User Name'
-    //   },
-    //   value: '',
-    //   validation: {
-    //     required: true,
-    //     unique: true
-    //   },
-    //   valid: false,
-    //   touched: false,
-    //   errMsg: 'Please enter user name!'
-    // },
+    id: {
+      label: 'ID',
+      elementType: 'input',
+      elementConfig: {
+        disabled: true
+      },
+      value: '',
+      validation: {},
+      valid: true,
+      hidden: true
+    },
     email: {
       label: 'Email',
       elementType: 'input',
@@ -1090,51 +1079,16 @@ export const forms = {
       },
       valid: false,
       touched: false,
+      onBlur: 'findEntityByMail',
       errMsg: 'Please enter valid email!'
     },
-    password: {
-      label: 'Password',
-      elementType: 'input',
-      elementConfig: {
-
-        type: 'password',
-        placeholder: 'Password'
-      },
-      value: '',
-      validation: {
-        required: true,
-      },
-      valid: false,
-      touched: false,
-      errMsg: 'Please enter password!'
-    },
-    confirmPassword: {
-      label: 'Confirm password',
-      elementType: 'input',
-      elementConfig: {
-
-        type: 'password',
-        placeholder: 'Password'
-      },
-      value: '',
-      validation: {
-        required: true,
-        confirm: 'password'
-      },
-      valid: false,
-      touched: false,
-      errMsg: 'Please confirm password!'
-    },
-
-  },
-  'organizationForm':  {
-    name: {
-      label: 'Organization name',
+    first_name: {
+      label: 'First name',
       elementType: 'input',
       elementConfig: {
 
         type: 'text',
-        placeholder: 'Organization name'
+        placeholder: 'First name'
       },
       value: '',
       validation: {
@@ -1143,7 +1097,109 @@ export const forms = {
       },
       valid: false,
       touched: false,
-      errMsg: 'Please enter organization name!'
+      onBlur: '',
+      errMsg: 'Please tell us your name!'
+    },
+    last_name: {
+      label: 'Last name',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'text',
+        placeholder: 'Last name'
+      },
+      value: '',
+      validation: {
+        required: true,
+      },
+      valid: false,
+      touched: false,
+      onBlur: '',
+      errMsg: 'Please enter your last name'
+    },
+    // password: {
+    //   label: 'Password',
+    //   elementType: 'input',
+    //   elementConfig: {
+
+    //     type: 'password',
+    //     placeholder: 'Password'
+    //   },
+    //   value: '',
+    //   validation: {
+    //     required: true,
+    //   },
+    //   valid: false,
+    //   touched: false,
+    //   errMsg: 'Please enter password!'
+    // },
+    // confirmPassword: {
+    //   label: 'Confirm password',
+    //   elementType: 'input',
+    //   elementConfig: {
+
+    //     type: 'password',
+    //     placeholder: 'Password'
+    //   },
+    //   value: '',
+    //   validation: {
+    //     required: true,
+    //     confirm: 'password'
+    //   },
+    //   valid: false,
+    //   touched: false,
+    //   errMsg: 'Please confirm password!'
+    // },
+    role_id: {
+      label: 'Assign role',
+      elementType: 'select',
+      elementConfig: {
+        // options: props.roleTypes
+        options: []
+      },
+      value: '',
+      validation: {
+        required: false
+      },
+      valid: true,
+      touched: true,
+      errMsg: 'Please assign a role!'
+    },
+
+  },
+  'organizationForm':  {
+    id: {
+      label: 'ID',
+      elementType: 'input',
+      elementConfig: {
+        disabled: true
+      },
+      value: '',
+      validation: {},
+      valid: true,
+      hidden: true
+    },
+    user_id: {
+      label: 'Admin user id',
+      elementType: 'input',
+      elementConfig: {
+        disabled: true
+      },
+      value: '',
+      validation: {},
+      valid: true,
+      hidden: true
+    },
+    created_by: {
+      label: 'Created by',
+      elementType: 'input',
+      elementConfig: {
+        disabled: true
+      },
+      value: '',
+      validation: {},
+      valid: true,
+      hidden: true
     },
     email: {
       label: 'Email',
@@ -1162,6 +1218,59 @@ export const forms = {
       touched: false,
       errMsg: 'Please enter contact email!'
     },
+    name: {
+      label: 'Organization name',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'text',
+        placeholder: 'Organization name'
+      },
+      value: '',
+      validation: {
+        required: true,
+        unique: true
+      },
+      valid: false,
+      touched: false,
+      errMsg: 'Please enter organization name!'
+    },
+    adminFirstName: {
+      label: 'Administrator first name',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'text',
+        
+      },
+      value: '',
+      validation: {
+        required: true,
+        confirm: 'password'
+      },
+      valid: false,
+      touched: false,
+      errMsg: 'Please confirm password!'
+    },
+    adminLastName: {
+      label: 'Administrator last name',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'text',
+        
+      },
+      value: '',
+      validation: {
+        required: true,
+        confirm: 'password'
+      },
+      valid: false,
+      touched: false,
+      errMsg: 'Please confirm password!'
+    },
+
+ 
     phone: {
       label: 'phone',
       elementType: 'input',
@@ -1172,9 +1281,9 @@ export const forms = {
       },
       value: '',
       validation: {
-        required: true,
+        required: false,
       },
-      valid: false,
+      valid: true,
       touched: false,
       errMsg: 'Please enter phone!'
     },
@@ -1197,9 +1306,178 @@ export const forms = {
       elementType: 'select',
       elementConfig: {
         options: [
-          {name: 'cm'},
-          {name: 'inch'},
-          {name: 'deg'},
+          {id:1 ,name: 'cm'},
+          {id:2 ,name: 'inch'},
+          {id:3 ,name: 'deg'},
+
+        ]
+      },
+      value: '',
+
+      valid: true
+    },
+    engineering_schema: {
+      label: 'Enginnering schema',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'text',
+        placeholder: 'Enginnering schema'
+      },
+      value: '',
+
+      valid: true,
+      touched: false,
+      errMsg: 'Please enter organization name!'
+    },
+    website: {
+      label: 'Website',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'text',
+        placeholder: 'Website'
+      },
+      value: '',
+
+      valid: true,
+      touched: false,
+      errMsg: 'Please enter organization name!'
+    },
+
+    contact_name: {
+      label: 'Contact name',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'text',
+        placeholder: 'Contact name'
+      },
+      value: '',
+      validation: {
+        required: true,
+
+      },
+      valid: true,
+      touched: false,
+      errMsg: 'Please enter contact name!'
+    },
+
+
+  },
+  'updateOrganizationForm':  {
+    id: {
+      label: 'ID',
+      elementType: 'input',
+      elementConfig: {
+        disabled: true
+      },
+      value: '',
+      validation: {},
+      valid: true,
+      hidden: true
+    },
+    created_by: {
+      label: 'Created by',
+      elementType: 'input',
+      elementConfig: {
+        disabled: true
+      },
+      value: '',
+      validation: {},
+      valid: true,
+      hidden: true
+    },
+    email: {
+      label: 'Email',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'email',
+        placeholder: 'Email'
+      },
+      value: '',
+      validation: {
+        required: true,
+        unique: true
+      },
+      valid: false,
+      touched: false,
+      errMsg: 'Please enter contact email!'
+    },
+    name: {
+      label: 'Organization name',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'text',
+        placeholder: 'Organization name'
+      },
+      value: '',
+      validation: {
+        required: true,
+        unique: true
+      },
+      valid: false,
+      touched: false,
+      errMsg: 'Please enter organization name!'
+    },
+    general_status: {
+      label: 'Status',
+      elementType: 'select',
+      elementConfig: {
+        options: []
+      },
+      value: '',
+      validation: {
+        required: true,
+        
+      },
+      valid: false,
+      hidden: true,
+      touched: false,
+      errMsg: 'Please enter organization name!'
+    },
+
+    
+    phone: {
+      label: 'phone',
+      elementType: 'input',
+      elementConfig: {
+        pattern: "[0-9]{3}-[0-9]{3}-[0-9]{4}",
+        type: 'tel',
+        placeholder: 'enter phone'
+      },
+      value: '',
+      validation: {
+        required: false,
+      },
+      valid: true,
+      touched: false,
+      errMsg: 'Please enter phone!'
+    },
+    remarks: {
+      label: 'Description',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'textarea',
+        placeholder: 'Description'
+      },
+      value: '',
+
+      valid: true,
+      touched: false,
+      errMsg: 'Please enter organization name!'
+    },
+    metric_system: {
+      label: 'Metric system',
+      elementType: 'select',
+      elementConfig: {
+        options: [
+          {id:1 ,name: 'cm'},
+          {id:2 ,name: 'inch'},
+          {id:3 ,name: 'deg'},
 
         ]
       },
@@ -1257,6 +1535,46 @@ export const forms = {
 
   },
   'providerForm':  {
+    id: {
+      label: 'ID',
+      elementType: 'input',
+      elementConfig: {
+        disabled: true
+      },
+      value: '',
+      validation: {},
+      valid: true,
+      hidden: true
+    },
+    created_by: {
+      label: 'Created by',
+      elementType: 'input',
+      elementConfig: {
+        disabled: true
+      },
+      value: '',
+      validation: {},
+      valid: true,
+      hidden: true
+    },
+    email: {
+      label: 'Email',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'email',
+        placeholder: 'Email'
+      },
+      value: '',
+      validation: {
+        required: true,
+        unique: true
+      },
+      valid: false,
+      touched: false,
+      onBlur: 'findEntityByMail',
+      errMsg: 'Please enter contact email!'
+    },
     name: {
       label: 'Provider name',
       elementType: 'input',
@@ -1274,6 +1592,174 @@ export const forms = {
       touched: false,
       errMsg: 'Please enter provider name!'
     },
+    adminFirstName: {
+      label: 'Administrator first name',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'text',
+        
+      },
+      value: '',
+      validation: {
+        required: true,
+        confirm: 'password'
+      },
+      valid: false,
+      touched: false,
+      errMsg: 'Please confirm password!'
+    },
+    adminLastName: {
+      label: 'Administrator last name',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'text',
+        
+      },
+      value: '',
+      validation: {
+        required: true,
+        confirm: 'password'
+      },
+      valid: false,
+      touched: false,
+      errMsg: 'Please confirm password!'
+    },
+    
+    phone: {
+      label: 'phone',
+      elementType: 'input',
+      elementConfig: {
+        pattern: "[0-9]{3}-[0-9]{3}-[0-9]{4}",
+        type: 'tel',
+        placeholder: 'enter phone'
+      },
+      value: '',
+      validation: {
+        required: false,
+      },
+      valid: true,
+      touched: false,
+      errMsg: 'Please enter phone!'
+    },
+    contact_name: {
+      label: 'Contact name',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'text',
+        placeholder: 'Contact name'
+      },
+      value: '',
+      validation: {
+        required: true,
+
+      },
+      valid: true,
+      touched: false,
+      errMsg: 'Please enter contact name!'
+    },
+    website: {
+      label: 'Website',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'text',
+        placeholder: 'Website'
+      },
+      value: '',
+
+      valid: true,
+      touched: false,
+
+    },
+
+    region: {
+      label: 'Region',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'text',
+        placeholder: 'Region'
+      },
+      value: '',
+
+      valid: true,
+      touched: false,
+
+    },
+    address: {
+      label: 'Address',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'textarea',
+        placeholder: 'Address'
+      },
+      value: '',
+
+      valid: true,
+      touched: false,
+
+    },
+    remarks: {
+      label: 'Description',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'textarea',
+        placeholder: 'Description'
+      },
+      value: '',
+
+      valid: true,
+      touched: false,
+
+    },
+
+    about_team: {
+      label: 'About team',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'textarea',
+        placeholder: 'Say something about your team'
+      },
+      value: '',
+
+      valid: true,
+      touched: false,
+
+    },
+
+
+
+
+  },
+  'updateProviderForm':  {
+    id: {
+      label: 'ID',
+      elementType: 'input',
+      elementConfig: {
+        disabled: true
+      },
+      value: '',
+      validation: {},
+      valid: true,
+      hidden: true
+    },
+    created_by: {
+      label: 'Created by',
+      elementType: 'input',
+      elementConfig: {
+        disabled: true
+      },
+      value: '',
+      validation: {},
+      valid: true,
+      hidden: true
+    },
     email: {
       label: 'Email',
       elementType: 'input',
@@ -1289,8 +1775,27 @@ export const forms = {
       },
       valid: false,
       touched: false,
+      onBlur: 'findEntityByMail',
       errMsg: 'Please enter contact email!'
     },
+    name: {
+      label: 'Provider name',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'text',
+        placeholder: 'Provider name'
+      },
+      value: '',
+      validation: {
+        required: true,
+        unique: true
+      },
+      valid: false,
+      touched: false,
+      errMsg: 'Please enter provider name!'
+    },
+    
     phone: {
       label: 'phone',
       elementType: 'input',
@@ -1301,9 +1806,9 @@ export const forms = {
       },
       value: '',
       validation: {
-        required: true,
+        required: false,
       },
-      valid: false,
+      valid: true,
       touched: false,
       errMsg: 'Please enter phone!'
     },
@@ -2321,6 +2826,250 @@ export const forms = {
     },
 
   },
+  'userAllocationForm': {
+
+    target: {
+      label: 'Allocate to...',
+      elementType: 'select',
+      elementConfig: {
+        options: [
+          {id: 'organization', name: 'Organization'},
+          {id: 'provider', name: 'Provider'},
+          
+        ]
+      },
+      value: '',
+      validation: {},
+      valid: false
+    },
+    organization_id: {
+      label: 'Select organization',
+      elementType: 'select',
+      elementConfig: {
+        options: [],
+        disabled: true
+      },
+      value: '',
+      validation: {},
+      valid: true
+    },
+    provider_id: {
+      label: 'Select provider',
+      elementType: 'select',
+      elementConfig: {
+        options: [],
+        disabled: true
+      },
+      value: '',
+      validation: {},
+      valid: true
+    },
+    role_id: {
+      label: 'Select role',
+      elementType: 'select',
+      elementConfig: {
+        options: []
+      },
+      value: '',
+      validation: {
+        required: true
+      },
+      valid: false,
+      touched: false,
+      errMsg: 'Must choose a role!'
+    },
+    remarks: {
+      label: 'Remarks',
+      elementType: 'input',
+      elementConfig: {
+        // type: 'textarea'
+      },
+      value: '',
+      validation: {
+        required: false
+      },
+      valid: true,
+      touched: false,
+      
+    },
+  },
+  'organizaionUserAllocationForm': {
+
+    // user_type: {
+    //   label: 'Choose user type',
+    //   elementType: 'select',
+    //   elementConfig: {
+    //     options: [
+    //       {id: 1, name: 'Inhouse user'},
+    //       {id: 2, name: 'Provider user'}]
+    //   },
+    //   value: '',
+    //   validation: {},
+    //   valid: false
+    // },
+    provider_id: {
+      label: 'Choose provider',
+      elementType: 'select',
+      elementConfig: {
+        options: []
+      },
+      value: '',
+      validation: {},
+      valid: true,
+      hidden: true
+    },
+    organization_id: {
+      label: 'Choose provider',
+      elementType: 'select',
+      elementConfig: {
+        options: []
+      },
+      value: '',
+      validation: {},
+      valid: true,
+      hidden: true
+    },
+    role_id: {
+      label: 'Select role',
+      elementType: 'select',
+      elementConfig: {
+        options: [],
+        multiple: false
+      },
+      value: '',
+      validation: {
+        required: false
+      },
+      valid: true,
+      touched: false,
+      errMsg: 'Must choose a role!'
+    },
+    user_id: {
+      label: 'Choose users',
+      elementType: 'select',
+      elementConfig: {
+        options: [],
+        multiple: true,
+        search: true,
+      },
+      value: [],
+      validation: {},
+      valid: true
+    },
+ 
+    remarks: {
+      label: 'Remarks',
+      elementType: 'input',
+      elementConfig: {
+        // type: 'textarea'
+      },
+      value: '',
+      validation: {
+        required: false
+      },
+      valid: true,
+      touched: false,
+      
+    },
+  },
+  'providerUserAllocationForm': {
+
+
+    user_id: {
+      label: 'Choose user',
+      elementType: 'select',
+      elementConfig: {
+        options: []
+      },
+      value: '',
+      validation: {},
+      valid: false
+    },
+    role_id: {
+      label: 'Select role',
+      elementType: 'select',
+      elementConfig: {
+        options: []
+      },
+      value: '',
+      validation: {
+        required: true
+      },
+      valid: false,
+      touched: false,
+      errMsg: 'Must choose a role!'
+    },
+    remarks: {
+      label: 'Remarks',
+      elementType: 'input',
+      elementConfig: {
+        // type: 'textarea'
+      },
+      value: '',
+      validation: {
+        required: false
+      },
+      valid: true,
+      touched: false,
+      
+    },
+  },
+  'providerOrganizationAllocationForm': {
+
+
+    organization_id: {
+      label: 'Choose organization',
+      elementType: 'select',
+      elementConfig: {
+        options: []
+      },
+      value: '',
+      validation: {},
+      valid: false
+    },
+    remarks: {
+      label: 'Remarks',
+      elementType: 'input',
+      elementConfig: {
+        // type: 'textarea'
+      },
+      value: '',
+      validation: {
+        required: false
+      },
+      valid: true,
+      touched: false,
+      
+    },
+  },
+  'organizationProviderAllocationForm': {
+
+
+    provider_id: {
+      label: 'Choose provider',
+      elementType: 'select',
+      elementConfig: {
+        options: []
+      },
+      value: '',
+      validation: {},
+      valid: false
+    },
+    remarks: {
+      label: 'Remarks',
+      elementType: 'input',
+      elementConfig: {
+        // type: 'textarea'
+      },
+      value: '',
+      validation: {
+        required: false
+      },
+      valid: true,
+      touched: false,
+      
+    },
+  },
   'workSpaceForm': {
 
     workSpace: {
@@ -2351,6 +3100,98 @@ export const forms = {
     },
 
 
+  },
+  'roleForm': {
+    type: {
+      label: 'Select role type',
+      elementType: 'select',
+      elementConfig: {
+        options: []
+      },
+      value: '',
+      validation: {
+        required: true
+      },
+      valid: false,
+      touched: false,
+      errMsg: 'Must choose a role!'
+    },
+    name: {
+      label: 'Role name',
+      elementType: 'input',
+      elementConfig: {
+        
+      },
+      value: '',
+      validation: {
+        required: true
+      },
+      valid: false
+    },
+    description: {
+      label: 'Description',
+      elementType: 'input',
+      elementConfig: {
+       
+      },
+
+      value: '',
+      validation: {
+        required: false
+      },
+      valid: true,
+      touched: false,
+      errMsg: 'Please give this task a name!'
+    },
+  
+    
+  },
+  'generalRoleForm': {
+    name: {
+      label: 'Role name',
+      elementType: 'input',
+      elementConfig: {
+        
+      },
+      value: '',
+      validation: {
+        required: true
+      },
+      valid: false
+    },
+    description: {
+      label: 'Description',
+      elementType: 'input',
+      elementConfig: {
+       
+      },
+
+      value: '',
+      validation: {
+        required: false
+      },
+      valid: true,
+      touched: false,
+      errMsg: 'Please give this task a name!'
+    },
+  
+    
+  },
+  'roleTypeForm': {
+
+    name: {
+      label: 'Role type name',
+      elementType: 'input',
+      elementConfig: {
+        
+      },
+      value: '',
+      validation: {
+        required: true
+      },
+      valid: false
+    },
+        
   },
 
 }

@@ -7,20 +7,7 @@ import { browserHistory } from 'react-router'
  *
  * @return {object} An action object with a type of LOAD_REPOS
  */
-export function login(user) {
-  console.log(user)
-  return {
-    type: actionTypes.LOGIN,
-    user: user
-  };
-}
-export function logout() {
-  console.log('logout')
-  return {
-    type: actionTypes.LOGOUT,
-    
-  };
-}
+
 
 /**
  * Load the repositories, this action starts the request saga
@@ -79,6 +66,12 @@ export function repoLoadingError(error) {
     error,
   };
 }
+export function foundResults(data) {
+  return {
+    type: actionTypes.FOUND_RESULTS,
+    data,
+  };
+}
 export function loadError(error) {
   console.log(error)
   return {
@@ -88,17 +81,24 @@ export function loadError(error) {
 }
 
 export function toggleModal(modalData) {
-  // console.log('alskdjlaskdj')
+ 
   return {
     type: actionTypes.TOGGLE_MODAL,
     modalData: modalData
   };
 }
 export function toggleAlert(data) {
-  // console.log('alskdjlaskdj')
+  
   return {
     type: actionTypes.TOGGLE_ALERT,
     data: data
+  };
+}
+export function roleSelected(roleName) {
+  
+  return {
+    type: actionTypes.ROLE_SELECTED,
+    roleName
   };
 }
 
@@ -110,39 +110,20 @@ export function showNotification(data) {
   };
 }
 
-export function registerUser(user) {
-  
-  return {
-    type: actionTypes.REGISTER_USER,
-    data: user
-  };
-}
-export function registerUserResponse(data) {
-  
-  return {
-    type: actionTypes.REGISTER_USER_RESPONSE,
-    data
-  };
-}
-export function registerProvider(provider) {
-  console.log('registerProvider')
-  return {
-    type: actionTypes.REGISTER_PROVIDER,
-    data: provider
-  };
-}
-export function registerOrg(org) {
-  console.log('registerOrg')
-  return {
-    type: actionTypes.REGISTER_ORG,
-    data: org
-  };
-}
+
 
 export function usersLoaded(data) {
 
   return {
     type: actionTypes.USERS_LOADED,
+    data
+
+  };
+}
+export function loginFail(data) {
+  console.log('alskjalskjslkjs')
+  return {
+    type: actionTypes.LOGIN_FAIL,
     data
 
   };
@@ -263,6 +244,84 @@ export function organizationAdded(org, users) {
     type: actionTypes.ORGANIZATION_ADDED,
     org,
     users
+  };
+}
+export function organizationUpdated(org, users) {
+  return {
+    type: actionTypes.ORGANIZATION_UPDATED,
+    org,
+    users
+  };
+}
+export function providerUpdated(data) {
+  return {
+    type: actionTypes.PROVIDER_UPDATED,
+    data
+  };
+}
+
+export function providerAdded(provider, users) {
+  return {
+    type: actionTypes.PROVIDER_ADDED,
+    provider,
+    users
+  };
+}
+export function newRoleCreated(newRole) {
+
+  return {
+    type: actionTypes.NEW_ROLE_CREATED,
+    newRole
+  };
+}
+export function userAllocated(data) {
+  
+  return {
+    type: actionTypes.USER_ALLOCATED,
+    data
+  };
+}
+export function newRoleTypeCreated(data) {
+  
+  return {
+    type: actionTypes.ROLE_TYPE_CREATED,
+    data
+  };
+}
+export function providerAllocated(data) {
+  
+  return {
+    type: actionTypes.PROVIDER_ALLOCATED,
+    data
+  };
+}
+
+export function organizationUserUpdated(data) {
+  
+  return {
+    type: actionTypes.ORG_USER_UPDATED,
+    data
+  };
+}
+export function providerOrganizationConnectionUpdated(data) {
+  
+  return {
+    type: actionTypes.PROV_ORG_CONNECTION_UPDATED,
+    data
+  };
+}
+export function providerUserUpdated(data) {
+  
+  return {
+    type: actionTypes.PROV_USER_UPDATED,
+    data
+  };
+}
+export function userUpdated(data) {
+  
+  return {
+    type: actionTypes.USER_UPDATED,
+    data
   };
 }
 

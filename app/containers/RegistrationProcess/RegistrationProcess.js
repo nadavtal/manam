@@ -1,6 +1,16 @@
-import React, { useState, memo, useEffect } from "react";
+import React, { useState, memo, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { MDBContainer, MDBRow, MDBCol, MDBStepper, MDBStep, MDBBtn, MDBCard, MDBCardBody, MDBInput } from "mdbreact";
+import {
+  MDBContainer,
+  MDBRow,
+  MDBCol,
+  MDBStepper,
+  MDBStep,
+  MDBBtn,
+  MDBCard,
+  MDBCardBody,
+  MDBInput,
+} from 'mdbreact';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import reducer from './reducer';
@@ -8,207 +18,389 @@ import { createStructuredSelector } from 'reselect';
 import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
 import HoverableWrapper from '../../components/Hoverable/Hoverable';
-import { makeSelectProviderOrganizations, makeSelectMessage } from './selectors'
+import Overlay from '../../components/Overlay';
 import {
-  
+  makeSelectProviderOrganizations,
+  makeSelectMessage,
+} from './selectors';
+import PageHeader from 'components/PageHeader/PageHeader';
+import {
   makeSelectLoading,
   makeSelectError,
-  makeSelectCurrentUser
+  makeSelectCurrentUser,
+  makeSelectCurrentUserRole
 } from 'containers/App/selectors';
-import * as actions from './actions'
+import * as actions from './actions';
 import Form from '../Forms/Form';
 import {
-    getProviderOrganizations
-  } from '../AppData/actions';
-  import {
-    registerUser,
-    registerProvider,
-    registerOrg,
-    login,
-    
-  } from '../App/actions';
-import './RegistrationProcess.css'
+  getProviderOrganizations,
+  registerUser,
+  registerProvider,
+  registerOrg,
+  login,
+  
+} from '../AppData/actions';
+import { roleSelected } from '../App/actions';
+import './RegistrationProcess.css';
 const key = 'registrationProcess';
 
-const RegistrationProcess  = ({
-    currentUser,
-    onLoginUser,
-    onAuth,
-    onRegisterUser,
-    providerOrganizations,
-    getProviderOrganizations,
-    msg,
-    history = useHistory(),
+const RegistrationProcess = ({
+  currentUser,
+  onLoginUser,
+  onAuth,
+  onRoleSelected,
+  onRegisterUser,
+  providerOrganizations,
+  getProviderOrganizations,
+  msg,
+  history = useHistory(),
 }) => {
-    useInjectReducer({ key, reducer });
-    const [active, setActive] = useState({
-        formActivePanel3: currentUser ? 2 : 1,
-        formActivePanel1Changed: false,
-        })
-    const [hasAccount, sethasAccount] = useState(false);
-    const [formModeState, setformModeState] = useState('login');
-    const [formTypeState, setFormTypeState] = useState('loginUserForm');
-    const [provider, setprovider] = useState({});
-    useEffect(() => {
-        if (currentUser) {
-            console.log(currentUser);
-            if (currentUser.userProviderRoles && currentUser.userProviderRoles.length == 1) {
-              setprovider(currentUser.userProviderRoles[0])
-              getProviderOrganizations(currentUser.userProviderRoles[0].provider_id)
-            }
-            handleNextPrevClick2(3,2)
+  useInjectReducer({ key, reducer });
+  const [active, setActive] = useState({
+    formActivePanel3: currentUser ? 2 : 1,
+    formActivePanel1Changed: false,
+  });
+  const [hasAccount, sethasAccount] = useState(false);
+  const [formModeState, setformModeState] = useState('login');
+  const [formTypeState, setFormTypeState] = useState('loginUserForm');
+  const [pageTitle, setPageTitle] = useState('Please log in to continue');
+  const [provider, setprovider] = useState({});
+  const [organization, setOrganization] = useState();
+  const [showOverlay, setShowOverlay] = useState(false);
+  useEffect(() => {
+    if (currentUser) {
+      console.log('userOrganiztionRoles', currentUser.userOrganiztionRoles);
+      console.log('userProviderRoles', currentUser.userProviderRoles);
+      console.log('providerOrganizations', providerOrganizations);
+      //If user has on organization role and no provider roles
+      if (
+        currentUser.userOrganiztionRoles.length == 1 &&
+        currentUser.userProviderRoles.length == 0
+      ) {
+        console.log('//If user has on organization role and no provider roles')
+        history.push(
+          './organizations/' + currentUser.userOrganiztionRoles[0].org_id,
+        );
+        onRoleSelected(currentUser.userOrganiztionRoles[0].role_name)
+      }
+
+      //If user has no organization roles and one provider roles
+      else if (
+        !currentUser.userOrganiztionRoles.length &&
+        currentUser.userProviderRoles.length == 1
+      ) {
+        console.log('//If user has no organization roles and one provider roles')
+        history.push(
+          './providers/' + currentUser.userProviderRoles[0].provider_id,
+        );
+        onRoleSelected(currentUser.userProviderRoles[0].role_name)
+      }
+
+      // If user has 1 organization role and 1 provider role
+      else if (
+        currentUser.userProviderRoles.length == 1 &&
+        currentUser.userOrganiztionRoles.length == 1
+      ) {
+        //If org and provider are connected
+        if (
+          currentUser.userProviderRoles[0].provider_id ==
+          currentUser.userOrganiztionRoles[0].prov_id
+        ) {
+          console.log('// If user has 1 organization role and 1 provider role and are connected')
+          history.push({
+            pathname:
+              './providers/' + currentUser.userProviderRoles[0].provider_id,
+            search: '?query=abc',
+            state: { org_id: currentUser.userOrganiztionRoles[0].org_id },
+          });
+          onRoleSelected(currentUser.userOrganiztionRoles[0].role_name)
         }
-        return 
-    }, [currentUser])
-    let steps;
-    if (formModeState == 'register') {
-        steps =  [
-            {name: 'Registration',  icon: 'sign-in-alt'},
-            // {name: 'Choose account type',  icon: 'user-cog'},
-            // {name: 'Basic info',  icon: 'info'},
-            // {name: 'Registration complete',  icon: 'check-circle'},
-        ]
-    } else {
-        steps = [
-            {name: 'Login',  icon: 'sign-in-alt'},
-            {name: 'Choose Work space',  icon: 'user-cog'},
-            // {name: 'Choose organization',  icon: 'building'},
-            // {name: 'Building your work space',  icon: 'check-circle'},
-        ]
-
+        // setprovider(currentUser.userProviderRoles[0])
+        // getProviderOrganizations(currentUser.userProviderRoles[0].provider_id)
+      } else {
+        setPageTitle(
+          `Welcome ${
+            currentUser.userInfo.first_name
+              ? currentUser.userInfo.first_name
+              : ''
+          }  ${
+            currentUser.userInfo.last_name ? currentUser.userInfo.last_name : ''
+          }`,
+        );
+        handleNextPrevClick2(3, 2);
+      }
     }
-    const accoutTypes = [
-        { name: 'User', formType: 'userForm' },
-        { name: 'Provider', formType: 'providerForm' },
-        { name: 'Organization', formType: 'organizationForm'}
-      ]
-    const userOrgRoles = () => {
-        let roles = [];
-        currentUser.userOrganiztionRoles.map(role => {
-            // console.log(role)
-            roles.push({
-            org_id: role.org_id,
-            name: role.org_name,
-            roleName: role.role_name,
-            });
-        });
-
-    return roles;
-    };
-    const userProviderRoles = () => {
-        console.log(currentUser)
-        let roles = [];
-
-        currentUser.userProviderRoles.map(role => {
-            // console.log(role)
-            roles.push({
-            provider_id: role.provider_id,
-            name: role.name,
-            roleName: '',
-            });
-        });
-        return roles;
-    };
-    const swapFormActive = (a) => (param) => (e) => {
+    return;
+  }, [currentUser]);
+  let steps;
+  if (formModeState == 'register') {
+    steps = [
+      { name: 'Registration', icon: 'sign-in-alt' },
+      // {name: 'Choose account type',  icon: 'user-cog'},
+      // {name: 'Basic info',  icon: 'info'},
+      // {name: 'Registration complete',  icon: 'check-circle'},
+    ];
+  } else {
+    steps = [
+      { name: 'Login', icon: 'sign-in-alt' },
+      { name: 'Choose Work space', icon: 'building' },
+      // {name: 'Choose organization',  icon: 'building'},
+      // {name: 'Building your work space',  icon: 'check-circle'},
+    ];
+  }
+  const accoutTypes = [
+    { name: 'User', formType: 'userForm' },
+    { name: 'Provider', formType: 'providerForm' },
+    { name: 'Organization', formType: 'organizationForm' },
+  ];
+  const swapFormActive = a => param => e => {
     setActive({
-        ['formActivePanel' + a]: param,
-        ['formActivePanel' + a + 'Changed']: true
+      ['formActivePanel' + a]: param,
+      ['formActivePanel' + a + 'Changed']: true,
+    });
+  };
+
+  const handleNextPrevClick = a => param => e => {
+    console.log(a, param);
+    setActive({
+      ['formActivePanel' + a]: param,
+      ['formActivePanel' + a + 'Changed']: true,
+    });
+  };
+  const handleNextPrevClick2 = (a, param) => {
+    // console.log(a, param)
+    setActive({
+      ['formActivePanel' + a]: param,
+      ['formActivePanel' + a + 'Changed']: true,
+    });
+  };
+
+  const handleSelectProvider = () => {};
+  const handleSelectAccountType = account => {
+    console.log(account);
+    handleNextPrevClick2(3, 3);
+    setFormTypeState(account.formType);
+  };
+
+  const handleSubmission = () => {
+    alert('Form submitted!');
+  };
+
+  const calculateAutofocus = a => {
+    if (active['formActivePanel' + a + 'Changed']) {
+      return true;
+    }
+  };
+  const Header = ({ text }) => {
+    return (
+      <h3 className="font-weight-bold pl-0 my-4">
+        <strong>{text}</strong>
+      </h3>
+    );
+  };
+
+  const handleOrgClick = orgName => {
+    const orgRoles = currentUser.userOrganiztionRoles.filter(
+      role => role.org_name == orgName,
+    );
+    console.log(orgRoles)
+    //If there is only on org-role by this orgName
+    if (orgRoles.length == 1) {
+      //If this org-role has no provider id
+      if (!orgRoles[0].prov_id) {
+        history.push({
+          pathname: './organizations/' + orgRoles[0].org_id,
+          role: orgRoles[0].role_name
+        });
+        onRoleSelected(orgRoles[0].role_name)
+      } else {
+        //Check for user provider with selected organization
+        const orgProviders = currentUser.userProviderRoles.filter(
+          role => role.provider_id == orgRoles[0].prov_id,
+        );
+        console.log(orgProviders);
+        //If there is only one provider role
+        if (orgProviders && orgProviders.length == 1) {
+          history.push({
+            pathname: './providers/' + orgProviders[0].provider_id,
+            search: '?query=abc',
+            state: { 
+              org_id: orgRoles[0].org_id,
+              role: orgRoles[0].role_name
+            },
+          });
+          onRoleSelected(orgRoles[0].role_name)
+        }
+      }
+    } else {
+      setOrganization(orgName);
+      setShowOverlay(true)
+    }
+    // if (!org.prov_id) {
+    //     history.push({
+    //     pathname: './organizations/' + org.org_id,
+
+    //     })
+    // } else {
+    //   //Check for user provider with selected organization
+    //   const orgProviders = currentUser.userProviderRoles.filter(role => role.provider_id == org.prov_id);
+    //   console.log(orgProviders)
+    //   //If there is only one provider role
+    //   if (orgProviders && orgProviders.length == 1) {
+    //     history.push({
+    //       pathname:
+    //         './providers/' + orgProviders[0].provider_id,
+    //       search: '?query=abc',
+    //       state: { org_id: org.org_id },
+    //     });
+    //   }
+    // }
+  };
+  const handleOrgRoleClick = role => {
+
+    console.log(role)
+    if (role.prov_id) {
+      history.push({
+        pathname: './providers/' + role.prov_id,
+        search: '?query=abc',
+        state: { 
+          org_id: role.org_id,
+          role: role.role_name
+        },
+      });
+    } else {
+      history.push({
+      pathname: './organizations/' + role.org_id,
+      role: role.role_name
     });
     }
-     
-    const handleNextPrevClick = (a) => (param) => (e) => {
-        console.log(a, param)
-        setActive({
-            ['formActivePanel' + a]: param,
-            ['formActivePanel' + a + 'Changed']: true
-        });
-    }
-    const handleNextPrevClick2 = (a, param) => {
-        console.log(a, param)
-        setActive({
-            ['formActivePanel' + a]: param,
-            ['formActivePanel' + a + 'Changed']: true
-        });
-    }
+    onRoleSelected(role.role_name)
+  };
 
-    const handleSelectProvider = () => {
-        
-    }
-    const handleSelectAccountType = (account) => {
-        console.log(account);
-        handleNextPrevClick2(3, 3);
-        setFormTypeState(account.formType)
-    }
+  const handleProviderClick = provider => {
+    console.log(provider)
+    // const orgId = currentUser.userOrganiztionRoles.find(orgRole => orgRole.org_name == organization).org_id
+    // console.log(orgId);
+    onRoleSelected(provider.role_name)
+    history.push({
+      pathname:
+        './providers/' + provider.provider_id,
+      search: '?query=abc',
+      state: { 
+        // org_id: orgId,
+        role: provider.role_name
+      },
+    });
+  };
 
-    const handleSubmission = () => {
-    alert('Form submitted!');
-    }
+  const OrgNames = ({ user }) => {
+    // if (user.userOrganiztionRoles && user.userOrganiztionRoles.length){
+    const orgNames = [];
+    user.userOrganiztionRoles.forEach(role => {
+      if (!orgNames.includes(role.org_name)) orgNames.push(role.org_name);
+    });
+    // console.log(orgNames);
+    return (
+      <>
+        <h5>Organizations</h5>
+        {orgNames.map((orgName, index) => (
+          <HoverableWrapper
+            key={index}
+            bgColor="hsla(10, 100%, 48%, 0.343)"
+            className="text-left p-3"
+            style={{ height: '3.4rem' }}
+            color="rgba(255, 140, 0, 1)"
+            hoverColor="black"
+            afterBgColor={'rgba(255, 140, 0, 0.335)'}
+            useAfter={true}
+            hoverEffect="backGroundEnterLeft"
+            onClick={() => {
+              handleOrgClick(orgName);
+            }}
+          >
+            <h5>{orgName}</h5>
+          </HoverableWrapper>
+        ))}
+      </>
+    );
+    // }
+  };
 
-    const calculateAutofocus = (a) => {
-    if (active['formActivePanel' + a + 'Changed']) {
-    return true
-    }
-    }
-    const Header = ({text}) => {
-        return <h3 className="font-weight-bold pl-0 my-4">
-        <strong>{text}</strong>
-        </h3>
-       
-    }
+  const UserOrgRoles = ({ user }) => {
+    // console.log(user)
+    console.log(user.userOrganiztionRoles)
+    const orgRoles = user.userOrganiztionRoles.filter(role => role.org_name == organization)
+    const inHouseRoles = orgRoles.filter(orgRole => !orgRole.prov_id)
+    const providerRoles = orgRoles.filter(orgRole => orgRole.prov_id)
+    console.log(orgRoles);
+    return (
+      <>
+        {/* <h5>{`${organization}`}</h5> */}
+        <h5 className="text-center">Found {orgRoles.length} roles by {organization}</h5>
+        <p className="text-center">Please choose a role</p>
+        {orgRoles.map((role, index) => (
+          <HoverableWrapper
+            key={index}
+            bgColor="hsla(10, 100%, 48%, 0.343)"
+            className="text-left p-3"
+            style={{ height: '3.4rem' }}
+            color="rgba(255, 140, 0, 1)"
+            hoverColor="black"
+            afterBgColor={'rgba(255, 140, 0, 0.335)'}
+            useAfter={true}
+            hoverEffect="backGroundEnterLeft"
+            onClick={() => {
+              handleOrgRoleClick(role);
+            }}
+          >
+            <h5>{`${role.role_name}`}</h5>
+          </HoverableWrapper>
+        ))}
+      </>
+    );
+    // }
+  };
+  const UserProviderRoles = ({ user }) => {
+    // if (user.userProviderRoles && user.userProviderRoles.length){
 
-    const UserOrgRoles = ({user}) => {
-        // if (user.userOrganiztionRoles && user.userOrganiztionRoles.length){
-            return <>
-            <h5>Organizations</h5>
-            {userOrgRoles().map(org => <HoverableWrapper
-                key={org.id}
-                bgColor="hsla(10, 100%, 48%, 0.343)"                      
-                className="text-left p-3"
-                style={{'height': '3.4rem'}}
-                color="rgba(255, 140, 0, 1)"
-                hoverColor="black"
-                afterBgColor={"rgba(255, 140, 0, 0.335)"}
-                useAfter={true}
-                hoverEffect="backGroundEnterLeft"
-                onClick={() => {
-                    console.log(org)
-                    history.push({
-                      pathname: './organizations/' + org.org_id,
-                     
-                      })
-                }}
-                ><h5>
-                {org.name}
-            </h5>
-            </HoverableWrapper>
-            )} 
-            </>
-        // }
-        
-    }
-    const UserProviderRoles = ({user}) => {
-        
-        // if (user.userProviderRoles && user.userProviderRoles.length){
-            return <>
-            <h5>Choose provider</h5>
-            {userProviderRoles().map(prov => <>
+    //Get organization Roles by org name
+    const orgRolesByOrgName = currentUser.userOrganiztionRoles.filter(role => role.org_name == organization)
+    console.log(orgRolesByOrgName)
+
+    let providersByOrgRoles = [];
+    //Get user roles by providers working with selected org
+    orgRolesByOrgName.map(
+      orgRole => {
+        const provRole = currentUser.userProviderRoles.find(provRole => provRole.provider_id == orgRole.prov_id)
+        if (provRole) providersByOrgRoles.push(provRole);
+      }
+    )
+    // console.log(providersByOrgRoles)
+    return (
+      <>
+        {/* <h5 className="text-center">Found {providersByOrgRoles.length} roles by {organization}</h5> */}
+        <h5>{`Providers`}</h5>
+        {/* <p className="text-center">Please choose a role</p> */}
+        {/* {console.log('userProviderRoles' , userProviderRoles())} */}
+        {currentUser.userProviderRoles.map((prov, index) => (
+          <>
             <HoverableWrapper
-                key={prov.provider_id}
-                bgColor="hsla(10, 100%, 48%, 0.343)"                      
-                className="text-left p-3"
-                style={{'height': '3.4rem'}}
-                color="rgba(255, 140, 0, 1)"
-                hoverColor="black"
-                afterBgColor={"hsla(222, 23%, 45%, 0.397)"}
-                useAfter={true}
-                hoverEffect="backGroundEnterLeft"
-                onClick={() => {
-                    setprovider(prov)
-                    getProviderOrganizations(prov.provider_id)
-                }}
-                ><h5>
-                {prov.name}
-            </h5>
+              key={index}
+              bgColor="hsla(10, 100%, 48%, 0.343)"
+              className="text-left p-3"
+              style={{ height: '3.4rem' }}
+              color="rgba(255, 140, 0, 1)"
+              hoverColor="black"
+              afterBgColor={'hsla(222, 23%, 45%, 0.397)'}
+              useAfter={true}
+              hoverEffect="backGroundEnterLeft"
+              onClick={() => {
+                handleProviderClick(prov)
+              }}
+            >
+              <h5>
+                {prov.provider_name} - {prov.role_name}
+              </h5>
             </HoverableWrapper>
             {/* {providerOrganizations.length && provider.name == prov.name ? 
                             
@@ -236,19 +428,23 @@ const RegistrationProcess  = ({
                     </HoverableWrapper>
                     ) 
                     : ''} */}
-                </>
-            )} 
-            </>
-        // }
-    }
-    console.log(msg)
-    return (
-      <MDBContainer className="registrationProcess">
-        <MDBCard>
-          <MDBCardBody>
-            <MDBRow className="pt-5 justify-content-center">
-              <MDBCol md="2" className="pl-5 pl-md-0 pb-5">
-                {/* <MDBStepper icon vertical>
+          </>
+        ))}
+      </>
+    );
+    // }
+  };
+
+  return (
+    <div className="registrationProcess ">
+      <MDBCard className="background-white">
+        <div className="background-orange text-white text-center py-2">
+          {pageTitle}
+        </div>
+
+        <MDBRow className="justify-content-center no-gutters bg-white m-2">
+          {/* <MDBCol md="2" className="pl-5 pl-md-0 pb-5"> */}
+          {/* <MDBStepper icon vertical>
                     {steps.map((step, index) => <MDBStep
                         key={index}
                         className={active.formActivePanel3 == index + 1 ? 'active' : ''}
@@ -259,38 +455,34 @@ const RegistrationProcess  = ({
                         vertical
                     />)}
                 </MDBStepper> */}
-              </MDBCol>
+          {/* </MDBCol> */}
 
-              <MDBCol md="7">
-                {active.formActivePanel3 === 1 && (
-                  <MDBCol md="12" className="login">
-                    <Header
-                      text="Please sign in"
-                    />
-                    
-                    {formModeState == 'register' ?
-                     <Form
-                        formType={'registerUserForm'}
-                        editMode={formModeState}
-                        colWidth={12}
-                        editFunction={(data, event) => {
-                          // onAuth(data)
-                          onRegisterUser(data)
-
-                        }}
-                        />
-                    :
-                    <Form
-                        formType={'loginUserForm'}
-                        editMode={formModeState}
-                        colWidth={12}
-                        editFunction={(data, event) => {
-                          onLoginUser(data)
-                          // onAuth(data)
-                        }}
-                    />}
-                    <div className="message">{msg}</div>
-                    {formModeState !== 'register' && <>
+          <MDBCol md="7">
+            {active.formActivePanel3 === 1 && (
+              <MDBCol md="12" className="login ">
+                {formModeState == 'register' ? (
+                  <Form
+                    formType={'registerUserForm'}
+                    editMode={formModeState}
+                    colWidth={12}
+                    editFunction={(data, event) => {
+                      // onAuth(data)
+                      onRegisterUser(data);
+                    }}
+                  />
+                ) : (
+                  <Form
+                    formType={'loginUserForm'}
+                    editMode={formModeState}
+                    colWidth={12}
+                    editFunction={(data, event) => {
+                      onLoginUser(data);
+                      // onAuth(data)
+                    }}
+                  />
+                )}
+                <div className="message">{msg}</div>
+                {/* {formModeState !== 'register' && <>
                     <br/>
                     <br/>
                     <hr />
@@ -316,18 +508,16 @@ const RegistrationProcess  = ({
                               ]
                         }
                       >
-                        {/* <strong>Create account
-                        </strong> */}
+
                         <strong>
                           {formModeState === 'register'
                             ? 'Back to login'
                             : 'Create account'}
                         </strong>
                       </MDBBtn>
-                    </span>
-                   
-                    
-                   {/* <MDBBtn
+                    </span> */}
+
+                {/* <MDBBtn
                       color="mdb-color"
                       rounded
                       className="float-right"
@@ -335,70 +525,91 @@ const RegistrationProcess  = ({
                     >
                       next
                     </MDBBtn> */}
-                  </MDBCol>
-                )}
-                {active.formActivePanel3 === 2 && (
-                  <MDBCol md="12" className="basic_info">
-                    <Header
-                      text={`${steps[1].name}`}
-                    />
-                    {formModeState == 'register' ? 
-                        accoutTypes.map(account => <HoverableWrapper
-                            key={account.formType}
-                            bgColor="hsla(10, 100%, 48%, 0.343)"                      
-                            className="text-left p-3"
-                            style={{'height': '3.4rem'}}
-                            color="rgba(255, 140, 0, 1)"
-                            hoverColor="black"
-                            afterBgColor={"rgba(255, 140, 0, 0.335)"}
-                            useAfter={true}
-                            hoverEffect="backGroundEnterLeft"
-                            onClick={() => handleSelectAccountType(account)}
-                            ><h5>
-                            {account.name}
-                        </h5>
-                        </HoverableWrapper>
-                        )
-                        :
-                        <>
-                           {currentUser.userOrganiztionRoles && currentUser.userOrganiztionRoles.length ? 
-                            <UserOrgRoles user={currentUser}/> : ''
-                           } 
-                           {currentUser.userProviderRoles && currentUser.userProviderRoles.length > 1 && (
-                            <UserProviderRoles user={currentUser}/> 
-                           )} 
-                            {providerOrganizations.length ? <>
-                            <h5>Choose organization you wish to work on</h5>
-                            {providerOrganizations.map(org => <HoverableWrapper
-                                key={org.id}
-                                bgColor="hsla(10, 100%, 48%, 0.343)"                      
-                                className="text-left p-3"
-                                style={{'height': '3.4rem'}}
-                                color="rgba(255, 140, 0, 1)"
-                                hoverColor="black"
-                                afterBgColor={"rgba(255, 140, 0, 0.335)"}
-                                useAfter={true}
-                                hoverEffect="backGroundEnterLeft"
-                                onClick={() => {
-                                    history.push({
-                                        pathname: './providers/' + provider.provider_id,
-                                        search: '?query=abc',
-                                        state: { org_id: org.id }
-                                      })
-                                    
-                                }}
-                                ><h5>
-                                {org.name}
-                                </h5>
-                                </HoverableWrapper>
-                                ) }
-                            </> : ''
-                            }
-                        </>
+              </MDBCol>
+            )}
+            {active.formActivePanel3 === 2 && (
+              <MDBCol md="12" className="basic_info">
+                {/* <h4>{`Welcome ${
+                    currentUser.userInfo.first_name ? currentUser.userInfo.first_name : ''
+                  }  ${
+                    currentUser.userInfo.last_name ? currentUser.userInfo.last_name : ''
+                  }`}</h4> */}
+                <Header text={`${steps[1].name}`} />
+                {formModeState == 'register' ? (
+                  accoutTypes.map(account => (
+                    <HoverableWrapper
+                      key={account.formType}
+                      bgColor="hsla(10, 100%, 48%, 0.343)"
+                      className="text-left p-3"
+                      style={{ height: '3.4rem' }}
+                      color="rgba(255, 140, 0, 1)"
+                      hoverColor="black"
+                      afterBgColor={'rgba(255, 140, 0, 0.335)'}
+                      useAfter={true}
+                      hoverEffect="backGroundEnterLeft"
+                      onClick={() => handleSelectAccountType(account)}
+                    >
+                      <h5>{account.name}</h5>
+                    </HoverableWrapper>
+                  ))
+                ) : (
+                  <>
+                    {currentUser.userOrganiztionRoles &&
+                      currentUser.userOrganiztionRoles.length && (
                         
-                    }
-                    
-                    {/* <MDBBtn
+                        // <UserOrgRoles user={currentUser} />
+                        <OrgNames user={currentUser} />
+                      )}
+                    <UserProviderRoles user={currentUser} />
+                    <Overlay
+                      overlayOpen={showOverlay}
+                      animationType="overlayAnimation"
+                      toggleOverlay={() => setShowOverlay(!showOverlay)}
+                    > 
+                      <UserOrgRoles user={currentUser} />
+                     
+                    </Overlay>
+                    {/* {organization && currentUser.userProviderRoles.length && (
+                      <UserProviderRoles user={currentUser} />
+                    )} */}
+                    {/* {currentUser.userProviderRoles &&
+                        currentUser.userProviderRoles.length && (
+                          <UserProviderRoles user={currentUser} />
+                        )} */}
+                    {/* {providerOrganizations.length ? (
+                        <>
+                          <h5>Choose organization you wish to work on</h5>
+                          {providerOrganizations.map(org => (
+                            <HoverableWrapper
+                              key={org.id}
+                              bgColor="hsla(10, 100%, 48%, 0.343)"
+                              className="text-left p-3"
+                              style={{ height: '3.4rem' }}
+                              color="rgba(255, 140, 0, 1)"
+                              hoverColor="black"
+                              afterBgColor={'rgba(255, 140, 0, 0.335)'}
+                              useAfter={true}
+                              hoverEffect="backGroundEnterLeft"
+                              onClick={() => {
+                                history.push({
+                                  pathname:
+                                    './providers/' + provider.provider_id,
+                                  search: '?query=abc',
+                                  state: { org_id: org.id },
+                                });
+                              }}
+                            >
+                              <h5>{org.name}</h5>
+                            </HoverableWrapper>
+                          ))}
+                        </>
+                      ) : (
+                        ''
+                      )} */}
+                  </>
+                )}
+
+                {/* <MDBBtn
                       color="mdb-color"
                       rounded
                       className=""
@@ -406,7 +617,7 @@ const RegistrationProcess  = ({
                     >
                       previous
                     </MDBBtn> */}
-                    {/* <MDBBtn
+                {/* <MDBBtn
                       color="mdb-color"
                       rounded
                       className="float-right"
@@ -414,66 +625,60 @@ const RegistrationProcess  = ({
                     >
                       next
                     </MDBBtn> */}
-                  </MDBCol>
+              </MDBCol>
+            )}
+            {active.formActivePanel3 === 3 && (
+              <MDBCol md="12" className="basic_info">
+                <Header text={`${steps[2].name}`} />
+                {formModeState == 'register' ? (
+                  <Form
+                    formType={'basicInfoForm'}
+                    editMode={formModeState}
+                    colWidth={6}
+                    editFunction={(data, event) =>
+                      // onSubmitForm(data, event)
+                      console.log(data, event)
+                    }
+                  />
+                ) : (
+                  <>
+                    {providerOrganizations.length
+                      ? providerOrganizations.map(org => (
+                          <HoverableWrapper
+                            key={org.id}
+                            bgColor="hsla(10, 100%, 48%, 0.343)"
+                            className="text-left p-3"
+                            style={{ height: '3.4rem' }}
+                            color="rgba(255, 140, 0, 1)"
+                            hoverColor="black"
+                            afterBgColor={'rgba(255, 140, 0, 0.335)'}
+                            useAfter={true}
+                            hoverEffect="backGroundEnterLeft"
+                            onClick={() => {
+                              history.push({
+                                pathname:
+                                  './providers/' + provider.provider_id,
+                                search: '?query=abc',
+                                state: { org_id: org.id },
+                              });
+                            }}
+                          >
+                            <h5>{org.name}</h5>
+                          </HoverableWrapper>
+                        ))
+                      : ''}
+                  </>
                 )}
-                {active.formActivePanel3 === 3 && (
-                  <MDBCol md="12" className="basic_info">
-                      <Header
-                        text={`${steps[2].name}`}
-                        />
-                         {formModeState == 'register' ? 
-                         <Form
-                            formType={'basicInfoForm'}
-                            editMode={formModeState}
-                            colWidth={6}
-                            editFunction={(data, event) =>
-                                // onSubmitForm(data, event)
-                                console.log(data, event)
-                            }
-                            />
-                         :
-                         <>
-                         {providerOrganizations.length ? 
-                            
-                            providerOrganizations.map(org => <HoverableWrapper
-                                key={org.id}
-                                bgColor="hsla(10, 100%, 48%, 0.343)"                      
-                                className="text-left p-3"
-                                style={{'height': '3.4rem'}}
-                                color="rgba(255, 140, 0, 1)"
-                                hoverColor="black"
-                                afterBgColor={"rgba(255, 140, 0, 0.335)"}
-                                useAfter={true}
-                                hoverEffect="backGroundEnterLeft"
-                                onClick={() => {
-                                    history.push({
-                                        pathname: './providers/' + provider.provider_id,
-                                        search: '?query=abc',
-                                        state: { org_id: org.id }
-                                      })
-                                    
-                                }}
-                                ><h5>
-                                {org.name}
-                                </h5>
-                                </HoverableWrapper>
-                                ) 
-                             : ''
-                            }
-                            </>
 
-                        }
-                      
-                    
-                    <MDBBtn
-                      color="mdb-color"
-                      rounded
-                      className="float-left"
-                      onClick={handleNextPrevClick(3)(2)}
-                    >
-                      previous
-                    </MDBBtn>
-                    {/* <MDBBtn
+                <MDBBtn
+                  color="mdb-color"
+                  rounded
+                  className="float-left"
+                  onClick={handleNextPrevClick(3)(2)}
+                >
+                  previous
+                </MDBBtn>
+                {/* <MDBBtn
                       color="mdb-color"
                       rounded
                       className="float-right"
@@ -481,50 +686,51 @@ const RegistrationProcess  = ({
                     >
                       next
                     </MDBBtn> */}
-                  </MDBCol>
-                )}
-                {active.formActivePanel3 === 4 && (
-                  <MDBCol md="12">
-                    <h3 className="font-weight-bold pl-0 my-4">
-                      <strong>Finish</strong>
-                    </h3>
-                    <h2 className="text-center font-weight-bold my-4">
-                      Registration completed!
-                    </h2>
-                    <MDBBtn
-                      color="mdb-color"
-                      rounded
-                      className="float-left"
-                      onClick={handleNextPrevClick(3)(3)}
-                    >
-                      previous
-                    </MDBBtn>
-                    <MDBBtn
-                      color="success"
-                      rounded
-                      className="float-right"
-                      onClick={handleSubmission}
-                    >
-                      submit
-                    </MDBBtn>
-                  </MDBCol>
-                )}
               </MDBCol>
-            </MDBRow>
-          </MDBCardBody>
-        </MDBCard>
-      </MDBContainer>
-    );
+            )}
+            {active.formActivePanel3 === 4 && (
+              <MDBCol md="12">
+                <h3 className="font-weight-bold pl-0 my-4">
+                  <strong>Finish</strong>
+                </h3>
+                <h2 className="text-center font-weight-bold my-4">
+                  Registration completed!
+                </h2>
+                <MDBBtn
+                  color="mdb-color"
+                  rounded
+                  className="float-left"
+                  onClick={handleNextPrevClick(3)(3)}
+                >
+                  previous
+                </MDBBtn>
+                <MDBBtn
+                  color="success"
+                  rounded
+                  className="float-right"
+                  onClick={handleSubmission}
+                >
+                  submit
+                </MDBBtn>
+              </MDBCol>
+            )}
+          </MDBCol>
+        </MDBRow>
+
+      </MDBCard>
+    </div>
+  );
 };
 
 const mapStateToProps = createStructuredSelector({
-    currentUser: makeSelectCurrentUser(),
-    loading: makeSelectLoading(),
-    error: makeSelectError(),
-    msg: makeSelectMessage(),
-    providerOrganizations: makeSelectProviderOrganizations(),
-    // roles: makeSelectRoles(),
-  });
+  currentUser: makeSelectCurrentUser(),
+  currentUserRole: makeSelectCurrentUserRole(),
+  loading: makeSelectLoading(),
+  error: makeSelectError(),
+  msg: makeSelectMessage(),
+  providerOrganizations: makeSelectProviderOrganizations(),
+  // roles: makeSelectRoles(),
+});
 // const mapStateToProps = (state) => {
 //     console.log(state)
 //     return {
@@ -537,25 +743,26 @@ const mapStateToProps = createStructuredSelector({
 //     // roles: makeSelectRoles(),
 //     // roles: makeSelectRoles(),
 //   };
-  
-  export function mapDispatchToProps(dispatch) {
-    return {
-      onAuth: (userData) => dispatch(actions.auth(userData)),
-      onLoginUser: userData => dispatch(login(userData)),
-      onRegisterUser: data => dispatch(registerUser(data)),
-      onRegisterProvider: data => dispatch(registerProvider(data)),
-      onRegisterOrg: data => dispatch(registerOrg(data)),
-      getProviderOrganizations: providerId => dispatch(getProviderOrganizations(providerId)),
 
-    };
-  }
-  
-  const withConnect = connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  );
-  
-  export default compose(
-    withConnect,
-    memo,
-  )(RegistrationProcess);
+export function mapDispatchToProps(dispatch) {
+  return {
+    onAuth: userData => dispatch(actions.auth(userData)),
+    onLoginUser: userData => dispatch(login(userData)),
+    onRegisterUser: data => dispatch(registerUser(data)),
+    onRegisterProvider: data => dispatch(registerProvider(data)),
+    onRegisterOrg: data => dispatch(registerOrg(data)),
+    onRoleSelected: roleName => dispatch(roleSelected(roleName)),
+    getProviderOrganizations: providerId =>
+      dispatch(getProviderOrganizations(providerId)),
+  };
+}
+
+const withConnect = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+);
+
+export default compose(
+  withConnect,
+  memo,
+)(RegistrationProcess);

@@ -16,10 +16,10 @@ app.get("/providers", function(req, res){
 app.post("/providers", function(req, res){
   console.log('creating provider', req.body);
   const provider = req.body
-  var q = `INSERT INTO tbl_providers ( name, date_created, remarks, created_by, contact_name, phone, address, email, region, status, website, about_team )
+  var q = `INSERT INTO tbl_providers ( name, date_created, remarks, created_by, contact_name, phone, address, email, region, general_status, website, about_team )
   VALUES
   ( '${provider.name}', now(), '${provider.remarks}', '${provider.created_by}', '${provider.contact_name}', '${provider.phone}',  '${provider.address}',
-  '${provider.email}', '${provider.region}', 'active', '${provider.website}', '${provider.about_team}');`
+  '${provider.email}', '${provider.region}', '${provider.general_status ? provider.general_status : 'Awaiting confirmation'}', '${provider.website}', '${provider.about_team}');`
   console.log(q)
   connection.query(q, function (error, results) {
   if (error) res.send(error);
@@ -48,11 +48,23 @@ app.get("/providers/:id", function(req, res){
   res.send(results);
   });
  });
+ app.get("/providers/email/:email", function(req, res){
+  console.log('getting providers by mail', req.params.email)
+  // var q = `SELECT * FROM db_3dbia.tbl_users u
+  // INNER JOIN tbl_users_roletypes ur
+  //   ON ur.userId = u.id where user_name = '${req.params.email}' and password = '${req.params.password}'`
+  var q = `SELECT * FROM db_3dbia.tbl_providers where email = '${req.params.email}'`
 
+  connection.query(q, function (error, results) {
+  if (error) throw error;
+  
+  res.send(results);
+  });
+ });
 app.put("/providers/:id", function(req, res){
   const provider = req.body
   console.log('updating provider');
-  var q = `UPDATE tbl_organizations
+  var q = `UPDATE tbl_providers
   SET name = '${provider.name}',
       remarks = '${provider.remarks}',
       contact_name = '${provider.metric_system}',
@@ -60,8 +72,8 @@ app.put("/providers/:id", function(req, res){
       website = '${provider.website}',
       email = '${provider.email}',
       address = '${provider.address}',
-      status = '${provider.status}',
-      phone = '${provider.phone}'
+      phone = '${provider.phone}',
+      general_status = '${provider.general_status}'
   WHERE id = ${req.params.id};`
 
   console.log(q)
@@ -72,12 +84,20 @@ app.put("/providers/:id", function(req, res){
   });
 });
 app.get("/providers/:id/organizations", function(req, res){
-  console.log('getting organizations by provider: '+ req.params.id);
-  var q = `SELECT id, name , contact_name, phone, email, address, website
-  FROM tbl_organizations p
+  console.log('GETTING organizations by provider: '+ req.params.id);
+  var q = `SELECT * FROM tbl_organizations o
   INNER JOIN tbl_organization_providers op
-  ON op.organization_id = p.id
+  ON op.organization_id = o.id
   AND op.provider_id = ${req.params.id}`;
+  connection.query(q, function (error, results) {
+  if (error) res.send(error);
+
+  res.send(results);
+  });
+});
+app.get("/providers/:id/roles", function(req, res){
+  console.log('getting roles by provider: '+ req.params.id);
+  var q = `SELECT * FROM tbl_roles where provider_id = ${req.params.id};`;
   connection.query(q, function (error, results) {
   if (error) res.send(error);
 

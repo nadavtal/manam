@@ -9,8 +9,5 @@
  * export const YOUR_ACTION_CONSTANT = 'yourproject/YourContainer/YOUR_ACTION_CONSTANT';
  */
 
-export const DELETE_PROVIDER = 'boilerplate/providers/DELETE_PROVIDER';
-export const UPDATE_PROVIDER = 'boilerplate/providers/UPDATE_PROVIDER';
-export const ADD_PROVIDER = 'boilerplate/providers/ADD_PROVIDER';
 
 

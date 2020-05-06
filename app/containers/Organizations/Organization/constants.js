@@ -13,7 +13,7 @@
 export const ORGANIZATION_LOADED = 'organization/ORGANIZATION_LOADED';
 export const ORGANIZATION_PROJECT_CREATED = 'organization/ORGANIZATION_PROJECT_CREATED';
 export const PROCESSES_CREATED = 'organization/PROCESSES_CREATED';
-export const UPDATE_ORGANIZATION = 'organization/UPDATE_ORGANIZATION';
+
 export const CREATE_PROCESSES_IN_DB = 'organization/CREATE_PROCESSES_IN_DB';
 export const CREATE_TASKS_IN_DB = 'organization/CREATE_TASKS_IN_DB';
 export const GET_PROCESSES_BY_PROJECT_ID = 'organization/GET_PROCESSES_BY_PROJECT_ID';

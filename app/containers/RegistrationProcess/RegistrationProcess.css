@@ -1,3 +1,9 @@
+.registrationProcess {
+    width: 50rem !important;
+    margin-top: 10rem;
+
+}
+
 .registrationProcess .md-form textarea.md-textarea {
     padding: .5rem 0 ;
     overflow-y: hidden;
@@ -17,3 +23,15 @@
 .registrationProcess .steps-form-3 .active i{
     color: darkorange;
 }
+
+#register .view {
+    background: url('../../images/LogIn_Big.jpg') no-repeat bottom center;
+    background-size: cover;
+    height: 100vh;
+    max-height: 100vh;
+  }
+  
+  /* #register .card {
+    background-color: rgba(255, 255, 255, 0.85);
+  } */
+  

@@ -21,11 +21,12 @@ class ModalPage extends Component {
 // }
 
 confirm = (data, event) => {
-  if(event) {
+  // console.log(data)
+  // if(event) {
     // console.log('lalsdkjalskdjlaksjdlkasjdlkas')
     this.props.modalData.confirmFunction(data, event);
 
-  }
+  // }
   // this.props.onToggleModal()
 
 }
@@ -33,53 +34,78 @@ confirm = (data, event) => {
 render() {
 
   const modalData = this.props.modalData;
-  console.log(modalData)
+
   return (
     <MDBContainer>
       {/* <MDBBtn onClick={this.props.onToggleModal}>Modal</MDBBtn> */}
       <MDBModal
         isOpen={this.props.modalOpen}
         toggle={this.toggle}
-        disableFocusTrap >
+        disableFocusTrap
+      >
         <MDBModalHeader
-          className='light-blue darken-3 white-text'
-          toggle={this.props.onToggleModal}>
-            {modalData.title}
+          className="background-orange white-text"
+          toggle={this.props.onToggleModal}
+        >
+          {modalData.title}
         </MDBModalHeader>
         <MDBModalBody>
           {modalData.text}
-          {modalData.formType ?
+          {modalData.formType ? (
             <Form
               formType={modalData.formType}
               editMode={modalData.editMode}
               colWidth={modalData.colWidth}
               {...modalData.data}
-              createFunction= {(data, event) => this.confirm(data, event)}
-              editFunction= {(data, event) => this.confirm(data, event)}
-              users={this.props.users}
+              createFunction={(data, event) => this.confirm(data, event)}
+              editFunction={(data, event) => this.confirm(data, event)}
+              onBlurFunction={value =>
+                this.props.modalData.onBlurFunction
+                  ? this.props.modalData.onBlurFunction(value)
+                  : console.log('No Blur Function')
+              }
             />
-            :
+          ) : (
             modalData.body
-          }
-          {modalData.options ?
-
+          )}
+          {modalData.options ? (
             <Dropdown
-            mainText={modalData.options.buttonText}
-            size="sm"
-            options={modalData.options.options}
-            selectFunction={() => console.log('aslkslksj')}>
-
-            </Dropdown>
-            : ''}
-
+              mainText={modalData.options.buttonText}
+              size="sm"
+              options={modalData.options.options}
+              selectFunction={() => console.log('aslkslksj')}
+            />
+          ) : (
+            ''
+          )}
         </MDBModalBody>
         <MDBModalFooter>
-          {modalData.cancelButton ? <MDBBtn color="secondary" onClick={this.props.onToggleModal}>{modalData.cancelButton}</MDBBtn> : '' }
-          {modalData.confirmButton ? <MDBBtn color="primary" onClick={modalData.confirmFunction}>{modalData.confirmButton}</MDBBtn> : ''}
+          {modalData.cancelButton ? (
+            <MDBBtn 
+              // color="secondary" 
+              className="modalFormBtn background-turkize"
+              rounded
+              onClick={this.props.onToggleModal}>
+              {modalData.cancelButton}
+            </MDBBtn>
+          ) : (
+            ''
+          )}
+          {modalData.confirmButton ? (
+            <MDBBtn 
+              // color="primary" 
+              className="modalFormBtn background-orange"
+              rounded
+              onClick={modalData.confirmFunction}>
+              {modalData.confirmButton}
+            </MDBBtn>
+          ) : (
+            ''
+          )}
         </MDBModalFooter>
       </MDBModal>
     </MDBContainer>
-    );
+  );
   }
 }
 

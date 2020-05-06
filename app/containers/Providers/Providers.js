@@ -104,7 +104,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onCreateProvider: (provider) => dispatch(addProvider(provider)),
     onDeleteProvider: (provider) => dispatch(actionCreators.deleteProvider(provider)),
-    onUpdateProvider: (provider) => dispatch(actionCreators.editProvider(provider)),
+    onUpdateProvider: (provider) => dispatch(actionCreators.updateProvider(provider)),
 
 
   };

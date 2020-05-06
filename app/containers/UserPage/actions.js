@@ -22,15 +22,4 @@ export function registerUser(user) {
 //     userId,
 //   };
 // }
-export function editUser(user) {
-  return {
-    type: UPDATE_USER,
-    user,
-  };
-}
-export function deletUser(user) {
-  return {
-    type: DELETE_USER,
-    user,
-  };
-}
+

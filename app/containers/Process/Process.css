@@ -13,12 +13,7 @@
   height: 95%;
 }
 
-.fullHeight{
-  height: 90%;
-}
-.fullWidth{
-  width: 100%;
-}
+
 
 .taskRow ul.stepper li a {
   padding: 0;

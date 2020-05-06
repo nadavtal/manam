@@ -3,7 +3,7 @@ import  {initialState}  from './reducer';
 
 
 const selectProjects = state =>
-  state.projects || initialState
+  state.appData || initialState
 ;
 // const makeSelectProjects = () =>
 //   createSelector(
@@ -13,7 +13,7 @@ const selectProjects = state =>
 const makeSelectProject = () =>
   createSelector(
     selectProjects,
-    projectsPageState => projectsPageState.selectedProject,
+    appDataState => appDataState.selectedProject,
   );
 
 

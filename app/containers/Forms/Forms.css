@@ -39,3 +39,10 @@
 .MainViewForm {
   padding: .5rem;
 }
+
+.modalFormBtn {
+  position: absolute;
+  bottom: 40px;
+  right: 10rem;
+
+}

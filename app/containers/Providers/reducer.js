@@ -25,15 +25,7 @@ const usersReducer = (state = initialState, action) =>
 
     switch (action.type) {
 
-      case actionTypes.DELETE_PROVIDER:
-
-        console.log('DELETE_PROVIDER')
-        break;
-      case actionTypes.UPDATE_PROVIDER:
-
-        console.log('UPDATE_PROVIDER')
-        break;
-
+      
 
       default:
         return {...state}

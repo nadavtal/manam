@@ -9,7 +9,7 @@
 
 import produce from 'immer';
 import { PROVIDER_ORGANIZATIONS_LOADED } from '../AppData/constants';
-import { REGISTER_USER_RESPONSE } from '../App/constants';
+import { REGISTER_USER_RESPONSE, LOGIN_FAIL } from '../App/constants';
 // import * as actionTypes from './constants';
 
 // The initial state of the App
@@ -31,6 +31,10 @@ const registrationProceessReducer = (state = initialState, action) =>
         break;
       case REGISTER_USER_RESPONSE:
         console.log(action.data)
+        draft.msg = action.data.msg
+        break;
+      case LOGIN_FAIL:
+        console.log(action)
         draft.msg = action.data.msg
         break;
     }

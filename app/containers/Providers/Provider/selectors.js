@@ -61,10 +61,28 @@ const makeSelectProviderTasks = () =>
 const makeSelectProviderUsers = () =>
   createSelector(
     selectProvider,
-    providerState => providerState.provider_users,
+    providerState => providerState.providerUsers,
+  );
+const makeSelectProviderRoles = () =>
+  createSelector(
+    selectProvider,
+    providerState => providerState.providerRoles,
+  );
+const makeSelectOrganizationUsers = () =>
+  createSelector(
+    selectProvider,
+    providerState => providerState.organizationUsers,
+  );
+const makeSelectOrganizationRoles = () =>
+  createSelector(
+    selectProvider,
+    providerState => providerState.organizationsRoles.filter(role => {
+      return role.type !== 'Organization admin' && role.type !== 'General'
+    }),
   );
 
 export { selectProvider, makeSelectProvider, makeSelectProviderProjects, makeSelectProviderBridges,
   makeSelectProviderProcessesTemplates, makeSelectProviderOrganizations, makeSelectProviderProcessesTasks,
   makeSelectProviderMessages, makeSelectProviderProcesses, makeSelectProviderProjectsProcesses,
-  makeSelectProviderTasks, makeSelectProviderUsers };
+  makeSelectProviderTasks, makeSelectProviderUsers, makeSelectProviderRoles, makeSelectOrganizationUsers,
+  makeSelectOrganizationRoles };

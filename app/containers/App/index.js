@@ -25,7 +25,7 @@ import Projects from 'containers/Projects/Projects';
 import Processes from '../Processes/Processes';
 import Process from '../Process/Process';
 import AppData from '../AppData/AppData'
-import Admin from '../Admin/Admin';
+
 import AdminModule from '../AdminModule/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import Modal from '../Modal/Modal'

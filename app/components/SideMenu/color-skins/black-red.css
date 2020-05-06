@@ -72,27 +72,27 @@
 }
 
 .wsmenu>.wsmenu-list>li>.wsmegamenu .menu_form input[type="submit"] {
-  background-color: #d7412e;
+  background-color:  #FF892F;
   color: #fff;
 }
 
 .wsmenu>.wsmenu-list>li>.wsmegamenu .menu_form input[type="button"] {
-  background-color: #d7412e;
+  background-color:  #FF892F;
   color: #fff;
 }
 
 .wsmenu>.wsmenu-list>li>a.active {
-  background-color: #d7412e;
+  background-color:  #FF892F;
   color: #fff;
 }
 
 .wsmenu>.wsmenu-list>li:hover>a {
-  background-color: #d7412e;
+  background-color:  #FF892F;
   color: #fff;
 }
 
 .wsmenu>.wsmenu-list>li>ul.sub-menu>li:hover>a {
-  background-color: #d7412e;
+  background-color:  #FF892F;
   color: #fff;
 }
 
@@ -102,6 +102,6 @@
 }
 
 .wsmenu>.wsmenu-list>li>ul.sub-menu>li>ul.sub-menu>li>ul.sub-menu>li:hover a {
-  background-color: #d7412e;
+  background-color:  #FF892F;
   color: #fff;
 }

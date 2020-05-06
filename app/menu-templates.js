@@ -32,30 +32,8 @@ const userProviderRoles = () => {
 export const menus = {
   providerMenu: [
     {
-      name: currentUser ? currentUser.userInfo.first_name : 'User',
-      icon: 'user',
-      type: 'sub-menu',
-      float: 'left',
-      children: [
-          {
-            name: 'Switch work space',
-            // children: [
-            //     {
-            //       name: 'Providers',
-            //       children: userProviderRoles()
-            //     },
-            //     {
-            //       name: 'Organizations',
-            //       children: userOrgRoles()
-            //     },
-            // ]
-          },
-          {name: 'Log out'}
-      ]
-    },
-    {
       name: 'Bridges',
-      icon: 'info',
+      icon: 'building',
       type: 'sub-menu',
       float: 'left'
     },
@@ -77,11 +55,17 @@ export const menus = {
       float: 'right',
       counter: true,
     },
+    // {
+    //   name: 'Manage roles',
+    //   icon: 'users',
+    //   type: 'sub-menu',
+    //   float: 'left'
+    // },
     {
-      name: 'Manage roles',
-      icon: 'users',
+      name: 'Management',
+      icon: 'tasks',
       type: 'sub-menu',
-      float: 'left'
+      float: 'left',
     },
     {
       name: 'Manage projects',
@@ -102,28 +86,98 @@ export const menus = {
       float: 'left'
     },
     {
-      name: 'Switch work space',
-      icon: 'random',
+      name: 'Settings',
+      icon: 'cog',
+      type: 'sub-menu',
+      float: 'right'
+    },
+    
+  ],
+  organizationMenu: [
+    // {
+    //   name: currentUser && currentUser.userInfo ? currentUser.userInfo.first_name : 'User',
+    //   icon: 'user',
+    //   type: 'sub-menu',
+    //   float: 'left',
+    //   // children: [
+    //   //     {
+    //   //       name: 'Switch work space',
+    //   //     },
+    //   //     {name: 'Log out'}
+    //   // ]
+    // },
+    // {
+    //   name: 'Info',
+    //   icon: 'info',
+    //   type: 'sub-menu',
+    //   float: 'left'
+    // },
+    {
+      name: 'Bridges',
+      icon: 'building',
       type: 'sub-menu',
       float: 'left'
     },
+    {
+      name: 'Messages',
+      icon: 'envelope',
+      type: 'sub-menu',
+      float: 'right',
+      counter: true,
+      children: [
+        {name: 'Notifications', counter: true},
+        {name: 'Requests', counter: true},
+      ]
+    },
+    {
+      name: 'Schedule',
+      icon: 'calendar-alt',
+      type: 'sub-menu',
+      float: 'right',
+      counter: true,
+    },
+    {
+      name: 'Management',
+      icon: 'tasks',
+      type: 'sub-menu',
+      float: 'left',
+    },
+    // {
+    //   name: 'Manage projects',
+    //   icon: 'project-diagram',
+    //   type: 'sub-menu',
+    //   float: 'left'
+    // },
+    // {
+    //   name: 'Manage processes',
+    //   icon: 'tasks',
+    //   type: 'sub-menu',
+    //   float: 'left'
+    // },
+    // {
+    //   name: 'Pro',
+    //   icon: 'address-card',
+    //   type: 'sub-menu',
+    //   float: 'left'
+    // },
+
     {
       name: 'Settings',
       icon: 'cog',
       type: 'sub-menu',
       float: 'right'
     },
-    {
-      name: 'Sign out',
-      icon: 'sign-out-alt',
-      type: 'sub-menu',
-      float: 'right'
-    },
+    // {
+    //   name: 'Sign out',
+    //   icon: 'sign-out-alt',
+    //   type: 'sub-menu',
+    //   float: 'right'
+    // },
     
   ],
   marketMenu: [
     {
-      name: currentUser ? currentUser.userInfo.first_name : 'User',
+      name: currentUser && currentUser.userInfo ? currentUser.userInfo.first_name : 'User',
       icon: 'user',
       type: 'sub-menu',
       float: 'left',
@@ -284,7 +338,7 @@ export const menus = {
   ],
   adminMenu: [
     {
-      name: currentUser ? currentUser.userInfo.first_name : 'User',
+      name: currentUser && currentUser.userInfo ? currentUser.userInfo.first_name : 'User',
       icon: 'user',
       type: 'sub-menu',
       float: 'left',
@@ -331,22 +385,22 @@ export const menus = {
       counter: true,
     },
     {
-      name: 'Manage roles',
+      name: 'Manage users & roles',
       icon: 'users',
       type: 'sub-menu',
-      float: 'left'
-    },
-    {
-      name: 'Manage projects',
-      icon: 'project-diagram',
-      type: 'sub-menu',
-      float: 'left'
-    },
-    {
-      name: 'Manage processes',
-      icon: 'tasks',
-      type: 'sub-menu',
-      float: 'left'
+      float: 'left',
+      children: [
+        {
+          name: 'All users',
+        },
+        {
+          name: 'Organizations users',
+        },
+        {
+          name: 'Providers users',
+        },
+              
+      ]
     },
     {
       name: 'Organizations',
@@ -372,6 +426,19 @@ export const menus = {
               
       ]
     },
+    {
+      name: 'Manage projects',
+      icon: 'project-diagram',
+      type: 'sub-menu',
+      float: 'left'
+    },
+    {
+      name: 'Manage processes',
+      icon: 'tasks',
+      type: 'sub-menu',
+      float: 'left'
+    },
+    
     {
       name: 'Switch work space',
       icon: 'random',

@@ -58,7 +58,7 @@ const PV2 = (props) => {
               </MDBView>
               <MDBCardBody className='text-center'>
               <Form
-                formType={`${props.dataType}Form`}
+                formType={props.dataType}
                 item={props.item}
                 editMode='edit'
                 // createFunction={(formData) => this.props.createNewProject(formData)}

@@ -4,7 +4,9 @@ import { MDBInput, MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownI
   MDBSelectOptions,
   MDBSelectOption   } from "mdbreact";
 import './Input.css';
-import Select from '../Select/Select'
+import Select from '../Select/Select';
+import SelectMultiple from '../SelectMultiple';
+import CustomSelect from '../CustomSelect';
 const input = (props) => {
   // console.log(props)
   let inputElement = null;
@@ -22,6 +24,7 @@ const input = (props) => {
 
   switch (props.elementtype) {
     case('input'):
+    // console.log(props)
       // inputElement = <MDBInput
       //                 value={props.value.value}
       //                 {...props.elementconfig}
@@ -33,13 +36,14 @@ const input = (props) => {
       //                 <div className="invalid-feedback">{props.errMsg}</div>
       //               </MDBInput>
 
+      // console.log(props)
       inputElement =
         <MDBInput label={props.label}
         value={props.value}
         {...props.elementconfig}
         onChange={props.changed}
         className={props.invalid && props.shouldValidate ? "is-invalid" : "is-valid"}
-        >
+        onBlur={(e) => props.onBlur(e)}>
           {props.invalid && props.shouldValidate && props.touched ?
             <div className="invalid-feedback">{props.errMsg}</div>
              :
@@ -49,27 +53,36 @@ const input = (props) => {
         </MDBInput>
       break;
     case('select'):
-    // console.log(props)
-    let options = []
+    
+    // let options = []
 
-    props.elementconfig.options.map(option => {
-      const selectValue = props.elementconfig.optionValueAttr ? option[props.elementconfig.optionValueAttr]: option.id;
-      // console.log(selectValue)
-      let selectOption = {
+    // props.elementconfig.options.map(option => {
+    //   const selectValue = props.elementconfig.optionValueAttr ? option[props.elementconfig.optionValueAttr]: option.id;
+    //   // console.log(selectValue)
+    //   let selectOption = {
 
-        name: option.name? option.name : option.first_name + ' ' + option.last_name,
-        id: selectValue
-      }
-      options.push(selectOption)
-    })
+    //     name: option.name? option.name : option.first_name + ' ' + option.last_name,
+    //     id: selectValue
+    //   }
+    //   options.push(selectOption)
+    // })
     // console.log(options)
-    // console.log(props.elementconfig.options)
-    inputElement = <Select
-        options={options}
-        value={props.value ? props.value : null}
-        label={props.label}
-        onChange={(event) => props.changed(event)}
-        />
+    // console.log('INPUT PROPS', props)    
+    inputElement = <CustomSelect 
+      label={props.label}
+      multiple={props.elementconfig.multiple}
+      search={props.elementconfig.search}
+      options={props.elementconfig.options}
+      value={props.value}
+      onChange={(event) => props.changed(event)}
+    />    
+    // inputElement = <Select
+    //     options={props.elementconfig.options}
+    //     value={props.value}
+    //     label={props.label}
+    //     disabled={props.elementconfig.disabled}
+    //     onChange={(event) => props.changed(event)}
+    //     />
       // <MDBSelect
       //   key={props.label}
       //   // options={options}
@@ -104,44 +117,18 @@ const input = (props) => {
 
       break;
     case('selectMultiple'):
-      // console.log(props)
+      console.log('selectMultiple', props)
       if(props.elementconfig.options) {
-        inputElement =
-        <MDBSelect multiple color='primary'
-          search
-          label={props.label}
-          getValue={(event) => props.changed(event)}>
-          <MDBSelectInput />
-          <MDBSelectOptions>
-            <MDBSelectOption disabled>
-              {props.label}
-            </MDBSelectOption>
-            {props.elementconfig.options.map(option => {
-              return <MDBSelectOption key={option.id} value={option.id}>{option.name}</MDBSelectOption>
-            })}
+        inputElement = <SelectMultiple
+        options={props.elementconfig.options}
+        value={props.value}
+        label={props.label}
+        disabled={props.elementconfig.disabled}
+        onChange={(event) => props.changed(event)}
+        />
 
-          </MDBSelectOptions>
-        </MDBSelect>
-        // inputElement = <div
-        // {...props.elementconfig}
-        // value={props.value}
-        // onChange={props.changed}
-        // className={inputClasses.join(' ')}
-        // >
-        //   {props.value.map(option => (
-
-        //    <div key={option.valueId} className="d-flex align-items-center">
-        //      <input type="radio"
-        //        value={option.valueId}
-        //      /><br />
-
-        //      <label className="ml-1 mb-0">{option.value}</label>
-        //    </div>
-        //    //  <option key={option.value} value={option.value}>{option.displayValue}</option>
-        //   ))}
-        // </div>;
-
-      } else {
+      } 
+      else {
         inputElement = <div>no value in select</div>
       }
       break;

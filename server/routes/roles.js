@@ -7,8 +7,67 @@ const connection = require('../db.js');
 
 //ROLES ROUTES
 app.get("/roles", function(req, res){
-  console.log('getting roles')
-  var q = `select * from tbl_roles`;
+  console.log('getting roles', req.query)
+  let q = ''
+  if (req.query.fields && req.query.fields.organization_id) {
+    q = `select * from tbl_roles
+    WHERE organization_id IN (${req.query.fields.organization_id})`;
+    // q = `select * from tbl_roles r
+    // INNER JOIN tbl_organizations o
+    // ON r.organization_id = o.id
+    // WHERE r.organization_id IN (${req.query.fields.organization_id})`;
+     
+  } else if (req.query.fields && req.query.fields.provider_id) {
+    q = `select * from tbl_roles
+    WHERE provider_id IN (${req.query.fields.provider_id})`;
+    // q = `select * from tbl_roles r
+    // INNER JOIN tbl_organizations o
+    // ON r.organization_id = o.id
+    // WHERE r.organization_id IN (${req.query.fields.organization_id})`;
+     
+  }
+  else {
+    q = `select * from tbl_roles`
+  }
+  
+  console.log(q)
+  connection.query(q, function (error, results) {
+  if (error) throw error;
+
+  res.send(results);
+  });
+});
+app.get("/roles/:id", function(req, res){
+  // console.log('getting roles', req)
+  
+  const q = `select * from tbl_roles
+    where id = ${req.params.id}`;
+  console.log(q)
+  connection.query(q, function (error, results) {
+  if (error) throw error;
+
+  res.send(results);
+  });
+});
+app.get("/roles/:id", function(req, res){
+  // console.log('getting roles', req)
+  
+  const q = `select * from tbl_roles`;
+  console.log(q)
+  connection.query(q, function (error, results) {
+  if (error) throw error;
+
+  res.send(results);
+  });
+});
+app.post("/roles", function(req, res){
+  console.log('create role');
+  const role = req.body
+  const q = `INSERT INTO tbl_roles ( name, description, organization_id, provider_id, type)
+  VALUES
+  ( '${role.name}','${role.description}', ${role.organization_id ? role.organization_id : null},
+  ${role.provider_id ? role.provider_id : null}, '${role.type}');`
+  
   connection.query(q, function (error, results) {
   if (error) throw error;
 
@@ -16,12 +75,41 @@ app.get("/roles", function(req, res){
   });
 });
 
+app.put("/roles/:id", function(req, res){
+  const role = req.body
+  console.log('updating role');
+  var q = `UPDATE tbl_roles
+  SET name = '${role.name}',
+      description = '${role.description}',
+      organization_id = ${role.organization_id},
+      provider_id = ${role.provider_id},
+      type = '${role.type}'
+  WHERE id = ${req.params.id};`
 
+  console.log(q)
+  connection.query(q, function (error, results) {
+  if (error) res.send(error);
+
+  res.send(results);
+  });
+});
 //ROLES TYPES ROUTES
 app.get("/roleTypes", function(req, res){
   console.log('getting rolesTypes')
   var q = `select * from tbl_roles_types`;
   // console.log(q)
+  connection.query(q, function (error, results) {
+  if (error) throw error;
+
+  res.send(results);
+  });
+});
+app.post("/roleTypes", function(req, res){
+  const role = req.body
+  console.log('getting rolesTypes')
+  const q = `INSERT INTO tbl_roles_types ( name )
+  VALUES
+  ( '${role.name}');`
   connection.query(q, function (error, results) {
   if (error) throw error;
 

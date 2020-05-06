@@ -4,6 +4,9 @@ var app = module.exports = express();
 const connection = require('../db.js');
 const config = require('../config.js')
 const jwt = require('jsonwebtoken');
+const generator = require('generate-password');
+ 
+
 app.get("/organizations", function(req, res){
   console.log('getting organizations');
   var q = 'SELECT * FROM tbl_organizations';
@@ -16,10 +19,12 @@ app.get("/organizations", function(req, res){
 app.post("/organizations", function(req, res){
   console.log('creating organization', req.body);
   const organization = req.body
-  var q = `INSERT INTO tbl_organizations ( name, date_created, remarks, created_by, metric_system, engineering_schema, website, email,  contact_name, phone )
+  var q = `INSERT INTO tbl_organizations ( name, date_created, remarks, created_by, metric_system, engineering_schema, 
+  website, email, contact_name, phone, address, general_status )
   VALUES
   ( '${organization.name}', now(), '${organization.remarks}', '${organization.created_by}', '${organization.metric_system}', '${organization.engineering_schema}',
-  '${organization.website}', '${organization.email}', '${organization.contact_name}' , '${organization.phone}');`
+  '${organization.website}', '${organization.email}', '${organization.contact_name}' , '${organization.phone}', '${organization.address}', 
+  '${organization.general_status ? organization.general_status : 'Awaiting confirmation'}');`
   console.log(q)
   connection.query(q, function (error, results) {
   if (error) res.send(error);
@@ -47,7 +52,9 @@ app.put("/organizations/:id", function(req, res){
       website = '${org.website}',
       email = '${org.email}',
       contact_name = '${org.contact_name}',
-      phone = '${org.phone}'
+      phone = '${org.phone}',
+      address = '${org.address}',
+      general_status = '${org.general_status}'
   WHERE id = ${req.params.id};`
 
   console.log(q)
@@ -103,8 +110,7 @@ app.get("/organizations/:id/bridges", function(req, res){
 });
 app.get("/organizations/:id/providers", function(req, res){
   console.log('getting providers by orgnization: '+ req.params.id);
-  var q = `SELECT name , contact_name, phone, email, address
-  FROM tbl_providers p
+  var q = `SELECT * FROM tbl_providers p
   INNER JOIN tbl_organization_providers op
   ON op.provider_id = p.id
   AND op.organization_id = ${req.params.id}`;
@@ -127,6 +133,16 @@ app.get("/organizations/:id/projects", function(req, res){
 app.get("/organizations/:id/tasks", function(req, res){
   console.log('getting tasks by orgnization: '+ req.params.id);
   var q = 'SELECT * FROM tbl_tasks where organization_id = '+req.params.id;
+  console.log(q)
+  connection.query(q, function (error, results) {
+  if (error) res.send(error);
+
+  res.send(results);
+  });
+});
+app.get("/organizations/:id/roles", function(req, res){
+  console.log('getting roles by orgnization: '+ req.params.id);
+  var q = `SELECT * FROM tbl_roles where organization_id = ${req.params.id}`;
   console.log(q)
   connection.query(q, function (error, results) {
   if (error) res.send(error);
@@ -207,7 +223,19 @@ app.get("/organizations/:id/processes-tasks/:name", function(req, res){
   res.send(results);
   });
 });
+app.get("/organizations/email/:email", function(req, res){
+  console.log('getting organizations by mail', req.params.email)
+  // var q = `SELECT * FROM db_3dbia.tbl_users u
+  // INNER JOIN tbl_users_roletypes ur
+  //   ON ur.userId = u.id where user_name = '${req.params.email}' and password = '${req.params.password}'`
+  var q = `SELECT * FROM db_3dbia.tbl_organizations where email = '${req.params.email}'`
 
+  connection.query(q, function (error, results) {
+  if (error) throw error;
+  
+  res.send(results);
+  });
+ });
 
 
 //other routes..

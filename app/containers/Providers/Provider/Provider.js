@@ -2,26 +2,31 @@ import React, {useState, memo, useEffect} from "react";
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
-import { makeSelectLoading, makeSelectError, makeSelectUsers, makeSelectCurrentUser
-  } from '../../App/selectors';
+import { makeSelectLoading, makeSelectError, makeSelectCurrentUser,
+  makeSelectRoleTypes, makeSelectCurrentUserRole} from '../../App/selectors';
 import { makeSelectProvider, makeSelectProviderProjects, makeSelectProviderBridges,
   makeSelectProviderProcessesTemplates, makeSelectProviderOrganizations, makeSelectProviderProcessesTasks,
   makeSelectProviderMessages, makeSelectProviderProcesses, makeSelectProviderProjectsProcesses,
-  makeSelectProviderTasks, makeSelectProviderUsers, getProviderBridges } from './selectors'
+  makeSelectProviderTasks, makeSelectProviderUsers, getProviderBridges, makeSelectProviderRoles,
+  makeSelectOrganizationUsers, makeSelectOrganizationRoles } from './selectors'
 import TableFilters from '../../TableFilters/TableFilters';
 import BridgePage from 'containers/BridgePage/Loadable'
 import Processes from '../../Processes/Processes';
 import Calender from '../../Calender/Calender';
 import AccordionTable from '../../AccordionTable/AccordionTable';
+import ManagementSection from '../../Management/ManagementSection';
 import IconButtonToolTip from '../../../components/IconButtonToolTip/IconButtonToolTip'
 import { convertToMySqlDateFormat } from '../../../utils/dateTimeUtils';
-import { updateTask } from '../../AppData/actions'
+import { updateTask, createNewRole, registerNewProvUser, allocateUserToOrg, updateProvider,
+  getProviderbyId, logout, findEntityByEmail } from '../../AppData/actions';
+import { toggleModal, toggleAlert } from '../../App/actions';
+
+import { createNewProject } from '../../Projects/actions';
 import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
 import Form from '../../Forms/Form';
 import * as actions from './actions';
 import Projects from '../../Projects/Projects';
-import MegaMenu from '../../../components/MegaMenu/MegaMenu';
 import SideMenu from '../../../components/SideMenu/SideMenu';
 import {  MDBTabPane,
   MDBTabContent,
@@ -41,22 +46,27 @@ import Extended from '../../UserPage/Extended/Extended';
 import Basic from '../../UserPage/Basic/Basic';
 import UsersPage from '../../Users/index';
 import RolesDropDown from '../../../components/RolesDropDown/RolesDropDown'
-import { toggleModal, logout } from '../../App/actions';
-import { getProviderbyId } from '../../AppData/actions';
-import { createNewProject } from '../../Projects/actions';
+
+import { addOrganizationToRoles, getUserById, getRoleById, searchBy } from '../../../utils/dataUtils'
 import reducer from './reducer';
 import saga from './saga';
 // import { selectOrganization } from "../../Organizations/Organization/selectors";
 const key = "provider";
 
 const ProviderPage = (props) => {
-  
-  
+    
   useInjectSaga({ key, saga });
   useInjectReducer({ key, reducer });
   
 
-  const [activeItemClassicTabs3, setActiveItemClassicTabs3] = useState('Bridges');
+  const [activeItemClassicTabs3, setActiveItemClassicTabs3] = useState(
+    localStorage.getItem('activeItemClassicTabs3')
+      ? localStorage.getItem('activeItemClassicTabs3')
+      : props.provider.general_status !== 'Active' ?
+        'Info'
+        :
+        'Bridges'
+  );
   const [showProviderProcesses, setsShowProviderProcesses] = useState(true);
   const [selectedOrganization, setSelectedOrganization] = useState(localStorage.getItem('orgId') ? localStorage.getItem('orgId') : null);
   const [selectedbridge, setSelectedbridge] = useState();
@@ -64,14 +74,18 @@ const ProviderPage = (props) => {
   useEffect(() => {
     const providerId = props.match.params.id;
     props.getProvider(providerId)
-    console.log('[ProviderPage] all', props.location.state.org_name)
-    setSelectedOrganization(props.location.state.org_id)
+    console.log('[ProviderPage] all', props.location)
+    // console.log(props.location.state)
+    if( props.location.state && props.location.state.org_id) setSelectedOrganization(props.location.state.org_id)
   }, [props.match.params.id]);
 
   useEffect(() => {
 
-    console.log('[ProviderPage] props', props)
-  }, [props]);
+    console.log('[ProviderPage] props', selectedOrganization)
+    // console.log(props.providerUsers, typeof(props.providerUsers))
+    addOrganizationToRoles(props.organizationsRoles, props.organizations)
+    // console.log('[ProviderPage] selectedOrganization', selectedOrganization)
+  }, [props.organizationsRoles, props.organizations]);
 
   const toggleClassicTabs3 = (tab) => {
     console.log(activeItemClassicTabs3, tab)
@@ -171,7 +185,7 @@ const ProviderPage = (props) => {
           // confirmButton: 'Create',
           cancelButton: 'Cancel',
           formType: 'allocateUserForm',
-          users: props.users,
+          users: props.providerUsers,
           // options: {
           //   buttonText: 'Add users',
           //   options: [props.users],
@@ -200,100 +214,229 @@ const ProviderPage = (props) => {
     setSelectedOrganization(orgId);
     setSelectedbridge(null)
   }
+  const handleMenuClick = name => {
+    toggleClassicTabs3(name);
+    switch (name) {
+      case 'Switch work space':
+        props.history.push('/');
+        break;
+      case 'Sign out':
+        props.onToggleAlert({
+          title: `Are you sure you want to sign out?`,
+          // text: `${user.first_name} ${user.last_name} is allready allocated as ${role.name}`,
+          confirmButton: 'Sign out',
+          cancelButton: 'Cancel',
+          alertType: 'danger',
+          confirmFunction: () => {
+            
+            props.onLogout();
+            props.history.push('/');
+          }
+        });
+        break;
 
-  const handleMenuClick = (name) => {
-    toggleClassicTabs3(name)
-    switch (name) {
-      case 'Switch work space':
-          props.history.push('/')
-        break;
-        case 'Sign out':
-          props.onToggleModal({
-            title: 'Are you sure you want to log out?',
-            text: '',
-            confirmButton: 'Log out',
-            cancelButton: 'Cancel',
-            
-            confirmFunction: (data) => {
-              props.onLogout()
-              props.history.push('/')
-            }
-          });
-          
-        break;
-    
       default:
         break;
     }
-  }
-  const handleSubMenuClick = (name) => {
+  };
+
+  const handleAction = (name, value) => {
+    console.log(name, value);
     switch (name) {
+      case 'Roles':
+        toggleClassicTabs3(name);
+        break;
       case 'Switch work space':
-          props.history.push('/')
+        props.history.push('/');
         break;
-        case 'Sign out':
+
+      case 'Create new role':
+        props.onToggleModal({
+          title: `Create new role `,
+          text: 'Create new role for ' + props.provider.name,
+          // confirmButton: 'Create',
+          cancelButton: 'Cancel',
+          formType: 'generalRoleForm',
+
+          data: {
+            editMode: 'Create',
+            colWidth: 12,
+            roleTypes: props.roleTypes,
+          },
+          confirmFunction: (data, event) => {
+            data['provider_id'] = props.provider.id;
+            // data['type'] = props.roleTypes.find(roleType => roleType.id === data.type).name;
+            data['type'] = 'General';
+            props.createNewRole(data)
+          }
+        });
+        break;
+        case 'Create new user':
           props.onToggleModal({
-            title: 'Are you sure you want to log out?',
+            title: 'Create new user',
             text: '',
-            confirmButton: 'Log out',
+            // confirmButton: 'Create',
             cancelButton: 'Cancel',
-            
-            confirmFunction: (data) => {
-              props.onLogout()
-              props.history.push('/')
-            }
+            data: {
+              editMode: 'create',
+              colWidth: 12,
+              roles: props.providerRoles,
+            },
+            formType: 'registerUserForm',
+            confirmFunction: data => {
+              console.log(data)
+              props.createNewProviderUser(data, props.provider);
+            },
+            onBlurFunction: (value) => {
+              
+              const searchResults = searchBy(
+                'email', 
+                value, 
+                [],
+                [],
+                [...props.organizationUsers, ...props.providerUsers],
+                )
+              console.log(searchResults)
+              if (searchResults) {
+                searchResults['allocated'] = true
+                return searchResults
+              }
+               else {
+                props.findEntityByEmail(value)
+  
+              }
+            },
           });
-          
+          break;
+
+      case 'Allocate user to in house user':
+        props.onToggleModal({
+          title: `Allocate user to ${selectedOrganization.name}`,
+          text:
+            'Choose user and role to allocate to ' + selectedOrganization.name,
+          // confirmButton: 'Create',
+          cancelButton: 'Cancel',
+          formType: 'organizaionUserAllocationForm',
+
+          data: {
+            // providerUsers: allProvidersUsers,
+            users: props.organizationUsers,
+            roles: props.organizationRoles,
+            editMode: 'Allocate',
+            colWidth: 12,
+          },
+          confirmFunction: (data, event) =>
+            prepareUserAllocation(data, 'organization'),
+        });
         break;
-    
+      case 'Allocate users to role':
+        // console.log(props.providerUsers, typeof(props.providerUsers))
+        props.onToggleModal({
+          title: `Allocate user to ${selectedOrganization.name}`,
+          text:
+            'Choose users and role to allocate to ' + selectedOrganization.name,
+          // confirmButton: 'Create',
+          cancelButton: 'Cancel',
+          formType: 'organizaionUserAllocationForm',
+
+          data: {
+            // providerUsers: allProvidersUsers,
+            users: props.providerUsers,
+            roles: props.organizationsRoles.filter(orgRole => orgRole.organization_id === selectedOrganization),
+            editMode: 'Allocate',
+            colWidth: 12,
+          },
+          confirmFunction: (data, event) => {
+            // console.log(data)
+            prepareUserAllocation(data)
+          }
+        });
+        break;
+      case 'Update provider':
+        value.general_status = 'Active'
+        props.updateProvider(value, props.provider.id)
+        break;
       default:
         break;
     }
+  };
+
+  const prepareUserAllocation = (data) => {
+    // console.log(data)
+    const roleName = getRoleById(data.role_id, props.organizationsRoles).name;
+    const org = props.organizations.find(org => org.id == selectedOrganization)
+    if (data.user_id.length > 1) {
+      data.user_id.forEach(user_id => {
+        const user = props.providerUsers.find(provUser => provUser.user_id == +user_id);
+      
+        props.allocateUserToOrg(user, org, data.role_id, roleName, data.remarks, props.provider.id) ;
+      });
+    } else {
+      const user = props.providerUsers.find(provUser => provUser.user_id == +data.user_id[0]);
+      console.log(user)
+      props.allocateUserToOrg(user, org, data.role_id, roleName, data.remarks, props.provider.id) ;
+    }
+    
+    // switch (allocateTo) {
+    //   case 'organization':
+    //     const org = data.organization_id ? utils.getOrganizationbyId(data.organization_id, props.Organizations) : selectedOrganization;
+    //     props.allocateUserToOrg(user, org, data.role_id, roleName, data.remarks, data.provider_id) ;
+    //     break;
+    //   case 'provider':
+    //     const provider = data.provider_id ? getProviderById(data.provider_id) : selectedProvider;      
+        
+    //     props.allocateUserToProv(user, provider, data.role_id, roleName, data.remarks)
+    //     break;
+    
+    //   default:
+    //     break;
+  
+   
   }
+  console.log(props.currentUser)
+  if (!props.currentUser) 
+    return <div>NO CURRENT USER</div> 
+  else
   return (
 
     <div className="position-relative">
-        {/* <MegaMenu
-          menuType="providerMenu"
-          onMenuClick={(name) => toggleClassicTabs3(name)}
-          onSubMenuClick={(name) => handleSubMenuClick(name)}
-          linkToProviderPage={(provider_id) => linkToProviderPage(provider_id)}
-          // changeWorkSpace={(orgId) => changeWorkSpace(orgId)}
-          currentUser={props.currentUser}
-          onFinalItemClick={(menuItem, menuType) => {
-            if (menuItem.org_id) changeWorkSpace(menuItem.org_id)
-            else if (menuItem.provider_id) linkToProviderPage(menuItem.provider_id)
-          }}
- 
-          >
-        
-        </MegaMenu> */}
         <SideMenu
           menuType="providerMenu"
           onMenuClick={(name) => handleMenuClick(name)}
           onSubMenuClick={(name) => handleSubMenuClick(name)}
           linkToProviderPage={(provider_id) => linkToProviderPage(provider_id)}
-          // changeWorkSpace={(orgId) => changeWorkSpace(orgId)}
+          company={props.provider}
           currentUser={props.currentUser}
+          currentUserRole={props.currentUserRole}
           onFinalItemClick={(menuItem, menuType) => {
             if (menuItem.org_id) changeWorkSpace(menuItem.org_id)
             else if (menuItem.provider_id) linkToProviderPage(menuItem.provider_id)
           }}
-          // onProviderClick={(provider_id) => linkToProviderPage(provider_id)}
-          // onOrganizationClick={(orgId) => changeWorkSpace(orgId)}
+
           />
         
         
       <div className="classic-tabs">
-        {console.log(activeItemClassicTabs3)}
+
         {!props.loading ? <MDBTabContent className="pageContent" activeItem={activeItemClassicTabs3}>
-          <MDBTabPane tabId={props.currentUser.userInfo.first_name}>
-            <Basic
-              item={props.provider}
-              updateItem={(data) => props.updateProvider(data, props.provider.id)}
-              dataType="provider"
-              />
-          </MDBTabPane>
+          {props.currentUser && props.currentUser.userInfo.general_status !== 'Active' ?
+            <div className="ml-5">
+              <h3 className="ml-5">
+                Please activate your user and provider accounts  
+              </h3>
+              <p className="ml-5">
+                fill in your personal info and organization info in the main menu
+              </p>
+            </div>
+            :
+           <> 
+            <MDBTabPane tabId={'Info'}>
+              <Basic
+                item={props.provider}
+                updateItem={data => handleAction('Update provider', data) }
+                dataType="updateProviderForm"
+                />
+            </MDBTabPane>
             <MDBTabPane tabId="Bridges">
               {selectedbridge ?
               <>
@@ -341,18 +484,18 @@ const ProviderPage = (props) => {
 
             </MDBTabPane>
          
-            <MDBTabPane tabId="Manage roles">
-              <MDBBtn
-                color='info'
-                rounded
-                className='ml-3 leftTopCorner mt-4'
-                onClick={() => toggleModal('allocateUsers')}
-              >
-                Add user <MDBIcon icon='user' className='ml-1' />
-              </MDBBtn>
-              <UsersPage
-                users={props.provider_users}
-                provider={props.provider}
+            <MDBTabPane tabId="Management">
+              <ManagementSection
+                  handleAction={(actionName, value) => handleAction(actionName, value)}
+                  users={props.providerUsers}
+                  roles={props.providerRoles}
+                  company={props.provider}
+                  organizations={props.organizations}
+                  // organizationUsers={props.organizationUsers.filter(orgUser => orgUser.organization_id === selectedOrganization)}
+                  // organizationUsers={props.organizationUsers.filter(orgUser => orgUser.organization_id === selectedOrganization)}
+                  organizationsRoles={props.organizationsRoles}
+                  organizationUsers={props.organizationUsers}
+                  type="provider"
                 />
             </MDBTabPane>
             <MDBTabPane tabId="Manage projects">
@@ -429,7 +572,8 @@ const ProviderPage = (props) => {
               />
 
                 </MDBTabPane>
-          
+            </>
+            }
           </MDBTabContent>
            : <strong>Getting {props.provider.name} data</strong>}
       </div>
@@ -441,7 +585,7 @@ const ProviderPage = (props) => {
 }
 
 const mapStateToProps = createStructuredSelector({
-  users: makeSelectUsers(),
+  // users: makeSelectUsers(),
   currentUser: makeSelectCurrentUser(),
   loading: makeSelectLoading(),
   error: makeSelectError(),
@@ -456,21 +600,29 @@ const mapStateToProps = createStructuredSelector({
   messages: makeSelectProviderMessages(),
   projectsProcesses: makeSelectProviderProjectsProcesses(),
   tasks: makeSelectProviderTasks(),
-  provider_users: makeSelectProviderUsers(),
-
-
+  providerUsers: makeSelectProviderUsers(),
+  providerRoles: makeSelectProviderRoles(),
+  organizationUsers: makeSelectOrganizationUsers(),
+  organizationsRoles: makeSelectOrganizationRoles(),
+  roleTypes: makeSelectRoleTypes(),
+  currentUserRole: makeSelectCurrentUserRole(),
 });
 
 
 const mapDispatchToProps = (dispatch) => {
   return {
     onToggleModal: (modalData) => {dispatch(toggleModal(modalData))},
+    onToggleAlert: alertData => dispatch(toggleAlert(alertData)),
     onCreateNewProject: data => {dispatch(createNewProject(data))},
     getProvider: (id) => dispatch(getProviderbyId(id)),
     onAllocateUser: (newProviderUser) => dispatch(actions.allocateUser(newProviderUser)),
-    updateProvider: (data, id) => dispatch(actions.updateProvider(data,id)),
+    updateProvider: (data, id) => dispatch(updateProvider(data,id)),
     onUpdateTask: (task) => dispatch(updateTask(task)),
     onLogout: () => dispatch(logout()),
+    createNewRole: (data) => dispatch(createNewRole(data)),
+    createNewProviderUser: (newUser, provider) => dispatch(registerNewProvUser(newUser, provider)),
+    allocateUserToOrg: (user, org, role_id, roleName, remarks, provider_id) => dispatch(allocateUserToOrg({user, org, role_id, roleName, remarks, provider_id})),
+    findEntityByEmail: email => dispatch(findEntityByEmail(email)),  
   };
 }
 
@@ -484,124 +636,6 @@ export default compose(
   memo,
 )(ProviderPage);
 
- {/* <MDBNav classicTabs color="orange" className="">
-          <MDBNavItem >
-            <div className="logo-wrapper sn-ad-avatar-wrapper d-flex">
-              <a href="#!">
-                <img alt="" src={require('../../../images/gilad.jpg')} className="rounded-circle" />
-                <span>Gilad</span>
-              </a>
-              {selectedOrganization}
-            </div>
-
-          </MDBNavItem>
-          <MDBNavItem active={activeItemClassicTabs3==="1"}>
-            <MDBNavLink link to="#" active={activeItemClassicTabs3==="1"} onClick={() => toggleClassicTabs3("1")}>
-              <MDBIcon icon="info" size="1x" />
-              <br />
-              Bridges
-            </MDBNavLink>
-          </MDBNavItem>
-          <MDBNavItem>
-            <MDBNavLink link  to="#" active={activeItemClassicTabs3==="2"} onClick={() => toggleClassicTabs3("2")}>
-              <MDBIcon icon="users" size="1x" />
-              <br />
-              Users
-            </MDBNavLink>
-          </MDBNavItem>
-          <MDBNavItem>
-            <MDBNavLink link  to="#" active={activeItemClassicTabs3==="3"} onClick={() => toggleClassicTabs3("3")}>
-              <MDBIcon icon="project-diagram" size="1x" />
-              <br />
-              Projects
-            </MDBNavLink>
-          </MDBNavItem>
-          <MDBNavItem>
-            <MDBNavLink link  to="#" active={activeItemClassicTabs3==="4"} onClick={() => toggleClassicTabs3("4")}>
-              <MDBIcon icon="users" size="1x" />
-              <br />
-              Processes
-            </MDBNavLink>
-          </MDBNavItem>
-          <MDBNavItem>
-            <MDBNavLink link  to="#" active={activeItemClassicTabs3==="5"} onClick={() => toggleClassicTabs3("5")}>
-              <MDBIcon icon="users" size="1x" />
-              <br />
-              Organizations
-            </MDBNavLink>
-          </MDBNavItem>
-          <div className="absolute-right d-flex align-items-center">
-            <MDBNavItem className="" >
-              <RolesDropDown
-                userData={props.currentUser}
-                onProviderClick={(provider_id) => linkToProviderPage(provider_id)}
-                onOrganizationClick={(orgId) => changeWorkSpace(orgId)}
-                />
-              <MDBDropdown>
-                <MDBDropdownToggle nav caret>
-                  <div className="d-none d-md-inline">
-
-                    Work space
-                  </div>
-                </MDBDropdownToggle>
-                <MDBDropdownMenu className="nav-drop-down tabs-orange active"
-                  right style={{ top: '20px !important' }}>
-                  <MDBDropdownItem header>Organizations</MDBDropdownItem>
-                  {props.currentUser && userOrgRoles().map(role => <MDBDropdownItem href="#!" className="text-left"
-                    onClick={(e) =>  setSelectedOrganization(role.org_id)}>
-                      {role.name}
-                      </MDBDropdownItem>)}
-                  <MDBDropdownItem header>Providers</MDBDropdownItem>
-                  {props.currentUser && userProviderRoles().map(role => <MDBDropdownItem href="#!" className="text-left"
-                    onClick={(e) =>  linkToProviderPage(role.provider_id)}>
-                      {role.name}
-                      </MDBDropdownItem>)}
-
-                </MDBDropdownMenu>
-              </MDBDropdown>
-
-            </MDBNavItem>
-            <MDBNavItem >
-
-              <MDBNavLink link to="#" active={activeItemClassicTabs3==="6"} onClick={() => toggleClassicTabs3("6")}
-                >
-
-                <span className='counter mt-2' >6</span>
-                <MDBIcon icon="envelope" size="2x" className='mt-2' />
-
-              </MDBNavLink>
-            </MDBNavItem>
-            <MDBNavItem className="" >
-              <MDBNavLink link to="#" active={activeItemClassicTabs3==="7"} onClick={() => toggleClassicTabs3("7")}
-                >
-
-                <span className='counter mt-2' >22</span>
-                <MDBIcon icon="calendar-alt" size="2x" className='mt-2' />
-
-              </MDBNavLink>
-            </MDBNavItem>
-            <MDBNavItem className="" >
-            <MDBDropdown>
-              <MDBDropdownToggle nav>
-                <MDBIcon icon="cog" size="2x" className='mt-2' />
-              </MDBDropdownToggle>
-              <MDBDropdownMenu className="nav-drop-down tabs-orange active"
-                right style={{ top: '10px !important' }}>
-                <MDBDropdownItem className="text-left text-white"
-                  onClick={() => localStorage.removeItem('currentUser')}>Log out</MDBDropdownItem>
-
-              </MDBDropdownMenu>
-            </MDBDropdown>
-              <MDBNavLink link to="#" active={activeItemClassicTabs3==="8"} onClick={() => toggleClassicTabs3("8")}
-                >
-
-                <MDBIcon icon="cog" size="2x" className='mt-2' />
-
-              </MDBNavLink>
-            </MDBNavItem>
-          </div>
-
-        </MDBNav> */}
 
 
 

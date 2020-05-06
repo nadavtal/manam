@@ -6,6 +6,7 @@ import { makeSelectAlertOpen, makeSelectAlertData } from '../App/selectors';
 import { TOGGLE_ALERT } from '../App/constants';
 import ReactDOM from 'react-dom';
 import { Container, Button, Alert } from 'react-bootstrap';
+import { MDBIcon } from 'mdbreact';
 import { CSSTransition } from 'react-transition-group';
 
 import './Alert.css';
@@ -19,7 +20,7 @@ const AlertComponent = ({
   const [showMessage, setShowMessage] = useState(false);
 
   return <>
-   {alertOpen && <div className="overlapblackbgFullScreen" onClick={onToggleAlert}></div>}
+   {alertOpen == true && <div className="overlapblackbgFullScreen" onClick={onToggleAlert}></div>}
       <CSSTransition
         in={alertOpen}
         timeout={300}
@@ -29,21 +30,31 @@ const AlertComponent = ({
         onExited={() => console.log('EXIT')}
       >
         <Alert
-          className="screenCenter"
-          variant="primary"
+          className="screenTopCenter"
+          variant={alertData && alertData.alertType ? alertData.alertType : 'primary'}
           dismissible
           onClose={onToggleAlert}
         >
-          <Alert.Heading>
-            Animated alert message
-          </Alert.Heading>
-          <p>
-            This alert message is being transitioned in and
-            out of the DOM.
-          </p>
-          <Button onClick={onToggleAlert}>
-            Close
-          </Button>
+          {alertData && <>
+            <Alert.Heading>
+              <MDBIcon icon="exclamation"
+                className={`mr-3`}/>
+              {alertData ? alertData.title : ''}
+            </Alert.Heading>
+            <p>
+              {alertData.text}
+            </p>
+            <Button 
+              onClick={alertData.confirmFunction ? alertData.confirmFunction : onToggleAlert}
+              variant={alertData.alertType}>
+              {alertData.confirmButton}
+            </Button>
+            <Button onClick={onToggleAlert}>
+              cancel
+            </Button>
+          
+          </>
+          }
         </Alert>
       </CSSTransition>
     

@@ -84,6 +84,7 @@ var surveysRoutes = require('./routes/surveys');
 var projectUsersRoutes = require('./routes/project-users');
 var providerUsersRoutes = require('./routes/provider-users');
 var organizationUsersRoutes = require('./routes/organization-users');
+var organizationProvidersRoutes = require('./routes/organization-providers');
 var projectSurveysRoutes = require('./routes/project-surveys');
 var messages = require('./routes/messages');
 var processTemaplateTasksRoutes = require('./routes/process-template-tasks');
@@ -93,7 +94,7 @@ var emailsRoutes = require('./routes/emails');
 var bodyParser = require('body-parser')
 app.use(bodyParser.json())
 app.use(config.apiRoute, [routes, orgRoutes, userRoutes, providersRoutes, projectsRoutes, bridgesRoutes, surveysRoutes, projectUsersRoutes, projectSurveysRoutes,
-                          providerUsersRoutes, messages, processTemaplateTasksRoutes, rolesRoutes, processesRoutes, tasksRoutes, emailsRoutes, organizationUsersRoutes]);
+                          providerUsersRoutes, organizationProvidersRoutes, messages, processTemaplateTasksRoutes, rolesRoutes, processesRoutes, tasksRoutes, emailsRoutes, organizationUsersRoutes]);
 
 
 

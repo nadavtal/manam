@@ -52,9 +52,6 @@ import {
   registerOrg,
   login,
 } from '../App/actions';
-import {
-  getProviderOrganizations
-} from '../AppData/actions';
 import reducer from './reducer';
 import saga from './saga';
 import './Register.css';
@@ -72,7 +69,7 @@ export function HomePage({
   onRegisterOrg,
   currentUser,
   providerOrganizations,
-  getProviderOrganizations,
+  
   history = useHistory(),
 }) {
   useInjectReducer({ key, reducer });
@@ -88,7 +85,7 @@ export function HomePage({
     error,
   };
 
-  
+  // localStorage.removeItem('currentUser')
 
   onSubmitForm = (data, event) => {
     // if (data !== undefined && event.preventDefault) event.preventDefault();
@@ -133,203 +130,12 @@ export function HomePage({
   //     onClick={props.onClick}>{props.children}</Div>
   //     }; 
   
-  const WorkSpaceSelect = ({user}) => {
-    
-    console.log(providerOrganizations)
-    return (
-      <>
-        <h4 className="text-center">Choose you work space</h4>
-        <MDBRow className="">
-          <MDBCol md="3" className="">
-            {currentUser.userProviderRoles &&
-              currentUser.userProviderRoles.length && (
-                
-                <HoverableWrapper 
-                  bgColor="hsla(30, 100%, 48%, 0.043)" 
-                  style={{'min-height' : '10rem'}}
-                  opacity={0.5}
-                  useAfter={false}
-                  >
-                  <h6 className="border-bottom py-1 mb-2 text-center">Providers</h6>
-                  {userProviderRoles().map((role, index) => (
-                    <HoverableWrapper bgColor="hsla(10, 100%, 48%, 0.343)"
-                      key={role.name}
-                      className="text-left pt-1"
-                      style={{'height': '2rem'}}
-                      color="orange"
-                      hoverColor="black"
-                      afterBgColor={"hsla(20, 100%, 48%, 0.343)"}
-                      useAfter={true}
-                      hoverEffect="backGroundEnterLeft"
-                      onClick={() => {
-                        console.log(role)
-                        setprovider(role)
-                        // history.push('./providers/' + role.provider_id)
-                        getProviderOrganizations(role.provider_id)
 
-                        }
-                      }
-                    >
-                      <span className="mr-2">{index+1}.</span>{role.name}
-                    </HoverableWrapper>
-                  ))}
-                  
-                </HoverableWrapper>
-               
-              )}
-          </MDBCol>
-          <MDBCol md="3" className="">
-            {provider.name && <h6 className="border-bottom py-1 mb-2 text-center">Choose organizations</h6>}
-            {provider.name && providerOrganizations.length && providerOrganizations.map(org => (
-              <HoverableWrapper bgColor="hsla(10, 100%, 48%, 0.343)"
-                key={org.name}
-                className="text-left ml-3"
-                
-                onClick={() =>
-                  // setprovider(role.name)
-                  // history.push('./providers/' + provider)
-                  history.push({
-                    pathname: './providers/' + provider.provider_id,
-                    search: '?query=abc',
-                    state: { org_id: org.id }
-                  })
-                  
-                  // getProviderOrganizations(role.provider_id)
-                }
-              >
-                <span>- {org.name}</span>
-              </HoverableWrapper>
-            ))}
-          </MDBCol>
-          <MDBCol md="6" className="">
-            {currentUser.userOrganiztionRoles && 
-              currentUser.userOrganiztionRoles.length && (
-                <HoverableWrapper 
-                  bgColor="hsla(29, 100%, 48%, 0.343)" 
-                  style={{'min-height' : '10rem'}}
-                  opacity={0.5}
-                  >
-                  <h6 className="border-bottom py-1 mb-2 text-center">Organizations</h6>
-                  {userOrgRoles().map(role => (
-                    <p
-                      key={role.name}
-                      className="text-left"
-                      onClick={e =>
-                        history.push('./organizations/' + role.org_id)
-                      }
-                    >
-                      - {role.name}
-                    </p>
-                  ))}
-                </HoverableWrapper>
-              )}
-          </MDBCol>
-        </MDBRow>
-      </>
-    );
-  }
-  const RegisterLogin = () => {
-
-    return <>
-    <h4>
-      "Portal name"{' '}
-      {formModeState === 'register'
-        ? 'registration'
-        : 'login'}
-    </h4>
-    <span className="loginButtons">
-      {/* <span>Create account</span> */}
-      <MDBBtn
-        color="indigo"
-        rounded
-        className=""
-        onClick={() =>
-          formModeState === 'register'
-            ? [
-                setformModeState('login'),
-                setFormTypeState('loginUserForm'),
-              ]
-            : [
-                setformModeState('register'),
-                setFormTypeState('userForm'),
-              ]
-        }
-      >
-        <strong>
-          {formModeState === 'register'
-            ? 'Back to login'
-            : 'Create account'}
-        </strong>
-      </MDBBtn>
-    </span>
-    <div>
-      {formModeState === 'register' && (
-        <Select
-          label="Choose account type"
-          options={[
-            { name: 'User', id: 'userForm' },
-            { name: 'Provider', id: 'providerForm' },
-            {
-              name: 'Organization',
-              id: 'organizationForm',
-            },
-          ]}
-          onChange={formType =>
-            setFormTypeState(formType)
-          }
-        />
-      )}
-    </div>
-    <hr />
-    {/* {formTypeState === 'userForm' || formTypeState === 'userForm' || } */}
-
-    <Form
-      formType={formTypeState}
-      editMode={formModeState}
-      editFunction={(data, event) =>
-        onSubmitForm(data, event)
-      }
-    />
-  </>
-  }
-
-  const centerSection =  <MDBMask className="d-flex justify-content-center" overlay="gradient">
-  <MDBContainer className="h-100 d-flex justify-content-center">
-    <MDBRow className="homepageFormWrapper">
-      <MDBCol md="12" className="mt-5 mx-auto ">
-        <MDBCard>
-          <MDBCardBody className="">
-            <div className="login_header">
-              
-              {currentUser ? 
-                <WorkSpaceSelect user={currentUser}/> 
-                : 
-                <RegisterLogin />}
-            </div>
-
-            {/* / */}
-            {/* <MDBBtn color='green' rounded
-                onClick={() => [setformModeState('login'), setFormTypeState('loginUserForm')]}>
-                <strong>LOGIN</strong>
-              </MDBBtn> */}
-
-            {formModeState === 'register' && (
-              <p>
-                By creating an account, I acknowledge that I have read
-                and agree with the Terms of Use.
-              </p>
-            )}
-          </MDBCardBody>
-        </MDBCard>
-      </MDBCol>
-    </MDBRow>
-  </MDBContainer>
-</MDBMask>
   return (
     <div id="register">
       <MDBView>
         <MDBMask className="d-flex justify-content-center" overlay="gradient">
-          <MDBContainer className="h-100 d-flex justify-content-center mt-5">
+          <MDBContainer className="h-100 d-flex justify-content-center">
             <RegistrationProcess />
 
           </MDBContainer>
@@ -370,7 +176,7 @@ export function mapDispatchToProps(dispatch) {
     onRegisterOrg: data => {
       dispatch(registerOrg(data));
     },
-    getProviderOrganizations: providerId => dispatch(getProviderOrganizations(providerId))
+    
   };
 }
 

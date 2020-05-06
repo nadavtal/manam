@@ -25,13 +25,7 @@ export function providerLoaded(data) {
     data,
   };
 }
-export function updateProvider(data, id) {
-  console.log('updateProvider', data, id)
-  return {
-    type: actionTypes.UPDATE_PROVIDER,
-    data,
-  };
-}
+
 
 
 

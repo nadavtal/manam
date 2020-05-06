@@ -50,13 +50,6 @@ export const addRoleSucceed = () => {
 }
 
 
-export const updateRole = (role) => {
-
-  return {
-    type: actionTypes.UPDATE_ROLE,
-    role: role
-  };
-};
 export const searchRole = () => {
   return {
     type: actionTypes.SEARCH_ROLE
