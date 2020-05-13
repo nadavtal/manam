@@ -1,4 +1,4 @@
-import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { call, put, select, takeLatest, all } from 'redux-saga/effects';
 
 import * as actionTypes from './constants';
 import request from 'utils/request';
@@ -153,12 +153,6 @@ function* getUserById(action) {
   console.log(action);
   try {
     const user = yield call(request, apiUrl + 'users/' + action.id);
-    console.log(user);
-    const userRolesTypes = yield call(
-      request,
-      apiUrl + 'users/' + user.id + '/roles-types',
-    );
-    console.log(userRolesTypes);
 
     const userProviderRoles = yield call(
       request,
@@ -172,7 +166,6 @@ function* getUserById(action) {
     console.log(userOrganizationRoles);
     const userData = {
       user,
-      userRolesTypes,
       userProviderRoles,
       userOrganizationRoles,
     };
@@ -190,7 +183,7 @@ function* getOrganizationById(action) {
       request,
       apiUrl + 'organizations/' + action.id,
     );
-    // console.log(organization);
+    console.log(organization);
     const organizationUsers = yield call(
       request,
       apiUrl + 'organization-users/' + action.id,
@@ -346,7 +339,7 @@ function* getProviderbyId(action) {
     // console.log(orgsIds)
     const organizationsRoles = yield call(
       request,
-      apiUrl + `roles?fields[organization_id]=${orgsIds}`,
+      apiUrl + `roles?fields[organization_id]=${orgsIds}&[visibility]=public`,
     );
 
     // const providerUsers = yield call(request, apiUrl + 'providers/' + action.id +'/users');
@@ -354,6 +347,7 @@ function* getProviderbyId(action) {
       request,
       apiUrl + 'provider-users/' + action.id,
     );
+    console.log(providerUsers)
     const organizationUsers = yield call(
       request,
       apiUrl + 'organization-users/provider/' + action.id,
@@ -442,28 +436,31 @@ function* getOrgTechnicalInfo(action) {
     yield put(loadError(err));
   }
 }
-function* findEntityByEmail(action) {
-  console.log('findEntityByEmail', action.data);
+function* findEntityBy(action) {
+  console.log('findEntityBy', action);
   const emailResults = {};
   try {
     // Call our request helper (see 'utils/request')
-
-    const user = yield call(request, apiUrl + 'users/email/' + action.data);
+    
+    const user = yield call(request, apiUrl + `users/${action.element}/${action.value}`);
     if (user && user.length) emailResults['user'] = user[0];
     const provider = yield call(
       request,
-      apiUrl + 'providers/email/' + action.data,
+      apiUrl + `providers/${action.element}/${action.value}`,
     );
     if (provider && provider.length) emailResults['provider'] = provider[0];
     const organization = yield call(
       request,
-      apiUrl + 'organizations/email/' + action.data,
+      apiUrl + `organizations/${action.element}/${action.value}`,
     );
     if (organization && organization.length)
       emailResults['organization'] = organization[0];
 
     // console.log(Object.keys(emailResults).length)
-    if (Object.keys(emailResults).length) yield put(foundResults(emailResults));
+    if (Object.keys(emailResults).length) {
+      emailResults['element'] = action.element
+      yield put(foundResults(emailResults));
+    }
   } catch (err) {
     yield put(loadError(err));
   }
@@ -479,85 +476,46 @@ export function* login(action) {
   console.log(user);
   if (user.user) {
     user = user.user;
-    const userRolesTypes = yield call(
+    const userSystemRoles = yield call(
       request,
-      apiUrl + 'users/' + user.id + '/roles-types',
+      apiUrl + 'users/' + user.id + '/system-roles',
     );
-    // console.log(userRolesTypes);
+    console.log('userSystemRoles', userSystemRoles);
+    let userData
+    if (userSystemRoles && userSystemRoles.length) {
+      userData = {
+          user,
+          userSystemRoles
+        };
+        console.log(userData);
+        yield put(userLoaded(userData));
+    }else {
+  
+      const userProviderRoles = yield call(
+        request,
+        apiUrl + 'users/' + user.id + '/provider-roles',
+      );
+      // console.log(userProviderRoles);
+      // const organizations = yield call(request, apiUrl + 'providers/' + action.id +'/organizations');
+      const userOrganizationRoles = yield call(
+        request,
+        apiUrl + 'users/' + user.id + '/organization-roles',
+      );
+      // console.log(userOrganizationRoles);
+      userData = {
+        user,
+        userProviderRoles,
+        userOrganizationRoles,
+      };
+      console.log(userData);
+      yield put(userLoaded(userData));
 
-    const userProviderRoles = yield call(
-      request,
-      apiUrl + 'users/' + user.id + '/provider-roles',
-    );
-    // console.log(userProviderRoles);
-    // const organizations = yield call(request, apiUrl + 'providers/' + action.id +'/organizations');
-    const userOrganizationRoles = yield call(
-      request,
-      apiUrl + 'users/' + user.id + '/organization-roles',
-    );
-    // console.log(userOrganizationRoles);
-    const userData = {
-      user,
-      userRolesTypes,
-      userProviderRoles,
-      userOrganizationRoles,
-    };
-    console.log(userData);
-    yield put(userLoaded(userData));
+    }
 
-    // if (userOrganizationRoles && userOrganizationRoles.length == 1) {
-    //   yield put(push('/organizations/'+ userOrganizationRoles[0].org_id));
-    // }
-    // else if (userProviderRoles && userProviderRoles.length == 1) {
-    //   yield put(push('/providers/'+ userProviderRoles[0].provider_id));
-    // } else {
-    //   for (const roleType of userRolesTypes) {
-    //     // console.log(roleType.roletypeId)
-    //     switch (roleType.roletypeId) {
-    //       case 1:
-    //         console.log('ADMINNNNN')
-    //         yield put(push('/admin/'));
-    //         return;
-
-    //       default:
-    //         yield put(push('/users/'+ user.id));
-    //       break;
-    //     }
-    //   }
-
-    // }
   } else {
     console.log('user login fail');
     yield put(loginFail(user));
   }
-  // localStorage.setItem('token', user.token);
-
-  // if (userProviderRoles.length || userOrganizationRoles.length) {
-  //   // yield put(toggleModal({
-  //   //   title: `Hello ${user.first_name}`,
-  //   //   text: 'Please choose your work space',
-  //   //   // confirmButton: 'Create',
-  //   //   cancelButton: 'Cancel',
-  //   //   formType: 'workSpaceForm',
-  //   //   data: {
-  //   //     userData,
-  //   //     editMode: 'Go'
-  //   //   },
-  //   //   // options: {
-  //   //   //   buttonText: 'Add users',
-  //   //   //   options: [],
-  //   //   // },
-  //   //   confirmFunction: (data, event) => console.log(data)
-  //   // }))
-
-  // } else {
-  //   try {
-
-  //   } catch (err) {
-  //     console.log(err)
-  //   }
-
-  // }
 }
 
 
@@ -703,65 +661,79 @@ function* addProvider(action) {
           allocateProviderToOrganization({ org, provider, remarks: '' }),
         );
         //Create new Role
-        const newRole = {
+        // const newRole = {
+        //   name: 'Provider administrator',
+        //   description:
+        //     'Automatic user generated when a new organization is created',
+        //   provider_id: result.insertId,
+        //   type: 'Provider admin',
+        // };
+        // const args = {
+        //   method: 'POST',
+        //   body: JSON.stringify(newRole),
+        // };
+        const generalRoleData = {
+          name: 'General role',
+          description:
+            'Automatic general role created when a new provider is created',
+          provider_id: result.insertId,
+          type: 'General',
+          visibility: 'private'
+        };
+        const newGeneralRole = {
+          method: 'POST',
+          body: JSON.stringify(generalRoleData),
+        };
+        const providerAdminRoleData = {
           name: 'Provider administrator',
           description:
-            'Automatic user generated when a new organization is created',
+            'Automatic role generated when a new provider is created',
           provider_id: result.insertId,
           type: 'Provider admin',
+          visibility: 'public'
         };
-        const args = {
+        const newProviderAdminRole = {
           method: 'POST',
-          body: JSON.stringify(newRole),
+          body: JSON.stringify(providerAdminRoleData),
         };
-
-        try {
-          const results = yield call(request, apiUrl + 'roles', args);
+        // const modalOpen = yield select(getModalOpen);
   
-
-          if (results.insertId) {
-            newRole.id = results.insertId;
-            yield put(newRoleCreated(newRole));
+        try {
+          const generalRole = yield call(request, apiUrl + 'roles', newGeneralRole);
+          if (generalRole.insertId) {
+            generalRoleData.id = generalRole.insertId;
+            yield put(newRoleCreated(generalRoleData));
+            yield put(
+              showNotification({
+                title: `New role created `,
+                message: `${generalRoleData.name} created `,
+                icon: 'bell',
+                text: 'You can allocate users to this role',
+                autohide: 3000,
+              }),
+            );
+          }
+          const providerAdminRole = yield call(request, apiUrl + 'roles', newProviderAdminRole);
+          console.log(providerAdminRole)
+          if (providerAdminRole.insertId) {
+            providerAdminRoleData.id = providerAdminRole.insertId;
+            yield put(newRoleCreated(providerAdminRoleData));
             //Create new User
             yield put(
               registerNewOrgUser(
                 {
-                  email: provider.email,
-                  first_name: provider.adminFirstName,
-                  last_name: provider.adminLastName,
+                  email: provider.adminEmail,
+                  first_name: provider.first_name,
+                  last_name: provider.last_name,
                   password: '',
                   general_status: 'Awaiting confirmation',
-                  role_id: results.insertId,
+                  role_id: providerAdminRole.insertId,
                   from_provider_id: provider.id,
+                  roleName: providerAdminRoleData.name
                 },
                 org,
               ),
             );
-            //   yield put(showNotification({
-            //   title: `New role created `,
-            //   message: `${newRole.name} created `,
-            //   icon: 'bell',
-            //   text: 'You can allocate users to this role',
-            //   autohide: 3000
-
-            //  }));
-
-            //  const emailData = {
-            //   recipientEmail: action.org.email,
-            //   subject: `User allocation message`,
-            //   subjectText: `You were allocated as ${action.roleName} to ${action.org.name}`,
-            //   header: `A new ${action.roleName} role is allocated for you by ${action.org.name}`,
-            //   message: `Please cpnfirm by clicking this link`,
-            //   link: 'http://localhost:3000/confirmation/organizationUserAllocation/'+result.token,
-
-            // }
-            // const args = {
-            //   method: 'POST',
-            //   body: JSON.stringify(emailData),
-            // }
-            // const email = yield call(request, apiUrl + 'email/send', args);
-            // console.log(email)
-            //  yield put(sendEmail())
           }
         } catch (err) {
           console.log(err);
@@ -780,7 +752,35 @@ function* addProvider(action) {
       );
     }
   } else {
+
     yield put(allocateProviderToOrganization({ org, provider, remarks: '' }));
+    //Get providers admins
+    const roleUrl = `roles/provider/${provider.id}/Provider admin`;
+    const providerAdminRole = yield call(request, apiUrl + roleUrl);
+    console.log(providerAdminRole)
+    if (providerAdminRole.length) {
+      const providerAdminUsers = yield call(request, apiUrl + `provider-users/${provider.id}/${providerAdminRole[0].id}`)
+      console.log(providerAdminUsers)
+      const [users] = yield all(
+        providerAdminUsers.map(user => put(
+          registerNewOrgUser(
+            { 
+              id: user.user_id,
+              email: user.email,
+              first_name: user.first_name,
+              last_name: user.last_name,
+              role_id: user.role_id,
+              general_status: 'Awaiting approvement',
+              from_provider_id: provider.id,
+              roleName: user.roleName
+            },
+            org
+          ) 
+        ))
+      );
+      console.log(users)
+
+    }
   }
 }
 
@@ -804,30 +804,57 @@ function* addOrganization(action) {
       // const users = yield call(request, apiUrl + 'users/email/'+ organization.email);
 
       yield put(organizationAdded(organization));
-      const newRoleData = {
+      const generalRoleData = {
+        name: 'General role',
+        description:
+          'Automatic role generated when a new organization is created',
+        organization_id: result.insertId,
+        type: 'General',
+        visibility: 'private'
+      };
+      const newGeneralRole = {
+        method: 'POST',
+        body: JSON.stringify(generalRoleData),
+      };
+      const orgAdminRoleData = {
         name: 'Organization administrator',
         description:
-          'Automatic user generated when a new organization is created',
+          'Automatic role generated when a new organization is created',
         organization_id: result.insertId,
         type: 'Organization admin',
+        visibility: 'private'
       };
-      const args = {
+      const newAdminRole = {
         method: 'POST',
-        body: JSON.stringify(newRoleData),
+        body: JSON.stringify(orgAdminRoleData),
       };
-      const modalOpen = yield select(getModalOpen);
+      // const modalOpen = yield select(getModalOpen);
 
       try {
-        const results = yield call(request, apiUrl + 'roles', args);
-        console.log('newRole', results);
-        if (modalOpen) yield put(toggleModal());
-        if (results.insertId) {
-          newRoleData.id = results.insertId;
-          yield put(newRoleCreated(newRoleData));
+        const generalRole = yield call(request, apiUrl + 'roles', newGeneralRole);
+        if (generalRole.insertId) {
+          generalRoleData.id = generalRole.insertId;
+          yield put(newRoleCreated(generalRoleData));
           yield put(
             showNotification({
               title: `New role created `,
-              message: `${newRoleData.name} created `,
+              message: `${generalRoleData.name} created `,
+              icon: 'bell',
+              text: 'You can allocate users to this role',
+              autohide: 3000,
+            }),
+          );
+        }
+        const orgAdminRole = yield call(request, apiUrl + 'roles', newAdminRole);
+        console.log(orgAdminRole)
+        if (orgAdminRole.insertId) {
+          orgAdminRoleData.id = orgAdminRole.insertId;
+          
+          yield put(newRoleCreated(orgAdminRoleData));
+          yield put(
+            showNotification({
+              title: `New role created `,
+              message: `${orgAdminRoleData.name} created `,
               icon: 'bell',
               text: 'You can allocate users to this role',
               autohide: 3000,
@@ -838,12 +865,13 @@ function* addOrganization(action) {
             registerNewOrgUser(
               { 
                 id: organization.user_id,
-                email: organization.email,
-                first_name: organization.adminFirstName,
-                last_name: organization.adminLastName,
-                role_id: newRoleData.id,
+                email: organization.adminEmail,
+                first_name: organization.first_name,
+                last_name: organization.last_name,
+                role_id: orgAdminRoleData.id,
                 general_status: 'Awaiting confirmation',
                 from_provider_id: null,
+                roleName: orgAdminRoleData.name
               },
               organization,
             ),
@@ -921,7 +949,7 @@ function* registerOrgUser(action) {
             role_id: user.role_id,
             organization_id: organization.id,
             remarks: user.remarks,
-            status: 'Awaiting approvement',
+            status: 'Approved',
             from_provider_id: user.from_provider_id
               ? user.from_provider_id
               : null,
@@ -1026,6 +1054,7 @@ function* registerOrgUser(action) {
         remarks: user.remarks,
         status: 'Awaiting approvement',
         from_provider_id: user.from_provider_id ? user.from_provider_id : null,
+        roleName: user.roleName
       };
       const args = {
         method: 'POST',
@@ -1080,9 +1109,8 @@ function* registerOrgUser(action) {
 function* registerProvUser(action) {
   console.log('registerProvUser', action);
   const user = action.user;
-  const provider = action.company;
-  const statuses = yield select(getStatuses);
-  // const users = yield call(request, apiUrl + 'users/email/'+ user.email);
+  const provider = action.provider;
+  const org = action.org;
   const modalOpen = yield select(getModalOpen);
 
   if (!user.id) {
@@ -1098,7 +1126,7 @@ function* registerProvUser(action) {
         const newUser = requestResults.user;
         //add to organization users
         if (provider) {
-          let userRoleData = {
+          let providerUserData = {
             user_id: newUser.id,
             role_id: user.role_id,
             provider_id: provider.id,
@@ -1107,31 +1135,69 @@ function* registerProvUser(action) {
           };
           const args = {
             method: 'POST',
-            body: JSON.stringify(userRoleData),
+            body: JSON.stringify(providerUserData),
           };
-          console.log(userRoleData);
+          console.log('providerUserData', providerUserData);
           try {
             const result = yield call(request, apiUrl + 'provider-users', args);
             console.log(result);
+            if (org) {
+
+            }
             // if (modalOpen) yield put(toggleModal());
-            yield put(
-              showNotification({
-                title: `User created & allocated to provider`,
-                message: `${newUser.email} has been created and allocated to ${
-                  provider.name
-                } `,
-                icon: 'bell',
-                text: '',
-                autohide: 3000,
-              }),
-            );
-            yield put(userAllocated({ ...userRoleData, ...newUser }));
+            // yield put(
+            //   showNotification({
+            //     title: `User created & allocated to provider`,
+            //     message: `${newUser.email} has been created and allocated to ${
+            //       provider.name
+            //     } `,
+            //     icon: 'bell',
+            //     text: '',
+            //     autohide: 3000,
+            //   }),
+            // );
+            yield put(userAllocated({ ...providerUserData, ...newUser }));
           } catch (err) {
             // console.log(err)
             yield put(loadError(err));
           }
         }
-
+        if (org && provider) {
+          let orgUserData = {
+            user_id: newUser.id,
+            role_id: user.role_id,
+            organization_id: org.id,
+            from_provider_id: provider.id,
+            remarks: user.remarks,
+            status: 'Awaiting approvement',
+          };
+          const args = {
+            method: 'POST',
+            body: JSON.stringify(orgUserData),
+          };
+          console.log('orgUserData', orgUserData);
+          try {
+            const result = yield call(request, apiUrl + 'organization-users', args);
+            console.log(result);
+        
+            // if (modalOpen) yield put(toggleModal());
+            // yield put(
+            //   showNotification({
+            //     title: `User created & allocated to provider`,
+            //     message: `${newUser.email} has been created and allocated to ${
+            //       provider.name
+            //     } `,
+            //     icon: 'bell',
+            //     text: '',
+            //     autohide: 3000,
+            //   }),
+            // );
+            yield put(userAllocated({ ...orgUserData, ...newUser }));
+          } catch (err) {
+            // console.log(err)
+            yield put(loadError(err));
+          }
+        }
         // const emailData = {
         //   recipientEmail: newUser.email,
         //   subject: `Email confirmation`,
@@ -1226,6 +1292,84 @@ function* registerProvUser(action) {
   //   yield put(push('/users/'+ requestResults.insertId));
   //   // updateUserRoles(requestResults.insertId, action.data.roles)
   // }
+}
+function* createNewProviderUserAndThenAllocateToOrganization(action) {
+  console.log(action)
+  let user = action.newUser;
+  let role_id = user.role_id;
+  let roleName = user.roleName;
+  let provider_id = action.provider.id
+  let remarks = ''
+  let org = action.organization;
+  try {
+    const newProvUser = yield put(registerNewProvUser(action.newUser, action.provider))
+    console.log(newProvUser);
+    if (newProvUser.insertId) {
+      user.id = newProvUser.insertId;
+      const newOrgUser = yield put(allocateUserToOrg({user, org, role_id, roleName, remarks, provider_id}));
+      console.log(newOrgUser)
+    }
+
+  }
+  catch (err) {
+    console.log(err)
+  }
+}
+function* addProviderUser(action) {
+  console.log('addProviderUser', action);
+  const args = {
+    method: 'POST',
+    body: JSON.stringify(action.data),
+  };
+
+  const url = apiUrl + 'provider-users';
+  
+  try {
+    const result = yield call(request, url, args);
+    console.log(result);
+    // if (modalOpen) yield put(toggleModal());
+    yield put(
+      showNotification({
+        title: `Role added`,
+        message: ``,
+        icon: 'bell',
+        text: '',
+        autohide: 3000,
+      }),
+    );
+    yield put(userAllocated({ ...action.data, ...action.user }));
+  } catch (err) {
+    // console.log(err)
+    yield put(loadError(err));
+  }
+}
+function* addOrganizationUser(action) {
+  console.log('addOrganizationUser', action);
+  const args = {
+    method: 'POST',
+    body: JSON.stringify(action.data),
+  };
+
+  const url = apiUrl + 'organization-users';
+  
+  try {
+    const result = yield call(request, url, args);
+    console.log(result);
+    // if (modalOpen) yield put(toggleModal());
+    yield put(
+      showNotification({
+        title: `Role added`,
+        message: ``,
+        icon: 'bell',
+        text: '',
+        autohide: 3000,
+      }),
+    );
+    yield put(userAllocated({ ...action.data, ...action.user }));
+  } catch (err) {
+    // console.log(err)
+    yield put(loadError(err));
+  }
 }
 //(user, role_id, org)
 function* allocateUserToOrganization(action) {
@@ -1401,6 +1545,8 @@ function* allocateUserToProvider(action) {
 function* addNewRole(action) {
   console.log(action);
   const newRole = action.data;
+  newRole.visibility = newRole.visibility == true ? 'public' : 'private';
+  console.log(newRole)
   const args = {
     method: 'POST',
     body: JSON.stringify(newRole),
@@ -1843,9 +1989,11 @@ export default function* addDataSaga() {
   );
   yield takeLatest(actionTypes.GET_ORG_TECH_INFO, getOrgTechnicalInfo);
   yield takeLatest(actionTypes.GET_USER, getUserById);
-  yield takeLatest(actionTypes.FIND_ENTITY_BY_EMAIL, findEntityByEmail);
+  yield takeLatest(actionTypes.FIND_ENTITY_BY_EMAIL, findEntityBy);
   yield takeLatest(actionTypes.REGISTER_ORG_USER, registerOrgUser);
   yield takeLatest(actionTypes.REGISTER_PROV_USER, registerProvUser);
+  yield takeLatest(actionTypes.ADD_PROVIDER_USER, addProviderUser);
+  yield takeLatest(actionTypes.ADD_ORGANIZATTION_USER, addOrganizationUser);
   yield takeLatest(actionTypes.REGISTER_PROVIDER, registerProvider);
   yield takeLatest(actionTypes.REGISTER_ORG, registerOrg);
   yield takeLatest(actionTypes.LOGIN, login);
@@ -1870,4 +2018,5 @@ export default function* addDataSaga() {
   yield takeLatest(actionTypes.UPDATE_USER, updateUser);
   yield takeLatest(actionTypes.UPDATE_PROV_USER, updateProviderUser);
   yield takeLatest(actionTypes.UPDATE_PROV_ORG_CONNECTION, updateProviderOrgConnection);
+  yield takeLatest(actionTypes.CREATE_PROV_USER_AND_ALLOCATE_TO_ORGANIZATION_USER, createNewProviderUserAndThenAllocateToOrganization);
 }

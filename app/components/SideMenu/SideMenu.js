@@ -17,7 +17,8 @@ const SideMenu = ({
   categories,
   linkToProviderPage,
   changeWorkSpace,
-  company,
+  organization,
+  provider,
   currentUser,
   history = useHistory(),
   onFinalItemClick
@@ -155,7 +156,11 @@ const SideMenu = ({
         >
           <ul className="wsmenu-list">
             <li className="">
-              <UserInfoBox company={company} handleAction={toggleSideNav} />
+              <UserInfoBox 
+                organization={organization ? organization : null}
+                provider={provider ? provider : null}
+                handleAction={toggleSideNav} 
+                />
             </li>
             {currentUser.userInfo.general_status == 'Active' &&<li className="">
               <MenuItem
@@ -168,7 +173,7 @@ const SideMenu = ({
               />
             </li>}
             {currentUser.userInfo.general_status == 'Active' &&
-              company && company.general_status == 'Active' && 
+              organization && organization.general_status == 'Active' && 
               menu.map(item => {
               switch (item.type) {
                 case 'icon-menu':

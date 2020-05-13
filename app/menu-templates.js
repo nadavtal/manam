@@ -67,30 +67,30 @@ export const menus = {
       type: 'sub-menu',
       float: 'left',
     },
-    {
-      name: 'Manage projects',
-      icon: 'project-diagram',
-      type: 'sub-menu',
-      float: 'left'
-    },
-    {
-      name: 'Manage processes',
-      icon: 'tasks',
-      type: 'sub-menu',
-      float: 'left'
-    },
-    {
-      name: 'Organizations',
-      icon: 'address-card',
-      type: 'sub-menu',
-      float: 'left'
-    },
-    {
-      name: 'Settings',
-      icon: 'cog',
-      type: 'sub-menu',
-      float: 'right'
-    },
+    // {
+    //   name: 'Manage projects',
+    //   icon: 'project-diagram',
+    //   type: 'sub-menu',
+    //   float: 'left'
+    // },
+    // {
+    //   name: 'Manage processes',
+    //   icon: 'tasks',
+    //   type: 'sub-menu',
+    //   float: 'left'
+    // },
+    // {
+    //   name: 'Organizations',
+    //   icon: 'address-card',
+    //   type: 'sub-menu',
+    //   float: 'left'
+    // },
+    // {
+    //   name: 'Settings',
+    //   icon: 'cog',
+    //   type: 'sub-menu',
+    //   float: 'right'
+    // },
     
   ],
   organizationMenu: [
@@ -161,12 +161,12 @@ export const menus = {
     //   float: 'left'
     // },
 
-    {
-      name: 'Settings',
-      icon: 'cog',
-      type: 'sub-menu',
-      float: 'right'
-    },
+    // {
+    //   name: 'Settings',
+    //   icon: 'cog',
+    //   type: 'sub-menu',
+    //   float: 'right'
+    // },
     // {
     //   name: 'Sign out',
     //   icon: 'sign-out-alt',

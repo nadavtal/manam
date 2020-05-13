@@ -17,8 +17,8 @@ import AccordionTable from '../../AccordionTable/AccordionTable';
 import ManagementSection from '../../Management/ManagementSection';
 import IconButtonToolTip from '../../../components/IconButtonToolTip/IconButtonToolTip'
 import { convertToMySqlDateFormat } from '../../../utils/dateTimeUtils';
-import { updateTask, createNewRole, registerNewProvUser, allocateUserToOrg, updateProvider,
-  getProviderbyId, logout, findEntityByEmail } from '../../AppData/actions';
+import { updateTask, createNewRole, registerNewProvUser, registerNewOrgUser, allocateUserToOrg, updateProvider,
+  getProviderbyId, logout, findEntityBy, createNewProviderUserAndThenAllocateToOrganization } from '../../AppData/actions';
 import { toggleModal, toggleAlert } from '../../App/actions';
 
 import { createNewProject } from '../../Projects/actions';
@@ -68,24 +68,37 @@ const ProviderPage = (props) => {
         'Bridges'
   );
   const [showProviderProcesses, setsShowProviderProcesses] = useState(true);
-  const [selectedOrganization, setSelectedOrganization] = useState(localStorage.getItem('orgId') ? localStorage.getItem('orgId') : null);
+  const [selectedOrganization, setSelectedOrganization] = useState();
   const [selectedbridge, setSelectedbridge] = useState();
 
   useEffect(() => {
     const providerId = props.match.params.id;
     props.getProvider(providerId)
     console.log('[ProviderPage] all', props.location)
-    // console.log(props.location.state)
-    if( props.location.state && props.location.state.org_id) setSelectedOrganization(props.location.state.org_id)
+
+   
   }, [props.match.params.id]);
 
   useEffect(() => {
+    if (props.organizations && props.organizations.length) {
+      if (localStorage.getItem('orgId')) {
+        console.log(localStorage.getItem('orgId'))
+  
+        setSelectedOrganization(props.organizations.find(org => org.id == localStorage.getItem('orgId')))
+      } else if( props.location.state && props.location.state.org_id) {
+        console.log(props.location.state.org_id);
+        console.log(props.organizations)
+        const org = props.organizations.find(org => org.id == props.location.state.org_id);
+        console.log(org)
+        setSelectedOrganization(
+          props.organizations.find(org => org.id == props.location.state.org_id)
+        )
+      }
+      
+      addOrganizationToRoles(props.organizationsRoles, props.organizations)
 
-    console.log('[ProviderPage] props', selectedOrganization)
-    // console.log(props.providerUsers, typeof(props.providerUsers))
-    addOrganizationToRoles(props.organizationsRoles, props.organizations)
-    // console.log('[ProviderPage] selectedOrganization', selectedOrganization)
-  }, [props.organizationsRoles, props.organizations]);
+    }
+    }, [props.provider, props.organizationsRoles, props.organizations]);
 
   const toggleClassicTabs3 = (tab) => {
     console.log(activeItemClassicTabs3, tab)
@@ -280,18 +293,27 @@ const ProviderPage = (props) => {
             data: {
               editMode: 'create',
               colWidth: 12,
-              roles: props.providerRoles,
+              roles: [...props.providerRoles, ...orgRolesBySelectedOrg()],
             },
             formType: 'registerUserForm',
             confirmFunction: data => {
               console.log(data)
-              props.createNewProviderUser(data, props.provider);
+              let role = [...props.providerRoles, ...orgRolesBySelectedOrg()].find(role => role.id === data.role_id);
+              console.log(role)
+              data['roleName'] = role.name
+              if (role.provider_id) {
+                props.createNewProviderUser(data, props.provider, null);
+              }
+              else if (role.organization_id) {
+                // data['from_provider_id'] = props.provider_id
+                props.createNewProviderUser(data, props.provider, selectedOrganization)
+              }
             },
             onBlurFunction: (value) => {
-              
+              console.log(value)
               const searchResults = searchBy(
                 'email', 
-                value, 
+                value.value, 
                 [],
                 [],
                 [...props.organizationUsers, ...props.providerUsers],
@@ -302,7 +324,7 @@ const ProviderPage = (props) => {
                 return searchResults
               }
                else {
-                props.findEntityByEmail(value)
+                props.findEntity('email', value.value)
   
               }
             },
@@ -342,7 +364,7 @@ const ProviderPage = (props) => {
           data: {
             // providerUsers: allProvidersUsers,
             users: props.providerUsers,
-            roles: props.organizationsRoles.filter(orgRole => orgRole.organization_id === selectedOrganization),
+            roles: props.organizationsRoles.filter(orgRole => orgRole.organization_id === selectedOrganization.id),
             editMode: 'Allocate',
             colWidth: 12,
           },
@@ -364,7 +386,7 @@ const ProviderPage = (props) => {
   const prepareUserAllocation = (data) => {
     // console.log(data)
     const roleName = getRoleById(data.role_id, props.organizationsRoles).name;
-    const org = props.organizations.find(org => org.id == selectedOrganization)
+    const org = props.organizations.find(org => org.id == selectedOrganization.id)
     if (data.user_id.length > 1) {
       data.user_id.forEach(user_id => {
         const user = props.providerUsers.find(provUser => provUser.user_id == +user_id);
@@ -376,28 +398,19 @@ const ProviderPage = (props) => {
       console.log(user)
       props.allocateUserToOrg(user, org, data.role_id, roleName, data.remarks, props.provider.id) ;
     }
-    
-    // switch (allocateTo) {
-    //   case 'organization':
-    //     const org = data.organization_id ? utils.getOrganizationbyId(data.organization_id, props.Organizations) : selectedOrganization;
-    //     props.allocateUserToOrg(user, org, data.role_id, roleName, data.remarks, data.provider_id) ;
-    //     break;
-    //   case 'provider':
-    //     const provider = data.provider_id ? getProviderById(data.provider_id) : selectedProvider;      
-        
-    //     props.allocateUserToProv(user, provider, data.role_id, roleName, data.remarks)
-    //     break;
-    
-    //   default:
-    //     break;
   
    
   }
-  console.log(props.currentUser)
+
+  const orgRolesBySelectedOrg = () => {
+    return props.organizationsRoles.filter(orgRole => orgRole.organization_id == selectedOrganization.id)
+  }
+  console.log('selectedOrganization', selectedOrganization)
   if (!props.currentUser) 
     return <div>NO CURRENT USER</div> 
-  else
-  return (
+  else if (!selectedOrganization)
+    return <div>NO SELECTED ORGNIZATION</div> 
+  else return (
 
     <div className="position-relative">
         <SideMenu
@@ -405,7 +418,8 @@ const ProviderPage = (props) => {
           onMenuClick={(name) => handleMenuClick(name)}
           onSubMenuClick={(name) => handleSubMenuClick(name)}
           linkToProviderPage={(provider_id) => linkToProviderPage(provider_id)}
-          company={props.provider}
+          organization={selectedOrganization}
+          provider={props.provider ? props.provider : null}
           currentUser={props.currentUser}
           currentUserRole={props.currentUserRole}
           onFinalItemClick={(menuItem, menuType) => {
@@ -442,7 +456,7 @@ const ProviderPage = (props) => {
               <>
               <BridgePage
                 bridgeId={selectedbridge}
-                orgId={selectedOrganization}
+                orgId={selectedOrganization.id}
                 type="providerPage"
                 />
                 <IconButtonToolTip
@@ -491,10 +505,8 @@ const ProviderPage = (props) => {
                   roles={props.providerRoles}
                   company={props.provider}
                   organizations={props.organizations}
-                  // organizationUsers={props.organizationUsers.filter(orgUser => orgUser.organization_id === selectedOrganization)}
-                  // organizationUsers={props.organizationUsers.filter(orgUser => orgUser.organization_id === selectedOrganization)}
-                  organizationsRoles={props.organizationsRoles}
-                  organizationUsers={props.organizationUsers}
+                  organizationsRoles={orgRolesBySelectedOrg()}
+                  organizationUsers={props.organizationUsers.filter(orgUser => orgUser.organization_id == selectedOrganization.id)}
                   type="provider"
                 />
             </MDBTabPane>
@@ -532,7 +544,7 @@ const ProviderPage = (props) => {
                 />
               {showProviderProcesses?
               <AccordionTable
-                  data={props.projectsProcesses.filter(process => process.organization_id == selectedOrganization)}
+                  data={props.projectsProcesses.filter(process => process.organization_id == selectedOrganization.id)}
                   rows={props.tasks}
                   dataType="processes"
                   // bridges={props.bridges}
@@ -620,9 +632,11 @@ const mapDispatchToProps = (dispatch) => {
     onUpdateTask: (task) => dispatch(updateTask(task)),
     onLogout: () => dispatch(logout()),
     createNewRole: (data) => dispatch(createNewRole(data)),
-    createNewProviderUser: (newUser, provider) => dispatch(registerNewProvUser(newUser, provider)),
+    createNewProviderUser: (newUser, provider, org) => dispatch(registerNewProvUser(newUser, provider, org)),
+    createNewOrganizationUser: (newUser, organization) => dispatch(registerNewOrgUser(newUser, organization)),
+    onCreateNewProviderUserAndOrganizationUser: (newUser, organization, provider) => dispatch(createNewProviderUserAndThenAllocateToOrganization(newUser, organization, provider)),
     allocateUserToOrg: (user, org, role_id, roleName, remarks, provider_id) => dispatch(allocateUserToOrg({user, org, role_id, roleName, remarks, provider_id})),
-    findEntityByEmail: email => dispatch(findEntityByEmail(email)),  
+    findEntity: (type, value) => dispatch(findEntityBy(type, value)),
   };
 }
 

@@ -21,7 +21,7 @@ const RoleRow = ({role, onUpdateRole}) => {
     { name: `Edit role`, icon: 'edit', type: 'info'},
     { name: `Delete role`, icon: 'trash', type: 'error', confirmationMessageType: 'danger', confirmationMessage: 'Are you sure you want to delete '},
   ]
-  console.log(roleName)
+  // console.log(roleName)
   const handleAction = (actionName, val) => {
     console.log(actionName, val)
     switch (actionName) {
@@ -69,7 +69,7 @@ const RoleRow = ({role, onUpdateRole}) => {
       {role.type}
     </div>
     <div className="col-1">
-      
+      {role.visibility}
     </div>
     <div className="col-2">
       <Actions actions={actions} 

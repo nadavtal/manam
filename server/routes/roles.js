@@ -7,9 +7,15 @@ const connection = require('../db.js');
 
 //ROLES ROUTES
 app.get("/roles", function(req, res){
-  console.log('getting roles', req.query)
+  // console.log('getting roles', req.query.visibility)
+  // console.log('getting roles', req.query.fields.organization_id)
   let q = ''
-  if (req.query.fields && req.query.fields.organization_id) {
+  if (req.query.visibility && req.query.visibility === 'public'
+    && req.query.fields && req.query.fields.organization_id) {
+    q = `select * from tbl_roles
+    WHERE organization_id IN (${req.query.fields.organization_id})
+    and visibility = 'public'`;
+  } else if (req.query.fields && req.query.fields.organization_id) {
     q = `select * from tbl_roles
     WHERE organization_id IN (${req.query.fields.organization_id})`;
     // q = `select * from tbl_roles r
@@ -49,10 +55,12 @@ app.get("/roles/:id", function(req, res){
   res.send(results);
   });
 });
-app.get("/roles/:id", function(req, res){
-  // console.log('getting roles', req)
+app.get("/roles/provider/:providerId/:roleType", function(req, res){
+  console.log('getting roles', req.params)
   
-  const q = `select * from tbl_roles`;
+  const q = `select * from tbl_roles
+    where provider_id = ${req.params.providerId} 
+    and type = '${req.params.roleType}'`;
   console.log(q)
   connection.query(q, function (error, results) {
   if (error) throw error;
@@ -63,10 +71,10 @@ app.get("/roles/:id", function(req, res){
 app.post("/roles", function(req, res){
   console.log('create role');
   const role = req.body
-  const q = `INSERT INTO tbl_roles ( name, description, organization_id, provider_id, type)
+  const q = `INSERT INTO tbl_roles ( name, description, organization_id, provider_id, type, visibility)
   VALUES
   ( '${role.name}','${role.description}', ${role.organization_id ? role.organization_id : null},
-  ${role.provider_id ? role.provider_id : null}, '${role.type}');`
+  ${role.provider_id ? role.provider_id : null}, '${role.type}', '${role.visibility}');`
   
   connection.query(q, function (error, results) {
   if (error) throw error;

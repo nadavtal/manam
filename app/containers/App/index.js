@@ -36,7 +36,7 @@ import GlobalStyle from '../../global-styles';
 import Categories from '../Market/Categories/Categories'
 import SideNav from '../SideNav/SideNav';
 
-
+// localStorage.removeItem('currentUser')
 const AppWrapper = styled.div`
   // max-width: calc(768px + 16px * 2);
   // margin: 0 auto;
@@ -50,7 +50,7 @@ const dynamicLeftPadding = {
   paddingLeft: '0'
     // this.state.windowWidth > this.state.breakWidth ? '240px' : '0'
 }
-
+// localStorage.removeItem('currentUser')
 export default function App() {
   return (
     <AppWrapper>

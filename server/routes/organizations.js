@@ -20,10 +20,10 @@ app.post("/organizations", function(req, res){
   console.log('creating organization', req.body);
   const organization = req.body
   var q = `INSERT INTO tbl_organizations ( name, date_created, remarks, created_by, metric_system, engineering_schema, 
-  website, email, contact_name, phone, address, general_status )
+  website, contact_name, phone, address, general_status )
   VALUES
   ( '${organization.name}', now(), '${organization.remarks}', '${organization.created_by}', '${organization.metric_system}', '${organization.engineering_schema}',
-  '${organization.website}', '${organization.email}', '${organization.contact_name}' , '${organization.phone}', '${organization.address}', 
+  '${organization.website}', '${organization.contact_name}' , '${organization.phone}', '${organization.address}', 
   '${organization.general_status ? organization.general_status : 'Awaiting confirmation'}');`
   console.log(q)
   connection.query(q, function (error, results) {
@@ -229,6 +229,19 @@ app.get("/organizations/email/:email", function(req, res){
   // INNER JOIN tbl_users_roletypes ur
   //   ON ur.userId = u.id where user_name = '${req.params.email}' and password = '${req.params.password}'`
   var q = `SELECT * FROM db_3dbia.tbl_organizations where email = '${req.params.email}'`
+
+  connection.query(q, function (error, results) {
+  if (error) throw error;
+  
+  res.send(results);
+  });
+ });
+app.get("/organizations/name/:name", function(req, res){
+  console.log('getting organizations by name', req.params.name)
+  // var q = `SELECT * FROM db_3dbia.tbl_users u
+  // INNER JOIN tbl_users_roletypes ur
+  //   ON ur.userId = u.id where user_name = '${req.params.email}' and password = '${req.params.password}'`
+  var q = `SELECT * FROM db_3dbia.tbl_organizations where name = '${req.params.name}'`
 
   connection.query(q, function (error, results) {
   if (error) throw error;

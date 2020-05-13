@@ -1,7 +1,7 @@
 import React, { useState, memo, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import { updateTask, registerNewOrgUser, addProvider, createNewRole, findEntityByEmail, logout,
+import { updateTask, registerNewOrgUser, addProvider, createNewRole, findEntityBy, logout,
  updateOrg } from '../../AppData/actions';
 import { toggleModal, toggleAlert } from '../../App/actions';
 import { createStructuredSelector } from 'reselect';
@@ -225,7 +225,7 @@ const OrganizationPage = props => {
             
             const searchResults = searchBy(
               'email', 
-              value, 
+              value.value, 
               [],
               props.providers,
               props.organizationUsers,
@@ -236,7 +236,7 @@ const OrganizationPage = props => {
               return searchResults
             }
              else {
-              props.findEntityByEmail(value)
+              props.findEntity('email', value.value)
 
             }
           },
@@ -255,28 +255,72 @@ const OrganizationPage = props => {
           formType: 'providerForm',
           confirmFunction: data => {
             console.log(data)
-            data['general_status'] = 'Awaiting confirmation'
-            props.createNewOrganizationProvider(data, props.organization);
+            props.onToggleAlert({
+              title: `Confirm new provider`,
+              body: <div>
+                <div><span className="bold">Name: </span> {data.name}</div>
+                <div><span className="bold">Email: </span> {data.adminEmail}</div>
+                <div><span className="bold">Admin: </span> {`${data.first_name} ${data.last_name}`}</div>
+                <p>An activation email will be sent to {`${data.first_name} ${data.last_name}`} </p>
+              </div>,
+              confirmButton: 'Create',
+              cancelButton: 'Cancel',
+              // alertType: 'info',
+              confirmFunction: () => {
+                console.log(data)
+                data['general_status'] = 'Awaiting confirmation'
+                props.createNewOrganizationProvider(data, props.organization);
+                
+
+              }
+            });
           },
           onBlurFunction: (value) => {
   
-            console.log('onBlurFunction', props.organizationUsers)
-            const searchResults = searchBy(
-              'email', 
-              value, 
-              [],
-              props.providers,
-              props.organizationUsers,
-              )
-            console.log(searchResults)
-            if (searchResults) {
-              searchResults['allocated'] = true
-              return searchResults
+            console.log('onBlurFunction')
+            let searchResults
+            switch (value.type) {
+              case 'email': 
+                searchResults = searchBy(
+                  value.type, 
+                  value.value, 
+                  [],
+                  props.providers,
+                  props.organizationUsers,
+                  )
+                console.log(searchResults)
+                if (searchResults) {
+                  searchResults['allocated'] = true
+                  return searchResults
+                }
+                else {
+                  props.findEntity('email', value.value)
+    
+                }
+                break
+              case 'name': 
+                searchResults = searchBy(
+                  value.type, 
+                  value.value, 
+                  [],
+                  props.providers,
+                  props.organizationUsers,
+                  )
+                console.log(searchResults)
+                if (searchResults) {
+                  searchResults['allocated'] = true
+                  return searchResults
+                }
+                else {
+                  props.findEntity('name', value.value)
+                  // console.log('findEntityByName')
+    
+                }
+                break
+              default: 
+                break
             }
-             else {
-              props.findEntityByEmail(value)
-
-            }
+             
           },
         });
         break;
@@ -404,7 +448,8 @@ const OrganizationPage = props => {
         menuType="organizationMenu"
         onMenuClick={name => handleMenuClick(name)}
         onSubMenuClick={name => handleSubMenuClick(name)}
-        company={props.organization}
+        organization={props.organization ? props.organization : null}
+        provider={props.provider ? props.provider : null}
         currentUser={props.currentUser}
         currentUserRole={props.currentUserRole}
         onFinalItemClick={(menuItem, menuType) => {
@@ -685,7 +730,7 @@ const mapDispatchToProps = dispatch => {
     createNewOrganizationUser: (newUser, organization) => dispatch(registerNewOrgUser(newUser, organization)),
     createNewOrganizationProvider: (provider, organization) => dispatch(addProvider(provider, organization)),
     onLogout: () => dispatch(logout()),
-    findEntityByEmail: email => dispatch(findEntityByEmail(email)),
+    findEntity: (type, value) => dispatch(findEntityBy(type, value)),
   };
 };
 

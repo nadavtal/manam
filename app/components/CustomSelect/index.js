@@ -1,6 +1,7 @@
 import React, { useState, memo, useEffect } from "react";
 import { MDBSelect } from "mdbreact";
 const createSelectOptionsArray = (options, value, disabled) => {
+  console.log(options, typeof(options))
   let array  
   if (typeof(options) === 'object'){    
     array = Object.keys(options).map(key => {
@@ -66,11 +67,11 @@ const CustomSelect = ({options, label, multiple, search, onChange, value}) => {
   
   const handleSelected = (event) => {
     if (event.length) {
-      console.log('handleSelected event', event, typeof(event))
-      console.log('handleSelected value', value, typeof(value))
+      // console.log('handleSelected event', event, typeof(event))
+      // console.log('handleSelected value', value, typeof(value))
       if (!multiple) {
         if (event[0] != value) {
-          console.log('FIRE NON MULTIPLE')
+          console.log('FIRE NON MULTIPLE', event[0])
           onChange(+event)
         }
       } else {
@@ -78,7 +79,7 @@ const CustomSelect = ({options, label, multiple, search, onChange, value}) => {
         // if (value && !value.includes(+event)) {
         console.log('value != event', JSON.stringify(value) === JSON.stringify(event) )
         if (JSON.stringify(value) != JSON.stringify(event)) {
-          console.log('FIRE MULTIPLE')
+          // console.log('FIRE MULTIPLE')
           onChange(event)
         }
       }

@@ -7,6 +7,27 @@ const config = require('../config.js')
 
 
 //PROVIDER-USERS ROUTES
+app.get("/provider-users/:id/:roleId", function(req, res){
+  console.log('getting provider-users by id and role', req.params);
+
+  // var q = `SELECT * FROM tbl_provider_users pu 
+  // INNER JOIN tbl_users u
+  // ON pu.user_id = u.id
+  // where provider_id = ${req.params.id}`;
+  var q = `SELECT pu.user_id, pu.provider_id, pu.role_id, pu.remarks, pu.status, pu.date_created,
+  u.first_name, u.last_name, u.email, r.name as roleName, r.description, r.provider_id FROM tbl_provider_users pu
+  INNER JOIN tbl_users u
+  ON pu.user_id = u.id
+  INNER JOIN tbl_roles r
+  on pu.role_id = r.id
+  where pu.provider_id = ${req.params.id} and pu.role_id = ${req.params.roleId}`;
+  // console.log(q)
+  connection.query(q, function (error, results) {
+  if (error) res.send(error) ;
+  
+  res.send(results);
+  });
+ });
 app.get("/provider-users/:id", function(req, res){
   console.log('getting all provider-users by id');
 
@@ -15,7 +36,7 @@ app.get("/provider-users/:id", function(req, res){
   // ON pu.user_id = u.id
   // where provider_id = ${req.params.id}`;
   var q = `SELECT pu.user_id, pu.provider_id, pu.role_id, pu.remarks, pu.status, pu.date_created,
-  u.first_name, u.last_name, u.email, r.name as roleName, r.description, r.provider_id FROM tbl_provider_users pu
+  u.first_name, u.last_name, u.email, r.name as roleName, r.description FROM tbl_provider_users pu
   INNER JOIN tbl_users u
   ON pu.user_id = u.id
   INNER JOIN tbl_roles r

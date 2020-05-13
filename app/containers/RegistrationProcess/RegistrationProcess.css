@@ -1,5 +1,5 @@
 .registrationProcess {
-    width: 50rem !important;
+    width: 31rem !important;
     margin-top: 10rem;
 
 }
@@ -11,6 +11,7 @@
 .registrationProcess .login .md-form {
     margin-top: 1.1rem !important;
     margin-bottom: 1.1rem !important;
+    width: 90%;
 }
 .registrationProcess .basic_info .md-form {
     margin-top: .1rem !important;

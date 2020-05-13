@@ -18,7 +18,12 @@ const AlertComponent = ({
 }) => {
   const [showButton, setShowButton] = useState(true);
   const [showMessage, setShowMessage] = useState(false);
-
+  const handleConfirmationClick = () => {
+    if (alertData.confirmFunction) {
+      alertData.confirmFunction()
+      if (alertOpen === true) {onToggleAlert()}
+    } else onToggleAlert()
+  }
   return <>
    {alertOpen == true && <div className="overlapblackbgFullScreen" onClick={onToggleAlert}></div>}
       <CSSTransition
@@ -44,15 +49,16 @@ const AlertComponent = ({
             <p>
               {alertData.text}
             </p>
+            {alertData.body && alertData.body}
             <Button 
-              onClick={alertData.confirmFunction ? alertData.confirmFunction : onToggleAlert}
+              onClick={handleConfirmationClick}
               variant={alertData.alertType}>
               {alertData.confirmButton}
             </Button>
-            <Button onClick={onToggleAlert}>
+            {alertData.cancelButton && <Button onClick={onToggleAlert}>
               cancel
             </Button>
-          
+            }         
           </>
           }
         </Alert>

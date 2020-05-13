@@ -15,6 +15,7 @@ import { ORGANIZATION_LOADED } from '../Organizations/Organization/constants'
 import { PROVIDER_LOADED } from '../Providers/Provider/constants'
 import { updateProcessTasks } from '../Processes/actions';
 // localStorage.removeItem('currentUser')
+// localStorage.removeItem('currentUserRole');
 console.log(localStorage)
 // The initial state of the App
 export const initialState = {
@@ -56,13 +57,14 @@ export const initialState = {
     'Created': {id: 2, name: 'Created', color: 'default'},
     'Awaiting confirmation': {id: 3, name: 'Awaiting confirmation', color: 'danger'},
     'Confirmend': {id: 4, name: 'Confirmend', color: 'success'},
-    'Inactive': {id: 5, name: 'Inactive', color: 'light'}
-  },
-  connectionStatuses: {
+    'Inactive': {id: 5, name: 'Inactive', color: 'light'},
     'Awaiting approvement': {id: 11, name: 'Awaiting approvement', color: 'danger'},
     'Unapproved': {id: 23, name: 'Unapproved', color: 'dark'},
     'Approved': {id: 13, name: 'Approved', color: 'success'},
     'Inactive': {id: 14, name: 'Inactive', color: 'light'}
+  },
+  connectionStatuses: {
+
   },
   // statuses: [
   //   {id: 'Active', name: 'Active', color: 'orange'},
@@ -106,6 +108,8 @@ const appReducer = (state = initialState, action) =>
         break;
       case actionTypes.ROLE_SELECTED:
         // console.log('USERS_LOADED', action)
+        localStorage.removeItem('currentUserRole');
+        localStorage.setItem('currentUserRole', JSON.stringify(action.roleName))
         draft.currentUserRole = action.roleName
         break;
       case actionTypes.PROJECTS_LOADED:
@@ -136,7 +140,7 @@ const appReducer = (state = initialState, action) =>
         draft.error = false;
         break;
       case LOGOUT:
-        console.log('LOGOUT')
+        console.log('LOGOUT', state.alertOpen)
         localStorage.removeItem('currentUser')
         draft.currentUser = null;
         draft.modalOpen = false;
@@ -145,18 +149,23 @@ const appReducer = (state = initialState, action) =>
         break;
 
       case actionTypes.LOAD_USER_SUCCESS:
+        console.log(action)
         if (localStorage.getItem('currentUser')) localStorage.removeItem('currentUser')
         const user = {
           userInfo: action.userData.user,
-          userOrganiztionRoles: action.userData.userOrganizationRoles,
-          userProviderRoles: action.userData.userProviderRoles,
-
+               
         }
-        console.log(user);
-        draft.currentUser = user
+        if (action.userData.userSystemRoles) {
+          user['userSystemRoles'] =  action.userData.userSystemRoles
+          // draft.currentUserRole = action.userData.userSystemRole[0].role_name;
+          
+        } else {
+          user['userOrganiztionRoles'] =  action.userData.userOrganizationRoles
+          user['userProviderRoles'] =  action.userData.userProviderRoles
+        }
+        draft.currentUser = user;
         draft.loading = false;
-        // draft.currentUser = action.user;
-        localStorage.setItem('currentUser', JSON.stringify(user))
+        localStorage.setItem('currentUser', JSON.stringify(user));
 
         break;
 

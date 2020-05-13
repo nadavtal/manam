@@ -35,7 +35,8 @@ const HoverableWrapper = ({
         left:0;
         bottom: 0;
         right : 0;
-        background-color: ${afterBgColor ? afterBgColor : 'transparent'};
+        border-bottom: ${color ? '1px solid green' : ''};
+        // background-color: ${afterBgColor ? afterBgColor : 'transparent'};
        
     }`
     const Div = styled.div`
@@ -44,10 +45,11 @@ const HoverableWrapper = ({
     position: relative;
     opacity: ${opacity ? opacity : 1};     
     background-color: transparent;
-    // border-bottom: ${color ? '2px solid black' : ''};
+    
+    
     &:hover {
         color: ${hoverColor ? hoverColor : 'inherit'};
-        background-color: ${bgColor && !useAfter ? bgColor : 'transparent'};
+        // background-color: ${bgColor && !useAfter ? bgColor : 'transparent'};
         opacity: 1;
 
         &::after {

@@ -23,7 +23,8 @@ import './UserInfoBox.css'
 
 function UserInfoBox({
   currentUser,
-  company,
+  organization,
+  provider,
   statuses,
   history = useHistory(),
   onToggleModal,
@@ -38,15 +39,8 @@ function UserInfoBox({
     setStatus(statuses[currentUser.userInfo.general_status])
   }, [currentUser])
   useEffect(() => {
-    console.log(currentUserRole)
+    console.log('organization', organization)
   }, [currentUserRole])
-  // console.log(user, roles)
-  // const role = getRoleById(user.role_id, roles);
-  // const getStatusByName = statusName => {
-  //   Object.keys(statuses)
-  //   statuses.find(status => status.name === statusName)
-  // }
-  // console.log('role', role)
   const actions = [
     // { name: `Switch roles`, icon: 'random', type: 'info', selectOptionsType: 'role'},
     // { name: `Change status`, icon: 'sync', type: 'info', selectOptionsType: 'status'},
@@ -61,13 +55,18 @@ function UserInfoBox({
         editProfile();
         
         break
+      case 'Show user info':
+        handleAction();
+        showProfile();
+        
+        break
       default:
         break
     }
 
   }
   const editProfile = () => onToggleModal({
-    title: 'Create new organization',
+    title: 'Edit profile info',
     text: '',
     // confirmButton: 'Create',
     cancelButton: 'Cancel',
@@ -82,6 +81,18 @@ function UserInfoBox({
       onUpdatedUser(data)
     },
   })
+  const showProfile = () => onToggleModal({
+    title: `${currentUser.userInfo.first_name} ${currentUser.userInfo.last_name} info` ,
+    text: '',
+    // confirmButton: 'Create',
+    cancelButton: 'Close',
+    body : <UserRolesInfo />,
+    confirmButton: 'Switch roles',
+    confirmFunction: () => {
+      onToggleModal()
+      history.push('/')
+    }
+  })
   const linkToProfilePage = () => {
     history.push('/users/'+currentUser.userInfo.id)
   }
@@ -92,11 +103,33 @@ function UserInfoBox({
     height: 8rem;
     position: relative;
     padding: 1rem;
+    font-size: .8rem;
   `
+  const UserRolesInfo = () => {
+
+    return <div>
+      {currentUser.userOrganiztionRoles && currentUser.userOrganiztionRoles.length ? <>
+        <h5>Organizations</h5>
+          {currentUser.userOrganiztionRoles.map(role => {
+            // const org = 
+            return <div key={role.role_id}>{`${role.org_name} - ${role.role_name}`}</div>})
+          }
+      
+      </>: ''}
+      {currentUser.userProviderRoles && currentUser.userProviderRoles.length ? <>
+        <h5 className="mt-3">Providers</h5>
+          {currentUser.userProviderRoles.map(role => {
+              // const org = 
+              return <div key={role.role_id}>{`${role.provider_name} - ${role.role_name}`}</div>})
+            }
+
+      </>: ''}
+    </div>
+  }
   return (
     <Wrapper className={`border border-${status.color}`}>
       {status.name == 'Active' && (
-        <div className="rightTopCorner d-flex">
+        <div className="rightTopCorner d-flex ">
           <IconButtonToolTip
             className="mr-2"
             iconName="edit"
@@ -113,30 +146,32 @@ function UserInfoBox({
             toolTipPosition="left"
             toolTipEffect="float"
             toolTipText="My info"
-            onClickFunction={() => onHandleAction('Edit user info')}
+            onClickFunction={() => onHandleAction('Show user info')}
           />
         </div>
       )}
       {/* <MDBIcon icon={'user'} size="2x" className="" /> */}
-      <h1>
+      <div>
         {status.name !== 'Active' ? (
           <MDBBtn 
             size="sm"
             onClick={() => onHandleAction('Edit user info')}>
             My Profile
           </MDBBtn>
-        ) : (
-          currentUser.userInfo.first_name +
-          ' ' +
-          currentUser.userInfo.last_name
-        )}
-      </h1>
-      {company && <h3>{company.name}</h3>}
-      {currentUserRole && <h3>{currentUserRole}</h3>}
-      {/* {currentUser && currentUser.userInfo ?  */}
-
-      {/* <img src={require('../../images/manamapps_logo_300x100.png')}/>   */}
-      {}
+        ) : <div className="text-left">
+          <div >
+            <span className="bold">Name: </span> {currentUser.userInfo.first_name + ' ' + currentUser.userInfo.last_name}</div>
+          {organization && <div>
+            <span className="bold">Organization: </span> {organization.name}</div>}
+          {provider && <div>
+            <span className="bold">Provider:</span> {provider.name}</div>}
+          <div ><span className="bold"> Role:  </span>{currentUserRole}
+           
+           </div>
+        </div>
+          
+        }
+      </div>
       <Status status={status} />
     </Wrapper>
   );

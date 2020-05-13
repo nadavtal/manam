@@ -110,6 +110,9 @@ const GlobalStyle = createGlobalStyle`
     border-right: 1px solid lightgrey
   }
   .registrationProcess button {
+    position: relative !important;
+    bottom: 0;
+    left: 0;
     margin-top: 3rem;
     margin-left: 1rem !important; 
     width: 97%;

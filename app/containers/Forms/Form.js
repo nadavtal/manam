@@ -13,7 +13,7 @@ import {
   makeSelectAlertOpen,
   makeSelectStatuses
 } from '../App/selectors';
-import { findEntityByEmail } from '../AppData/actions';
+import { findEntityBy } from '../AppData/actions';
 import { toggleAlert, toggleModal } from '../App/actions';
 import Overlay from '../../components/Overlay';
 import { MDBRow, MDBCol, MDBBtn } from 'mdbreact';
@@ -52,7 +52,7 @@ const form = props => {
   useEffect(() => {
     if (props.foundResults) {
       console.log("props.foundResults", props.foundResults)
-      handleBlurResults(props.foundResults)
+      handleBlurResults(props.foundResults, props.foundResults.element)
 
     }
     return () => {
@@ -162,11 +162,14 @@ const form = props => {
       if (form.general_status && props.statuses) {
         form.general_status.elementConfig.options = props.statuses;
       }
+      if (form.roles && props.roles) {
+        form.roles.elementConfig.options = props.roles;
+      }
     }
   };
 
   const inputChangedHandler = (event, inputIdetifier) => {
-    // console.log('inputChangedHandler', event, inputIdetifier)
+    // console.log('inputChangedHandler', inputIdetifier)
     // clone 1st order
     const updatedForm = {
       ...formTypeState,
@@ -182,8 +185,8 @@ const form = props => {
       updatedForm[inputIdetifier].elementType === 'date' ||
       updatedForm[inputIdetifier].elementType === 'file' ||
       updatedForm[inputIdetifier].elementType === 'select') {
-        console.log('SELECT', event, typeof(event))
-        console.log(updatedForm[inputIdetifier])
+        // console.log('SELECT', event, typeof(event))
+        // console.log(updatedForm[inputIdetifier])
         // if (updatedForm[inputIdetifier].elementConfig.multiple) {
         //   console.log(updatedFormElement.value, event)
         //   updatedFormElement.value = event
@@ -203,7 +206,7 @@ const form = props => {
     //     }
     } else if (
       updatedForm[inputIdetifier].elementType === 'selectMultiple') {
-        console.log('selectMultiple', typeof(event), event, updatedForm[inputIdetifier])
+     
         updatedFormElement.value = [...updatedFormElement.value, ...event]
     } else if (updatedForm[inputIdetifier].elementConfig.type === 'number') {
       // console.log(event, inputIdetifier);
@@ -280,7 +283,17 @@ const form = props => {
       // console.log(updatedForm.provider_id)
       // updatedForm.user_id.elementConfig.options = provUsers
     }
-
+    if (inputIdetifier == 'email' && updatedForm.first_name) {
+      if (updatedForm.first_name.elementConfig.disabled) {
+        updatedForm.first_name.elementConfig.disabled = false
+        updatedForm.first_name.value = ''
+      }
+      if (updatedForm.last_name.elementConfig.disabled) {
+        updatedForm.last_name.elementConfig.disabled = false
+        updatedForm.last_name.value = ''
+      }
+      
+    }
     // // check if valid
     if (updatedFormElement.validation)
       updatedFormElement.valid = checkValidity(
@@ -304,21 +317,16 @@ const form = props => {
     setformIsValidState(formIsValid);
   };
   const submitForm = event => {
-    // console.log(props.formType, props.editMode);
+   
     event.preventDefault();
     const formData = {};
     for (let formElementIdentifier in formTypeState) {
       formData[formElementIdentifier] =
         formTypeState[formElementIdentifier].value;
     }
-
+    console.log(props.modalOpen)
+    if (props.modalOpen) props.toggleModal()
     switch (props.editMode) {
-      // case 'edit':
-      //   props.editFunction(formData, event);
-      //   break
-      // case 'save':
-      //   props.editFunction(formData, event);
-      //   break
       case 'create':
         // console.log(formData)
         props.createFunction(formData);
@@ -430,11 +438,21 @@ const form = props => {
   const handleOnBlur = (formElement, value) => {
     if (formElement.config.valid) {
       if (formElement.id === 'email') {
+        if (props.onBlurFunction) {
+          console.log(formElement.id);
+          const results = props.onBlurFunction({value, type: formElement.id});
+          if (results) {
+            handleBlurResults(results, formElement.id)  
+          }
+        }
+      }
+      if (formElement.id === 'name') {
         // console.log(props);
         if (props.onBlurFunction) {
-          const results = props.onBlurFunction(value);
+          console.log(formElement.id);
+          const results = props.onBlurFunction({value, type: formElement.id});
           if (results) {
-            handleBlurResults(results, formElement)  
+            handleBlurResults(results, formElement.id)  
           }
         }
       }
@@ -472,138 +490,189 @@ const form = props => {
   }
 
   const handleBlurResults = (results, formElement) => {
-    
+    console.log(props.formType)
     switch (props.formType) {
       case 'organizationForm':
-        if (results.organization) {
-          const updatedForm = {
-            ...formTypeState,
-          };
-
-          //clone 2st order
-          const updatedFormElement = {
-            ...updatedForm[formElement.id],
-          };
-          console.log(updatedFormElement);
-          updatedFormElement.valid = false;
-          updatedFormElement.errMsg = `This email is allready used by organization: ${results.organization.name}`;
-          updatedForm[formElement.id] = updatedFormElement;
-          console.log(updatedForm);
-          setFormTypeState(updatedForm);
-          // setformIsValidState(false);
-          break;
-
-        }
-
-        if (results.provider) {
-          const updatedForm = {
-            ...formTypeState,
-          };
-
-          //clone 2st order
-          const updatedFormElement = {
-            ...updatedForm[formElement.id],
-          };
-          console.log(updatedFormElement);
-          updatedFormElement.valid = false;
-          updatedFormElement.errMsg = `This email is allready used by provider: ${results.provider.name}`;
-          updatedForm[formElement.id] = updatedFormElement;
-          console.log(updatedForm);
-          setFormTypeState(updatedForm);
-          // setformIsValidState(false);
-          break;
-
-        }
-        if (results.user) {
-          const overlayConfig = {
-            msg: `This email is assigned to a user: ${results.user.first_name}  ${results.user.last_name}`,
-            actionText: `Do you want to allocate ${results.user.first_name}  ${results.user.last_name} as organization admin`,
-            btnText: 'Allocate',
-            cancelFunction: () => {
+        console.log(formElement)
+        switch (formElement) {
+          case 'email':
+            if (results.organization) {
               const updatedForm = {
                 ...formTypeState,
               };
-              updatedForm.email.value = '';
-              updatedForm.email.valid = false
-
+    
               //clone 2st order
-              // const updatedFormElement = {
-              //   ...updatedForm[formElement.id],
-              // };
-              // console.log(updatedFormElement);
+              const updatedFormElement = {
+                ...updatedForm[formElement],
+              };
+              console.log(updatedFormElement);
+              updatedFormElement.valid = false;
+              updatedFormElement.errMsg = `This email is allready used by organization: ${results.organization.name}`;
+              updatedForm[formElement] = updatedFormElement;
               console.log(updatedForm);
-              setShowOverlay(false)
               setFormTypeState(updatedForm);
-            },
-            confirmFunction: () => {
-                const updatedForm = {
-                  ...formTypeState,
-                };
-                updatedForm.user_id.value = results.foundUser.id
-                updatedForm.adminFirstName.value = results.foundUser.first_name;
-                updatedForm.adminLastName.value = results.foundUser.last_name;
-                updatedForm.email.value = results.foundUser.email;
-                updatedForm.adminFirstName.valid = true
-                updatedForm.adminLastName.valid = true
-                updatedForm.email.valid = true;
-                //clone 2st order
-                // const updatedFormElement = {
-                //   ...updatedForm[formElement.id],
-                // };
-                // console.log(updatedFormElement);
-                console.log(updatedForm);
-                setShowOverlay(false)
-                setFormTypeState(updatedForm);
-                // setformIsValidState(false);
-                
+              // setformIsValidState(false);
+              break;
+    
             }
-          }
-          setOverLayData({...results, ...overlayConfig})
-          setShowOverlay(true)
-          break;
-
+    
+            if (results.provider) {
+              const updatedForm = {
+                ...formTypeState,
+              };
+    
+              //clone 2st order
+              const updatedFormElement = {
+                ...updatedForm[formElement],
+              };
+              console.log(updatedFormElement);
+              updatedFormElement.valid = false;
+              updatedFormElement.errMsg = `This email is allready used by provider: ${results.provider.name}`;
+              updatedForm[formElement] = updatedFormElement;
+              console.log(updatedForm);
+              setFormTypeState(updatedForm);
+              // setformIsValidState(false);
+              break;
+    
+            }
+            if (results.user) {
+              const overlayConfig = {
+                msg: `This email is assigned to a user: ${results.user.first_name}  ${results.user.last_name}`,
+                actionText: `Do you want to allocate ${results.user.first_name}  ${results.user.last_name} as organization admin`,
+                btnText: 'Allocate',
+                cancelFunction: () => {
+                  const updatedForm = {
+                    ...formTypeState,
+                  };
+                  updatedForm.email.value = '';
+                  updatedForm.email.valid = false
+    
+                  //clone 2st order
+                  // const updatedFormElement = {
+                  //   ...updatedForm[formElement],
+                  // };
+                  // console.log(updatedFormElement);
+                  console.log(updatedForm);
+                  setShowOverlay(false)
+                  setFormTypeState(updatedForm);
+                },
+                confirmFunction: () => {
+                    const updatedForm = {
+                      ...formTypeState,
+                    };
+                    updatedForm.user_id.value = results.user.id;
+                    // updatedForm.name.value = `${results.user.first_name} ${results.user.last_name}`
+                    updatedForm.first_name.value = results.user.first_name;
+                    updatedForm.last_name.value = results.user.last_name;
+                    updatedForm.email.value = results.user.email;
+                    updatedForm.first_name.valid = true
+                    updatedForm.last_name.valid = true
+                    updatedForm.email.valid = true;
+                    updatedForm.first_name.elementConfig.disabled = true
+                    updatedForm.last_name.elementConfig.disabled = true
+                    
+                    //clone 2st order
+                    // const updatedFormElement = {
+                    //   ...updatedForm[formElement],
+                    // };
+                    // console.log(updatedFormElement);
+                    console.log(updatedForm);
+                    setShowOverlay(false)
+                    setFormTypeState(updatedForm);
+                    // setformIsValidState(false);
+                    
+                }
+              }
+              setOverLayData({...results, ...overlayConfig})
+              setShowOverlay(true)
+              break;
+    
+            }
+            break;
+          case 'name':
+            if (results.organization) {
+              console.log(formElement)
+              const updatedForm = {
+                ...formTypeState,
+              };
+    
+              //clone 2st order
+              const updatedFormElement = {
+                ...updatedForm[formElement],
+              };
+              // console.log(updatedFormElement);
+              updatedFormElement.valid = false;
+              updatedFormElement.errMsg = `This name is allready used by organization: ${results.organization.name}`;
+              updatedForm[formElement] = updatedFormElement;
+              console.log(updatedForm);
+              setFormTypeState(updatedForm);
+              setformIsValidState(false);
+              break;
+    
+            }
+    
+            if (results.provider) {
+              const updatedForm = {
+                ...formTypeState,
+              };
+    
+              //clone 2st order
+              const updatedFormElement = {
+                ...updatedForm[formElement],
+              };
+              console.log(updatedFormElement);
+              updatedFormElement.valid = false;
+              updatedFormElement.errMsg = `This name is allready used by provider: ${results.provider.name}`;
+              updatedForm[formElement] = updatedFormElement;
+              console.log(updatedForm);
+              setFormTypeState(updatedForm);
+              // setformIsValidState(false);
+              break;
+    
+            }
+   
+            break;
+        
+          default:
+            break;
         }
+      break;  
       case 'registerUserForm':
-        if (results.organization) {
-          const updatedForm = {
-            ...formTypeState,
-          };
+        // if (results.organization) {
+        //   const updatedForm = {
+        //     ...formTypeState,
+        //   };
 
-          //clone 2st order
-          // const updatedFormElement = {
-          //   ...updatedForm[formElement.id],
-          // };
-          // console.log(updatedFormElement);
-          updatedForm.email.valid = false;
-          updatedForm.email.errMsg = `This email is allready used by organization: ${results.organization.name}`;
+        //   //clone 2st order
+        //   // const updatedFormElement = {
+        //   //   ...updatedForm[formElement],
+        //   // };
+        //   // console.log(updatedFormElement);
+        //   updatedForm.email.valid = false;
+        //   updatedForm.email.errMsg = `This email is allready used by organization: ${results.organization.name}`;
           
-          console.log(updatedForm);
-          setFormTypeState(updatedForm);
-          // setformIsValidState(false);
-          break;
+        //   console.log(updatedForm);
+        //   setFormTypeState(updatedForm);
+        //   // setformIsValidState(false);
+        //   break;
 
-        }
+        // }
 
-        if (results.provider) {
-          // console.log(formElement)
-          const updatedForm = {
-            ...formTypeState,
-          };
+        // if (results.provider) {
+        //   // console.log(formElement)
+        //   const updatedForm = {
+        //     ...formTypeState,
+        //   };
 
-          //clone 2st order
-          // const updatedFormElement = {
-          //   ...updatedForm[formElement.id],
-          // };
-          // console.log(updatedFormElement);
-          updatedForm.email.valid = false;
-          updatedForm.email.errMsg = `This email is allready used by provider: ${results.provider.name}`;
+        //   updatedForm.email.valid = false;
+        //   updatedForm.email.errMsg = `This email is allready used by provider: ${results.provider.name}`;
           
-          console.log(updatedForm);
-          setFormTypeState(updatedForm);
-          // setformIsValidState(false);
-          break;
+        //   console.log(updatedForm);
+        //   setFormTypeState(updatedForm);
+        //   // setformIsValidState(false);
+        //   break;
 
-        }
+        // }
         if (results.user) {
           if (results.allocated) {
             const updatedForm = {
@@ -614,6 +683,7 @@ const form = props => {
             updatedForm.email.errMsg = `${results.user.first_name} ${results.user.last_name} is allready allocated to you`
 
             setFormTypeState(updatedForm);
+            break
           } 
           else {
             const overlayConfig = {
@@ -629,7 +699,7 @@ const form = props => {
   
                 //clone 2st order
                 // const updatedFormElement = {
-                //   ...updatedForm[formElement.id],
+                //   ...updatedForm[formElement],
                 // };
                 // console.log(updatedFormElement);
                 console.log(updatedForm);
@@ -647,9 +717,12 @@ const form = props => {
                   updatedForm.first_name.valid = true
                   updatedForm.last_name.valid = true
                   updatedForm.email.valid = true;
+                  updatedForm.first_name.elementConfig.disabled = true
+                  updatedForm.last_name.elementConfig.disabled = true
+                  // updatedForm.email.elementConfig.disabled = true;
                   //clone 2st order
                   // const updatedFormElement = {
-                  //   ...updatedForm[formElement.id],
+                  //   ...updatedForm[formElement],
                   // };
                   // console.log(updatedFormElement);
                   console.log(updatedForm);
@@ -667,129 +740,201 @@ const form = props => {
 
         }
       case 'providerForm':
-        if (results.organization) {
-          const updatedForm = {
-            ...formTypeState,
-          };
-
-          //clone 2st order
-          // const updatedFormElement = {
-          //   ...updatedForm[formElement.id],
-          // };
-          // console.log(updatedFormElement);
-          updatedForm.email.valid = false;
-          updatedForm.email.errMsg = `This email is allready used by organization: ${results.organization.name}`;
-          
-          console.log(updatedForm);
-          setFormTypeState(updatedForm);
-          // setformIsValidState(false);
-          break;
-
-        }
-
-        if (results.provider) {
-          // console.log(formElement)
-          if (results.allocated) {
-            const updatedForm = {
-              ...formTypeState,
-            };
-            updatedForm.email.value = '';
-            updatedForm.email.valid = false
-            updatedForm.email.errMsg = `${results.provider.name} is allready allocated to you`
-
-            setFormTypeState(updatedForm);
-          } 
-          else {
-            const overlayConfig = {
-              msg: `This email is assigned to provider: ${results.provider.name}`,
-              actionText: `Do you want to allocate ${results.provider.name} to your providers?`,
-              btnText: 'Allocate',
-              cancelFunction: () => {
-                const updatedForm = {
-                  ...formTypeState,
-                };
-                console.log(updatedForm);
-                updatedForm.email.value = '';
-                updatedForm.email.valid = false
-  
-                //clone 2st order
-                // const updatedFormElement = {
-                //   ...updatedForm[formElement.id],
-                // };
-                // console.log(updatedFormElement);
-                setShowOverlay(false)
-                setFormTypeState(updatedForm);
-              },
-              confirmFunction: () => {
-                console.log(props.createFunction)
-                props.createFunction(results.provider);               
-              }
+        switch (formElement) {
+          case 'email':
+            if (results.organization) {
+              const updatedForm = {
+                ...formTypeState,
+              };
+    
+              //clone 2st order
+              // const updatedFormElement = {
+              //   ...updatedForm[formElement],
+              // };
+              // console.log(updatedFormElement);
+              updatedForm.email.valid = false;
+              updatedForm.email.errMsg = `This email is allready used by organization: ${results.organization.name}`;
+              
+              console.log(updatedForm);
+              setFormTypeState(updatedForm);
+              // setformIsValidState(false);
+              break;
+    
             }
-            setOverLayData({...results, ...overlayConfig})
-            setShowOverlay(true)
-            break;
-
-          }
-
-        }
-        if (results.user) {
-          if (results.allocated) {
-            const updatedForm = {
-              ...formTypeState,
-            };
-            updatedForm.email.value = '';
-            updatedForm.email.valid = false
-            updatedForm.email.errMsg = `${results.user.first_name} ${results.user.last_name} is allready allocated to you`
-
-            setFormTypeState(updatedForm);
-          } 
-          else {
-            const overlayConfig = {
-              msg: `This email is assigned to a user: ${results.user.first_name}  ${results.user.last_name}`,
-              actionText: `Do you want to create a new provider with ${results.user.first_name}  ${results.user.last_name} as provider admin?`,
-              btnText: 'Create provider',
-              cancelFunction: () => {
+    
+            if (results.provider) {
+              // console.log(formElement)
+              if (results.allocated) {
                 const updatedForm = {
                   ...formTypeState,
                 };
                 updatedForm.email.value = '';
                 updatedForm.email.valid = false
-  
-                //clone 2st order
-                // const updatedFormElement = {
-                //   ...updatedForm[formElement.id],
-                // };
-                // console.log(updatedFormElement);
-                console.log(updatedForm);
-                setShowOverlay(false)
+                updatedForm.email.errMsg = `${results.provider.name} is allready allocated to you`
+    
                 setFormTypeState(updatedForm);
-              },
-              confirmFunction: () => {
+              } 
+              else {
+                const overlayConfig = {
+                  msg: `This name is assigned to provider: ${results.provider.name}`,
+                  actionText: `Do you want to allocate ${results.provider.name} to your providers?`,
+                  btnText: 'Allocate',
+                  cancelFunction: () => {
+                    const updatedForm = {
+                      ...formTypeState,
+                    };
+                    console.log(updatedForm);
+                    updatedForm.email.value = '';
+                    updatedForm.email.valid = false
+      
+                    //clone 2st order
+                    // const updatedFormElement = {
+                    //   ...updatedForm[formElement],
+                    // };
+                    // console.log(updatedFormElement);
+                    setShowOverlay(false)
+                    setFormTypeState(updatedForm);
+                  },
+                  confirmFunction: () => {
+                    console.log(props.createFunction)
+                    props.createFunction(results.provider); 
+                    setShowOverlay(false)              
+                  }
+                }
+                setOverLayData({...results, ...overlayConfig})
+                setShowOverlay(true)
+                break;
+    
+              }
+    
+            }
+            if (results.user) {
+              const overlayConfig = {
+                msg: `This email is assigned to a user: ${results.user.first_name}  ${results.user.last_name}`,
+                actionText: `Do you want to create a new provider with ${results.user.first_name}  ${results.user.last_name} as provider admin?`,
+                btnText: 'Create provider',
+                cancelFunction: () => {
                   const updatedForm = {
                     ...formTypeState,
                   };
-                  // updatedForm.id.value = results.user.id
-                  // updatedForm.first_name.value = results.user.first_name;
-                  // updatedForm.last_name.value = results.user.last_name;
-                  // updatedForm.email.value = results.user.email;
-                  // updatedForm.first_name.valid = true
-                  // updatedForm.last_name.valid = true
-                  // updatedForm.email.valid = true;
-
+                  updatedForm.email.value = '';
+                  updatedForm.email.valid = false
+      
+                  //clone 2st order
+                  // const updatedFormElement = {
+                  //   ...updatedForm[formElement],
+                  // };
+                  // console.log(updatedFormElement);
                   console.log(updatedForm);
                   setShowOverlay(false)
                   setFormTypeState(updatedForm);
-
-                  
+                },
+                confirmFunction: () => {
+                    const updatedForm = {
+                      ...formTypeState,
+                    };
+                    updatedForm.user_id.value = results.user.id
+                    // updatedForm.name.value = `${results.user.first_name} ${results.user.last_name}`
+                    updatedForm.first_name.value = results.user.first_name;
+                    updatedForm.last_name.value = results.user.last_name;
+                    updatedForm.email.value = results.user.email;
+                    // updatedForm.name.valid = true
+                    updatedForm.first_name.valid = true
+                    updatedForm.last_name.valid = true
+                    updatedForm.email.valid = true;
+                    updatedForm.first_name.elementConfig.disabled = true
+                    updatedForm.last_name.elementConfig.disabled = true
+                    
+                    //clone 2st order
+                    // const updatedFormElement = {
+                    //   ...updatedForm[formElement],
+                    // };
+                    // console.log(updatedFormElement);
+                    console.log(updatedForm);
+                    setShowOverlay(false)
+                    setFormTypeState(updatedForm);
+      
+                    
+                }
               }
+              setOverLayData({...results, ...overlayConfig})
+              setShowOverlay(true)
+              break
+    
             }
-            setOverLayData({...results, ...overlayConfig})
-            setShowOverlay(true)
-            break;
-
-          }
-
+            break
+          case 'name':
+            if (results.organization) {
+              const updatedForm = {
+                ...formTypeState,
+              };
+    
+              //clone 2st order
+              // const updatedFormElement = {
+              //   ...updatedForm[formElement],
+              // };
+              // console.log(updatedFormElement);
+              updatedForm.name.valid = false;
+              updatedForm.name.errMsg = `This name is allready used by organization: ${results.organization.name}`;
+              
+              console.log(updatedForm);
+              setFormTypeState(updatedForm);
+              // setformIsValidState(false);
+              break;
+    
+            }
+    
+            if (results.provider) {
+              // console.log(formElement)
+              if (results.allocated) {
+                const updatedForm = {
+                  ...formTypeState,
+                };
+                updatedForm.name.value = '';
+                updatedForm.name.valid = false
+                updatedForm.name.errMsg = `${results.provider.name} is allready allocated to you`
+    
+                setFormTypeState(updatedForm);
+              } 
+              else {
+                const overlayConfig = {
+                  msg: `This email is assigned to provider: ${results.provider.name}`,
+                  actionText: `Do you want to allocate ${results.provider.name} to your providers?`,
+                  btnText: 'Allocate',
+                  cancelFunction: () => {
+                    const updatedForm = {
+                      ...formTypeState,
+                    };
+                    console.log(updatedForm);
+                    updatedForm.email.value = '';
+                    updatedForm.email.valid = false
+      
+                    //clone 2st order
+                    // const updatedFormElement = {
+                    //   ...updatedForm[formElement],
+                    // };
+                    // console.log(updatedFormElement);
+                    setShowOverlay(false)
+                    setFormTypeState(updatedForm);
+                  },
+                  confirmFunction: () => {
+                    console.log(props.createFunction)
+                    props.createFunction(results.provider); 
+                    setShowOverlay(false)              
+                  }
+                }
+                setOverLayData({...results, ...overlayConfig})
+                setShowOverlay(true)
+                break;
+    
+              }
+    
+            }
+  
+            break
+          default: break
         }
+      
       default:
         break;
     }
@@ -800,7 +945,6 @@ const form = props => {
   }
   const OverlayContent = ({ overLayData }) => {
 
-    console.log(overLayData)
     return <>
       <h1 className="mx-auto">{overLayData.msg}</h1>
       <h5>
@@ -808,7 +952,7 @@ const form = props => {
       </h5>
 
       <MDBBtn
-        color={props.btnColor ? props.btnColor : 'primary'}
+        color={`${props.btnColor ? props.btnColor : 'primary'}`}
         // disabled={!formIsValidState}
         rounded
         className={[
@@ -836,239 +980,7 @@ const form = props => {
         Cancel
       </MDBBtn>
     </>
-    // switch (type) {
-    //   case 'email':
-    //     switch (props.formType) {
-    //       case 'registerUserForm':
-    //         console.log(formTypeState.role_id.elementConfig.options)
-    //         if (props.foundResults.users && props.foundResults.users.length) {
-    //           return (
-    //             <>
-    //               <h1 className="mx-auto">{`This email is assigned to ${
-    //                 props.foundResults.users[0].first_name
-    //               }!`}</h1>
-    //               <h5>
-    //                 {`Choose a role to allocate ${
-    //                   props.foundResults.users[0].first_name
-    //                 } to`}
-    //               </h5>
-    //               <Select
-    //                 options={formTypeState.role_id.elementConfig.options}
-    //                 value={''}
-    //                 label={'Choose role'}
-    //                 disabled={false}
-    //                 onChange={event => {
-    //                   props.foundResults.users[0]['role_id'] = event;
-    //                 }}
-    //               />
-    //               <MDBBtn
-    //                 color={props.btnColor ? props.btnColor : 'primary'}
-    //                 // disabled={!formIsValidState}
-    //                 rounded
-    //                 className={[
-    //                   'text-center float-right',
-    //                   props.className,
-    //                 ].join(' ')}
-    //                 onClick={e =>
-    //                   props.createFunction(props.foundResults.users[0], e)
-    //                 }
-    //               >
-    //                 Allocate
-    //               </MDBBtn>
-    //             </>
-    //           );
-    //         }
-    //         if (props.foundResults.providers && props.foundResults.providers.length) {
-    //           return (
-    //             <>
-    //               <h1 className="mx-auto">{`This email is assigned to ${
-    //                 props.foundResults.providers[0].name
-    //               }!`}</h1>
-    //               <h5>
-    //                 {`What do you want to do with ${
-    //                   props.foundResults.providers[0].name
-    //                 } ??? `}
-    //               </h5>
-    //               {/* <Select
-    //                 options={formTypeState.role_id.elementConfig.options}
-    //                 value={''}
-    //                 label={'Choose role'}
-    //                 disabled={false}
-    //                 onChange={event => {
-    //                   props.foundResults.users[0]['role_id'] = event;
-    //                 }}
-    //               /> */}
-    //               <MDBBtn
-    //                 color={props.btnColor ? props.btnColor : 'primary'}
-    //                 // disabled={!formIsValidState}
-    //                 rounded
-    //                 className={[
-    //                   'text-center float-right',
-    //                   props.className,
-    //                 ].join(' ')}
-    //                 onClick={e =>
-    //                   props.createFunction(props.foundResults.users[0], e)
-    //                 }
-    //               >
-    //                 Allocate
-    //               </MDBBtn>
-    //             </>
-    //           );
-    //         }
-    //         break;
-    //       case 'providerForm':
-    //         if (
-    //           props.foundResults.providers &&
-    //           props.foundResults.providers.length
-    //         ) {
-    //           return (
-    //             <>
-    //               <h1 className="mx-auto">{`This email is assigned to ${
-    //                 props.foundResults.providers[0].name
-    //               }!`}</h1>
-    //               <h5>
-    //                 {`Do you want to allocate ${
-    //                   props.foundResults.providers[0].name
-    //                 }? `}
-    //               </h5>
 
-    //               <MDBBtn
-    //                 color={props.btnColor ? props.btnColor : 'primary'}
-    //                 // disabled={!formIsValidState}
-    //                 rounded
-    //                 className={[
-    //                   'text-center float-right',
-    //                   props.className,
-    //                 ].join(' ')}
-    //                 onClick={e =>
-    //                   props.createFunction(props.foundResults.providers[0], e)
-    //                 }
-    //               >
-    //                 Allocate
-    //               </MDBBtn>
-    //             </>
-    //           );
-    //         }
-    //         if (props.foundResults.users && props.foundResults.users.length) {
-    //           return (
-    //             <>
-    //               <h1 className="mx-auto">{`This email is assigned to ${
-    //                 props.foundResults.users[0].first_name
-    //               } ${props.foundResults.users[0].last_name}!`}</h1>
-    //               <h5>
-    //                 {`Do you want to allocate ${
-    //                   props.foundResults.users[0].first_name
-    //                 } as provider administartor to this provider?`}
-    //               </h5>
-    //               {/* <Select
-    //                 options={formTypeState.role_id.elementConfig.options}
-    //                 value={''}
-    //                 label={'Choose role'}
-    //                 disabled={false}
-    //                 onChange={event =>  {
-    //                   props.foundResults.users[0]['role_id'] = event
-    //                 }}
-    //               /> */}
-    //               <MDBBtn
-    //                 color={props.btnColor ? props.btnColor : 'primary'}
-    //                 // disabled={!formIsValidState}
-    //                 rounded
-    //                 className={[
-    //                   'text-center float-right',
-    //                   props.className,
-    //                 ].join(' ')}
-    //                 onClick={e =>
-    //                   props.createFunction(props.foundResults.users[0], e)
-    //                 }
-    //               >
-    //                 Allocate
-    //               </MDBBtn>
-    //             </>
-    //           );
-    //         }
-    //         break;
-    //       case 'organizationForm':
-    //         if (
-    //           props.foundResults.organziations &&
-    //           props.foundResults.organziations.length
-    //         ) {
-    //           return (
-    //             <>
-    //               <h1 className="mx-auto">{`This email is assigned to ${
-    //                 props.foundResults.organziations[0].name
-    //               }!`}</h1>
-    //               <h5>
-    //                 {`Do you want to allocate ${
-    //                   props.foundResults.organziations[0].name
-    //                 }? `}
-    //               </h5>
-
-    //               <MDBBtn
-    //                 color={props.btnColor ? props.btnColor : 'primary'}
-    //                 // disabled={!formIsValidState}
-    //                 rounded
-    //                 className={[
-    //                   'text-center float-right',
-    //                   props.className,
-    //                 ].join(' ')}
-    //                 onClick={e =>
-    //                   props.createFunction(props.foundResults.organziations[0], e)
-    //                 }
-    //               >
-    //                 Allocate
-    //               </MDBBtn>
-    //             </>
-    //           );
-    //         }
-    //         if (props.foundResults.users && props.foundResults.users.length) {
-    //           return (
-    //             <>
-    //               <h1 className="mx-auto">{`This email is assigned to ${
-    //                 props.foundResults.users[0].first_name
-    //               } ${props.foundResults.users[0].last_name}!`}</h1>
-    //               <h5>
-    //                 {`Do you want to allocate ${
-    //                   props.foundResults.users[0].first_name
-    //                 } as provider administartor to this provider?`}
-    //               </h5>
-    //               {/* <Select
-    //                 options={formTypeState.role_id.elementConfig.options}
-    //                 value={''}
-    //                 label={'Choose role'}
-    //                 disabled={false}
-    //                 onChange={event =>  {
-    //                   props.foundResults.users[0]['role_id'] = event
-    //                 }}
-    //               /> */}
-    //               <MDBBtn
-    //                 color={props.btnColor ? props.btnColor : 'primary'}
-    //                 // disabled={!formIsValidState}
-    //                 rounded
-    //                 className={[
-    //                   'text-center float-right',
-    //                   props.className,
-    //                 ].join(' ')}
-    //                 onClick={e =>
-    //                   props.createFunction(props.foundResults.users[0], e)
-    //                 }
-    //               >
-    //                 Allocate
-    //               </MDBBtn>
-    //             </>
-    //           );
-    //         }
-    //         break;
-
-    //       default:
-    //         return null;
-    //     }
-    //     console.log(props.foundResults);
-
-    //   default:
-    //     return null;
-    // }
-
-  
   };
 
   const formHtml = (
@@ -1120,7 +1032,7 @@ const form = props => {
         // color={props.btnColor ? props.btnColor : 'primary'}
         disabled={!formIsValidState}
         rounded
-        className={['text-center background-orange float-right', props.className].join(' ')}
+        className={['text-center modalFormBtn background-orange float-right', props.className].join(' ')}
         onClick={e => submitForm(e)}
       >
         {props.editMode == 'edit' ? 'Save' : props.editMode}
@@ -1141,7 +1053,7 @@ const mapStateToProps = createStructuredSelector({
 
 export function mapDispatchToProps(dispatch) {
   return {
-    findEntityByEmail: email => dispatch(findEntityByEmail(email)),
+    findEntityBy: email => dispatch(findEntityBy(email)),
     toggleAlert: alertData => dispatch(toggleAlert(alertData)),
     toggleModal: () => dispatch(toggleModal()),
   };

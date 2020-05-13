@@ -76,44 +76,6 @@ const input = (props) => {
       value={props.value}
       onChange={(event) => props.changed(event)}
     />    
-    // inputElement = <Select
-    //     options={props.elementconfig.options}
-    //     value={props.value}
-    //     label={props.label}
-    //     disabled={props.elementconfig.disabled}
-    //     onChange={(event) => props.changed(event)}
-    //     />
-      // <MDBSelect
-      //   key={props.label}
-      //   // options={options}
-      //   // label={props.label}
-      //   selected={props.value}
-      //   getValue={(event) => props.changed(event[0])}
-      // />
-      //  <MDBSelect color='primary'
-      //     label={props.label}
-      //     // selected={props.value}
-      //     getValue={(event) => props.changed(event[0])}>
-      //     <MDBSelectInput />
-      //     <MDBSelectOptions>
-      //       <MDBSelectOption disabled>
-      //         select {props.label}
-      //       </MDBSelectOption>
-      //       {props.elementconfig.options.map((option, index) => {
-      //         console.log(props.value)
-      //         // console.log(typeof(option.id), typeof(props.value))
-      //         console.log(option.id === props.value)
-      //         return <MDBSelectOption
-      //           key={index}
-      //           checked={option.id === props.value}
-      //           value={option.id }>
-      //             {option.name? option.name : option.first_name + ' ' + option.last_name}
-      //             </MDBSelectOption>
-      //       })}
-
-      //     </MDBSelectOptions>
-      //   </MDBSelect>
-
 
       break;
     case('selectMultiple'):
@@ -144,6 +106,7 @@ const input = (props) => {
       // console.log(props.value)
       inputElement =
         <MDBInput
+        labelClass="mt-3"
         label= {props.label}
         filled
         type="checkbox"

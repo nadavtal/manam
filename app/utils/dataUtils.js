@@ -1,6 +1,7 @@
 
 export const getRoleById = (id, roles) => {
-  return roles.find(role => role.id === id)
+  // console.log(id, roles)
+  return roles.find(role => role.id == id)
 }
 
 export const getUserById = (userId, users) => {
@@ -64,11 +65,11 @@ export const addProviderToRoles = (providerRoles, providers)  => {
 }
 
 export const searchBy = (fieldName, value, orgs, provs, usersArray) => {
-  console.log(usersArray)
+
   const organization = orgs.find(org => org[fieldName] === value);
   const provider = provs.find(prov => prov[fieldName] === value);
   const user = usersArray.find(user => user[fieldName] === value);
-  console.log(user)
+
   let results = null;
   if (organization || provider || user) {
     results = {
@@ -81,4 +82,17 @@ export const searchBy = (fieldName, value, orgs, provs, usersArray) => {
   return results
 }
 
+export const getRolesByUserId = (userId, userRoles, roles)  => {
+  // console.log('addProviderToRoles', providerRoles)
+  userRoles = userRoles.filter(userRole => userRole.user_id == userId)
+    .map(userRole => roles.find(role => userRole.role_id == role.id))
+  
+  return userRoles
+}
+
+export const getAvailableRolesByUserId = (allRoles, accupiedRoles)  => {
+  // console.log(allRoles, accupiedRoles)
+  let availableRoles = allRoles.filter(role => !accupiedRoles.includes(role));
+  return availableRoles
+}
 

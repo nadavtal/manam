@@ -5,7 +5,7 @@ import request from 'utils/request';
 import { showNotification, toggleModal, loadError, allDataLoaded, organizationAdded, providerAdded,
   newRoleCreated, organizationUpdated, providerUpdated, userAllocated, newRoleTypeCreated,
   providerAllocated } from 'containers/App/actions';
-import { findEntityByEmail } from 'containers/AppData/actions'
+import { findEntityBy } from 'containers/AppData/actions'
 import { getModalOpen } from '../App/selectors';
 import { apiUrl } from '../App/constants';
 

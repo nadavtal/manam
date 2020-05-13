@@ -1001,16 +1001,16 @@ export const forms = {
     //   validation: {},
     //   valid: true
     // },
-    user_image: {
-      label: 'Profile image',
-      elementType: 'file',
-      elementConfig: {
+    // user_image: {
+    //   label: 'Profile image',
+    //   elementType: 'file',
+    //   elementConfig: {
 
-      },
-      value: '',
-      validation: {},
-      valid: true
-    },
+    //   },
+    //   value: '',
+    //   validation: {},
+    //   valid: true
+    // },
 
   },
   'loginUserForm':  {
@@ -1068,7 +1068,7 @@ export const forms = {
       label: 'Email',
       elementType: 'input',
       elementConfig: {
-
+        disabled: false,
         type: 'email',
         placeholder: 'Email'
       },
@@ -1077,6 +1077,7 @@ export const forms = {
         required: true,
         unique: true
       },
+     
       valid: false,
       touched: false,
       onBlur: 'findEntityByMail',
@@ -1086,7 +1087,7 @@ export const forms = {
       label: 'First name',
       elementType: 'input',
       elementConfig: {
-
+        disabled: false,
         type: 'text',
         placeholder: 'First name'
       },
@@ -1097,6 +1098,7 @@ export const forms = {
       },
       valid: false,
       touched: false,
+      
       onBlur: '',
       errMsg: 'Please tell us your name!'
     },
@@ -1104,7 +1106,7 @@ export const forms = {
       label: 'Last name',
       elementType: 'input',
       elementConfig: {
-
+        disabled: false,
         type: 'text',
         placeholder: 'Last name'
       },
@@ -1112,6 +1114,7 @@ export const forms = {
       validation: {
         required: true,
       },
+      
       valid: false,
       touched: false,
       onBlur: '',
@@ -1201,23 +1204,23 @@ export const forms = {
       valid: true,
       hidden: true
     },
-    email: {
-      label: 'Email',
-      elementType: 'input',
-      elementConfig: {
+    // email: {
+    //   label: 'Email',
+    //   elementType: 'input',
+    //   elementConfig: {
 
-        type: 'email',
-        placeholder: 'Email'
-      },
-      value: '',
-      validation: {
-        required: true,
-        unique: true
-      },
-      valid: false,
-      touched: false,
-      errMsg: 'Please enter contact email!'
-    },
+    //     type: 'email',
+    //     placeholder: 'Email'
+    //   },
+    //   value: '',
+    //   validation: {
+    //     required: true,
+    //     unique: true
+    //   },
+    //   valid: false,
+    //   touched: false,
+    //   errMsg: 'Please enter contact email!'
+    // },
     name: {
       label: 'Organization name',
       elementType: 'input',
@@ -1235,7 +1238,24 @@ export const forms = {
       touched: false,
       errMsg: 'Please enter organization name!'
     },
-    adminFirstName: {
+    adminEmail: {
+      label: 'Administrator email',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'email',
+    
+      },
+      value: '',
+      validation: {
+        required: true,
+        // unique: false
+      },
+      valid: false,
+      touched: false,
+      errMsg: 'Please enter admin email!'
+    },
+    first_name: {
       label: 'Administrator first name',
       elementType: 'input',
       elementConfig: {
@@ -1252,7 +1272,7 @@ export const forms = {
       touched: false,
       errMsg: 'Please confirm password!'
     },
-    adminLastName: {
+    last_name: {
       label: 'Administrator last name',
       elementType: 'input',
       elementConfig: {
@@ -1398,11 +1418,12 @@ export const forms = {
       },
       value: '',
       validation: {
-        required: true,
+        required: false,
         unique: true
       },
-      valid: false,
+      valid: true,
       touched: false,
+      hidden: true,
       errMsg: 'Please enter contact email!'
     },
     name: {
@@ -1546,6 +1567,17 @@ export const forms = {
       valid: true,
       hidden: true
     },
+    user_id: {
+      label: 'Admin user id',
+      elementType: 'input',
+      elementConfig: {
+        disabled: true
+      },
+      value: '',
+      validation: {},
+      valid: true,
+      hidden: true
+    },
     created_by: {
       label: 'Created by',
       elementType: 'input',
@@ -1557,24 +1589,24 @@ export const forms = {
       valid: true,
       hidden: true
     },
-    email: {
-      label: 'Email',
-      elementType: 'input',
-      elementConfig: {
+    // email: {
+    //   label: 'Email',
+    //   elementType: 'input',
+    //   elementConfig: {
 
-        type: 'email',
-        placeholder: 'Email'
-      },
-      value: '',
-      validation: {
-        required: true,
-        unique: true
-      },
-      valid: false,
-      touched: false,
-      onBlur: 'findEntityByMail',
-      errMsg: 'Please enter contact email!'
-    },
+    //     type: 'email',
+    //     placeholder: 'Email'
+    //   },
+    //   value: '',
+    //   validation: {
+    //     required: true,
+    //     unique: true
+    //   },
+    //   valid: false,
+    //   touched: false,
+    //   onBlur: 'findEntityByMail',
+    //   errMsg: 'Please enter contact email!'
+    // },
     name: {
       label: 'Provider name',
       elementType: 'input',
@@ -1592,7 +1624,24 @@ export const forms = {
       touched: false,
       errMsg: 'Please enter provider name!'
     },
-    adminFirstName: {
+    adminEmail: {
+      label: 'Administrator email',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'email',
+        placeholder: 'Administrator email'
+      },
+      value: '',
+      validation: {
+        required: true,
+        // unique: false
+      },
+      valid: false,
+      touched: false,
+      errMsg: 'Please enter admin email!'
+    },
+    first_name: {
       label: 'Administrator first name',
       elementType: 'input',
       elementConfig: {
@@ -1609,7 +1658,7 @@ export const forms = {
       touched: false,
       errMsg: 'Please confirm password!'
     },
-    adminLastName: {
+    last_name: {
       label: 'Administrator last name',
       elementType: 'input',
       elementConfig: {
@@ -1770,12 +1819,12 @@ export const forms = {
       },
       value: '',
       validation: {
-        required: true,
+        required: false,
         unique: true
       },
-      valid: false,
+      valid: true,
       touched: false,
-      onBlur: 'findEntityByMail',
+      hidden: true,
       errMsg: 'Please enter contact email!'
     },
     name: {
@@ -3143,6 +3192,22 @@ export const forms = {
       touched: false,
       errMsg: 'Please give this task a name!'
     },
+    visibility: {
+      label: 'Make this role public for all providers ',
+      elementType: 'checkbox',
+      elementConfig: {
+       
+      },
+
+      value: false,
+      validation: {
+        required: false
+      },
+      valid: true,
+      touched: false,
+
+      
+    },
   
     
   },
@@ -3193,5 +3258,20 @@ export const forms = {
     },
         
   },
-
+  'rolesForm': {
+    roles: {
+      label: 'Select role ',
+      elementType: 'select',
+      elementConfig: {
+        options: []
+      },
+      value: '',
+      validation: {
+        required: true
+      },
+      valid: false,
+      touched: false,
+      errMsg: 'Must choose a role!'
+    }   
+  },
 }

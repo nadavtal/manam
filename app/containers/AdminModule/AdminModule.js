@@ -21,7 +21,7 @@ import { updateProvider,
   allocateProviderToOrg,
   registerNewOrgUser,
   registerNewProvUser,
-  findEntityByEmail
+  findEntityBy
   } from 'containers/AppData/actions';
 import PopperMenu from '../../components/PopperMenu/PopperMenu';
 import TableFilters from '../TableFilters/TableFilters';
@@ -382,21 +382,44 @@ const AdminModule = (props) => {
             props.addOrganization(data)
           },
           onBlurFunction: (value) => {
-            console.log('onBlurFunction')
-            const searchResults = utils.searchBy(
-              'email', 
-              value, 
-              props.organizations,
-              props.providers,
-              props.users,
-              )
-            // console.log(searchResults)
-            if (searchResults) return searchResults
-            else {
-              props.findEntityByEmail(value)
-
+            console.log('onBlurFunction', value)
+            let searchResults
+            switch (value.type) {
+              case 'email':
+                  searchResults = utils.searchBy(
+                  'email', 
+                  value.value, 
+                  props.organizations,
+                  props.providers,
+                  props.users,
+                  )
+                // console.log(searchResults)
+                if (searchResults) return searchResults
+                // else {
+                //   props.findEntityBy(value.value)
+    
+                // }
+                break;
+              case 'name':
+                  searchResults = utils.searchBy(
+                  'name', 
+                  value.value, 
+                  props.organizations,
+                  props.providers,
+                  []
+                  )
+                // console.log(searchResults)
+                if (searchResults) return searchResults
+                // else {
+                //   props.findEntityBy(value.value)
+    
+                // }
+                break;
+            
+              default:
+                break;
             }
-            // return found
+
           }
         });
         break;
@@ -453,7 +476,7 @@ const AdminModule = (props) => {
             //     msg: 'This email is allready in your users'
             //   }
             // } else {
-            //   props.findEntityByEmail(value)
+            //   props.findEntityBy(value)
 
             // }
             // return found
@@ -1401,7 +1424,7 @@ const mapDispatchToProps = (dispatch) => {
     allocateProviderToOrg: (data) => dispatch(allocateProviderToOrg(data)),
     createNewOrganizationUser: (newUser, organization) =>
       dispatch(registerNewOrgUser(newUser, organization)),
-    findEntityByEmail: email => dispatch(findEntityByEmail(email)),
+    findEntityBy: email => dispatch(findEntityBy(email)),
   };
 }
 

@@ -16,10 +16,10 @@ app.get("/providers", function(req, res){
 app.post("/providers", function(req, res){
   console.log('creating provider', req.body);
   const provider = req.body
-  var q = `INSERT INTO tbl_providers ( name, date_created, remarks, created_by, contact_name, phone, address, email, region, general_status, website, about_team )
+  var q = `INSERT INTO tbl_providers ( name, date_created, remarks, created_by, contact_name, phone, address, region, general_status, website, about_team )
   VALUES
   ( '${provider.name}', now(), '${provider.remarks}', '${provider.created_by}', '${provider.contact_name}', '${provider.phone}',  '${provider.address}',
-  '${provider.email}', '${provider.region}', '${provider.general_status ? provider.general_status : 'Awaiting confirmation'}', '${provider.website}', '${provider.about_team}');`
+  '${provider.region}', '${provider.general_status ? provider.general_status : 'Awaiting confirmation'}', '${provider.website}', '${provider.about_team}');`
   console.log(q)
   connection.query(q, function (error, results) {
   if (error) res.send(error);
@@ -54,6 +54,19 @@ app.get("/providers/:id", function(req, res){
   // INNER JOIN tbl_users_roletypes ur
   //   ON ur.userId = u.id where user_name = '${req.params.email}' and password = '${req.params.password}'`
   var q = `SELECT * FROM db_3dbia.tbl_providers where email = '${req.params.email}'`
+
+  connection.query(q, function (error, results) {
+  if (error) throw error;
+  
+  res.send(results);
+  });
+ });
+ app.get("/providers/name/:name", function(req, res){
+  console.log('getting providers by mail', req.params.name)
+  // var q = `SELECT * FROM db_3dbia.tbl_users u
+  // INNER JOIN tbl_users_roletypes ur
+  //   ON ur.userId = u.id where user_name = '${req.params.name}' and password = '${req.params.password}'`
+  var q = `SELECT * FROM db_3dbia.tbl_providers where name = '${req.params.name}'`
 
   connection.query(q, function (error, results) {
   if (error) throw error;

@@ -58,9 +58,9 @@ const organizationReducer = (state = initialState, action) =>
         break;
 
       case USER_ALLOCATED:
-        // console.log('USER_ALLOCATED', action.data)
-        // console.log('USER_ALLOCATED', state.providerUsers)
-        // console.log('USER_ALLOCATED', state.organizationUsers)
+        console.log('USER_ALLOCATED', action.data)
+        // console.log('organizationsRoles', state.organizationsRoles)
+        // console.log('providerRoles', state.providerRoles)
         if (action.data.role_id && !action.data.roleName) {
           let role
           if (action.data.from_provider_id) {

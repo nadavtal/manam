@@ -154,11 +154,12 @@ export function orgTechInfoLoaded(data) {
     data,
   };
 }
-export function findEntityByEmail(data) {
-
+export function findEntityBy(element, value) {
+  console.log(element, value)
   return {
     type: actionTypes.FIND_ENTITY_BY_EMAIL,
-    data,
+    element, 
+    value
   };
 }
 export function foundResults(data) {
@@ -177,12 +178,13 @@ export function registerNewOrgUser(user, company) {
     company
   };
 }
-export function registerNewProvUser(user, company) {
+export function registerNewProvUser(user, provider, org) {
   
   return {
     type: actionTypes.REGISTER_PROV_USER,
     user,
-    company
+    provider,
+    org
   };
 }
 export function registerUserResponse(data) {
@@ -345,6 +347,28 @@ export function updateProviderOrgConnection(company, status) {
     type: actionTypes.UPDATE_PROV_ORG_CONNECTION,
     company,
     status
+  };
+}
+export function addProviderUser(data, user) {
+  return {
+    type: actionTypes.ADD_PROVIDER_USER,
+    data,
+    user
+  };
+}
+export function addOrganizationUser(data, user) {
+  return {
+    type: actionTypes.ADD_ORGANIZATTION_USER,
+    data,
+    user
+  };
+}
+export function createNewProviderUserAndThenAllocateToOrganization(newUser, organization, provider) {
+  return {
+    type: actionTypes.CREATE_PROV_USER_AND_ALLOCATE_TO_ORGANIZATION_USER,
+    newUser, 
+    organization, 
+    provider
   };
 }
 

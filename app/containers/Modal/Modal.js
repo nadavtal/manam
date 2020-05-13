@@ -83,7 +83,7 @@ render() {
           {modalData.cancelButton ? (
             <MDBBtn 
               // color="secondary" 
-              className="modalFormBtn background-turkize"
+              className="background-turkize"
               rounded
               onClick={this.props.onToggleModal}>
               {modalData.cancelButton}
@@ -94,7 +94,7 @@ render() {
           {modalData.confirmButton ? (
             <MDBBtn 
               // color="primary" 
-              className="modalFormBtn background-orange"
+              className="background-orange"
               rounded
               onClick={modalData.confirmFunction}>
               {modalData.confirmButton}

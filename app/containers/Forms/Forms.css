@@ -42,7 +42,11 @@
 
 .modalFormBtn {
   position: absolute;
-  bottom: 40px;
+  bottom: -4.47rem;
   right: 10rem;
 
+}
+
+.md-form .form-control:disabled {
+  color: rgb(170, 170, 170);
 }

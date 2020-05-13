@@ -63,10 +63,12 @@ const organizationReducer = (state = initialState, action) =>
       case USER_ALLOCATED:
         console.log('USER_ALLOCATED', action)
         if (action.data.role_id && !action.data.roleName) {
+          // console.log([...state.organizationRoles, ...state.providersRoles])
+          // console.log(state.organizationRoles, state.providersRoles)
           const role = getRoleById(action.data.role_id, state.organizationRoles)
           console.log(role)
           action.data['roleName'] = role.name;
-          action.data['description'] = role.description;
+          // action.data['description'] = role.description;
   
         }
         if (!action.data.date_created) {

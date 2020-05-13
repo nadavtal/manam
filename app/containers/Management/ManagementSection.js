@@ -12,6 +12,7 @@ import StyledTableHeader from '../../components/StyledTableHeader';
 import action from '../Process/Action';
 const ManagementSection = ({
   handleAction,
+  
   users,
   roles,
   providers,
@@ -30,7 +31,7 @@ const ManagementSection = ({
   // );
   const [selectedComponent, setSelectedComponent] = useState('Roles');
   useEffect(() => {
-    console.log('users', users)
+    // console.log('users', users)
         // users = users.map(connection => {
     //   // console.log(connection);
     //   const role = getRoleById(connection.role_id, roles);
@@ -45,16 +46,17 @@ const ManagementSection = ({
   //   const isSelected = selectedOrganization !== null && selectedOrganization !== undefined;
   const menuItems = [
     { name: 'Roles' },
-    { name: 'In-house users' },
+    { name: 'Users' },
 
   ];
   const organizationMenuItems = [
     { name: 'Providers' },
-    { name: 'Providers-users'}
+    // { name: 'Providers-users'}
   ]
   const providerMenuItems = [
     // { name: 'Organization-roles' },
-    { name: 'Organization-users' }
+    // { name: 'Organization-users' },
+    { name: 'Users - roles' },
   ]
   if (type === 'provider') menuItems.push(...providerMenuItems);
   if (type === 'organization') menuItems.push(...organizationMenuItems);
@@ -62,6 +64,14 @@ const ManagementSection = ({
   const actions = {
     'Roles': [{ name: `Create new role`, icon: 'plus', type: 'info' }],
     'In-house users': [
+      { name: `Create new user`, icon: 'user-plus', type: 'info' },
+      {
+        name: `Allocate user to in house user`,
+        icon: 'plus-circle',
+        type: 'info',
+      },
+    ],
+    'Users': [
       { name: `Create new user`, icon: 'user-plus', type: 'info' },
       {
         name: `Allocate user to in house user`,
@@ -101,19 +111,29 @@ const ManagementSection = ({
         restrictions: '',
       },
     ],
+    'Users - roles': [
+      {
+        name: `Allocate users to role`,
+        icon: 'plus-circle',
+        type: 'info',
+        restrictions: '',
+      },
+    ],
   };
+  // console.log(roles)
+  // console.log(providersRoles)
+  // console.log(organizationsRoles)
+  let allRoles = [];
+  if (type === 'provider') allRoles = [...roles, ...organizationsRoles];
+  if (type === 'organization') allRoles = roles;
 
+  const handleChecked = (userRole) => {
+    console.log(userRole)
+  }
   const SelectedComponent = ({ componentName }) => {
     switch (componentName) {
       case 'Roles': 
-        // console.log(roles)
-        // console.log(providersRoles)
-        // console.log(organizationsRoles)
-        let allRoles = [];
-        if (type === 'provider') allRoles = [...roles, ...organizationsRoles];
-        if (type === 'organization') allRoles = [...roles, ...providersRoles];
-
-        
+       
         return (
           <>
             {/* {roles && roles.length ? (
@@ -175,62 +195,112 @@ const ManagementSection = ({
         return inhouseUsers && inhouseUsers.length ? (
           <Roles
             roles={roles}
-            users={inhouseUsers}
+            users={users}
             type="inhouseUsers"
             handleAction={(actionName, val) => handleAction(actionName, val)}
           />
         ) : (
           <div>There are no in house users</div>
         );
+      case 'Users':
+        if (users.length) {
+          // users.map(user => {
+          
+          //   if (user.from_provider_id) {
+          //     const provider = getProviderById(user.from_provider_id, providers);
+          //     user['companyName'] = provider.name;
+
+          //   } else {
+          //     user['companyName'] = 'In-house';
+          //   }
+          // });
+          return <Roles
+              roles={allRoles}
+              users={users}
+              type={type === 'provider' ? 'users' : 'providerUsers'}
+              handleAction={(actionName, val) => handleAction(actionName, val)}
+              handleChecked={(userRole) => handleChecked(userRole)}
+            />
+        } else {
+          return <div>There are no user allocated</div>
+        }
 
       case 'Providers-users':
+        console.log(users)
         let providerUsers = users.filter(
           user => user.from_provider_id !== null,
         );
-        providerUsers.map(user => {
-          console.log(user, providers)
-          const provider = getProviderById(user.from_provider_id, providers);
-          // console.log(provider)
-          // if(provider && provider.name)
-          user['companyName'] = provider.name;
-        });
-        // console.log(providerUsers)
-        return providerUsers && providerUsers.length ? (
-          <Roles
-            roles={roles}
-            users={providerUsers}
-            type="providerUsers"
-            handleAction={(actionName, val) => handleAction(actionName, val)}
-          />
-        ) : (
-          <div>There are no user allocated</div>
-        );
-      case 'Organization-users':
-        // console.log('organizationUsers', organizationUsers);
-        // console.log('organizations', organizations);
+        console.log(providerUsers)
+        if (providerUsers.length) {
+          // providerUsers.map(user => {
+          //   console.log(user, providers)
+          //   const provider = getProviderById(user.from_provider_id, providers);
+          //   user['companyName'] = provider.name;
+          users.map(user => {
+            console.log(user, providers)
+            if (user.from_provider_id) {
+              const provider = getProviderById(user.from_provider_id, providers);
+              user['companyName'] = provider.name;
 
-        organizationUsers.map(user => {
-          // console.log(user)
-          if (organizations && organizations.length) {
-            const org = getOrgById(user.organization_id, organizations);
-            // console.log(org);
-            user['companyName'] = org.name;
-          }
-        });
-        // // console.log(organizationUsers)
-        return organizationUsers && organizationUsers.length ? (
-          <Roles
+            } else {
+              user['companyName'] = 'In-house';
+            }
+          });
+          return <Roles
+              roles={allRoles}
+              users={users}
+              type="providerUsers"
+              handleAction={(actionName, val) => handleAction(actionName, val)}
+            />
+        } else {
+          return <div>There are no user allocated</div>
+        }
+      case 'Users - roles':
+        const organizationUsersRoleIds = organizationUsers.map(user => user.role_id)
+        const inhouseProviderUsers = users.filter(user => !organizationUsersRoleIds.includes(user.role_id))
+        let allUsersRoles = [...organizationUsers, ...inhouseProviderUsers]
+        console.log(allUsersRoles)
+        if (allUsersRoles.length) {
+          allUsersRoles.map(user => {
+            if (user.organization_id && organizations && organizations.length) {
+              const org = getOrgById(user.organization_id, organizations);
+           
+              user['companyName'] = org.name;
+            } else user['companyName'] = 'In-House'
+          });
+          // // console.log(allUsersRoles)
+          return <Roles
+            roles={allRoles}
+            users={allUsersRoles}
+            type="organizationUsers"
+            handleAction={(actionName, val) => handleAction(actionName, val)}
+            handleChecked={(userRole) => handleChecked(userRole)}
+          />            
+        } else return <div>There are no user allocated</div>;
+        
+      case 'Organization-users':
+        console.log('organizationUsers', organizationUsers);
+        console.log('organizations', organizations);
+        if (organizationUsers.length) {
+          organizationUsers.map(user => {
+            // console.log(user)
+            if (organizations && organizations.length) {
+              const org = getOrgById(user.organization_id, organizations);
+              // console.log(org);
+              user['companyName'] = org.name;
+            }
+          });
+          // // console.log(organizationUsers)
+          return <Roles
             roles={roles}
             users={organizationUsers}
             type="organizationUsers"
             handleAction={(actionName, val) => handleAction(actionName, val)}
-          />
-        ) : (
-          <div>There are no user allocated</div>
-        );
+          />            
+        } else return <div>There are no user allocated</div>;
 
       case 'Providers':
-        // console.log(providers)
+        console.log(providers)
         return providers && providers.length ? (
           <CompaniesTable
             companies={providers}
