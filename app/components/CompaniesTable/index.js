@@ -18,10 +18,8 @@ import {
 
 const CompaniesTable = ({
   companies, 
- 
-  statuses,
-  
-  currentUser}) => {
+  type,
+  }) => {
   
   return <div className="toggled">
     
@@ -37,7 +35,7 @@ const CompaniesTable = ({
       remarks
       </div>
       <div className="col-2">
-      email
+        {type === 'organization' ?  'Metric sustem': 'Region'}
       </div>
       <div className="col-2">
       phone
@@ -71,7 +69,7 @@ const CompaniesTable = ({
         return <CompanyRow
          key={company.name} 
          company={company}
-          
+        //  statusesType='connectionStatuses' 
           />
       })}
       </div>

@@ -30,8 +30,8 @@ import {  MDBTabPane,
   MDBSwitch
   } from "mdbreact";
 import ToolBar from '../../components/ToolBar/ToolBar';
-import Extended from '../UserPage/Extended/Extended';
-import Basic from '../UserPage/Basic/Basic';
+import Extended from 'components/Extended/Extended';
+import Basic from 'components/Basic/Basic';
 import UsersPage from '../Users/index'
 import { toggleModal } from '../App/actions';
 import { getUserbyId } from '../AppData/actions';

@@ -1,5 +1,5 @@
 import React from 'react';
-import Form from '../../Forms/Form'
+import Form from '../../containers/Forms/Form'
 import {
   MDBRow,
   MDBCol,
@@ -12,7 +12,7 @@ import {
   MDBBtn
 } from 'mdbreact';
 
-import './Basic.css';
+// import './Basic.css';
 
 const PV2 = (props) => {
   return (

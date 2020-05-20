@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import './webslidemenu.css';
 import './webslidemenu02.css';
@@ -12,6 +12,7 @@ import UserInfoBox from 'components/UserInfoBox'
 import { Transition, CSSTransition } from 'react-transition-group';
 const SideMenu = ({
   menuType,
+  open,
   onMenuClick,
   onSubMenuClick,
   categories,
@@ -24,9 +25,23 @@ const SideMenu = ({
   onFinalItemClick
 }) => {
   const [active, setActive] = useState('Bridges')
-  const [showSideMenu, setShowSideMenu] = useState(false)
+  const [showSideMenu, setShowSideMenu] = useState(open ? open : false)
+
+  useEffect(() => {
+    console.log(currentUser)
+    if (currentUser.userInfo.general_status !== 'Active') {
+      setShowSideMenu(true)
+    }
+
+  }, [currentUser])
+  useEffect(() => {
+    console.log(open)
+    setShowSideMenu(open)
+
+  }, [open])
   const menu = menus[menuType];
-  console.log(currentUser)
+ 
+ 
   const defaultStyle = {
     transition: `transform 200ms, opacity 200ms ease`,
     opacity: 1
@@ -101,7 +116,7 @@ const SideMenu = ({
       </div>
       {/* <!-- Mobile Header --> */}
 
-      <div className="wsmenu02 clearfix">
+      {/* <div className="wsmenu02 clearfix">
         <div className="wsmenu02-list">
           <div className="wsmenu02-title">Section Header Style</div>
 
@@ -139,7 +154,7 @@ const SideMenu = ({
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <br />
       <br />
@@ -431,7 +446,7 @@ const SideMenu = ({
                                               icon={child.icon}
                                               size={'sm'}
                                               className={''}
-                                              // border={props.border}
+                                              // border={border}
                                               // rotate={props.rotate}
                                               // pulse={props.pulse}
                                               // spin={props.spin}

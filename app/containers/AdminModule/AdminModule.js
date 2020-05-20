@@ -34,6 +34,7 @@ import DataTable from '../../components/DataTable/DataTable';
 import { convertToMySqlDateFormat } from '../../utils/dateTimeUtils';
 import { updateTask, getOrganizationbyId, getUser, getProviderOrganizations } from '../AppData/actions';
 import ManagementSection from "../../containers/Management/ManagementSection";
+import TextSearch from '../../components/TextSearch/TextSearch'
 import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
 import Form from '../Forms/Form';
@@ -57,8 +58,8 @@ import {  MDBTabPane,
   MDBBreadcrumbItem,  
   } from "mdbreact";
 import ToolBar from '../../components/ToolBar/ToolBar';
-import Extended from '../UserPage/Extended/Extended';
-import Basic from '../UserPage/Basic/Basic';
+import Extended from '../../components/Extended/Extended';
+import Basic from '../../components/Basic/Basic';
 import Providers from '../Providers/Providers'
 import UsersPage from '../Users/index';
 import RolesDropDown from '../../components/RolesDropDown/RolesDropDown';
@@ -1270,6 +1271,8 @@ const AdminModule = (props) => {
           <MDBBreadcrumbItem active>{activeItemClassicTabs3}</MDBBreadcrumbItem>
         </MDBBreadcrumb>      */}
         <MDBTabContent className="pageContent" activeItem={activeItemClassicTabs3}>
+          <TextSearch value=""
+            onChange={val => utils.searchAll(val, props.users)}/>
           <MDBTabPane tabId={props.currentUser.userInfo.first_name}>
             <Basic
               item={props.provider}

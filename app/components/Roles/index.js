@@ -38,7 +38,7 @@ const Roles = ({ roles, type, users, handleAction, handleChecked }) => {
         </div>
       );
     case 'users':
-      console.log(roles)
+      // console.log(roles)
       actions = [
         { name: `Switch roles`, icon: 'random', type: 'info', selectOptionsType: 'role'},
         { name: `Change status`, icon: 'sync', type: 'info', selectOptionsType: 'status'},
@@ -74,6 +74,7 @@ const Roles = ({ roles, type, users, handleAction, handleChecked }) => {
               user={user}
               actions={actions} 
               type="simple"
+              statusesType="connectionStatuses"
               // handleAction={(actionName, val) => handleAction(actionName, val)}
               />
           ))}
@@ -109,8 +110,7 @@ const Roles = ({ roles, type, users, handleAction, handleChecked }) => {
             </div>
           </TableHeader>
           {users.length && users.map((user, index) => {
-            
-            getRolesByUser(user.user_id, users, roles)
+
             return <UserRow 
               className=""
               roles={roles} 
@@ -118,6 +118,7 @@ const Roles = ({ roles, type, users, handleAction, handleChecked }) => {
               user={user}
               actions={actions} 
               type="extended"
+              statusesType="connectionStatuses"
               // handleAction={(actionName, val) => handleAction(actionName, val)}
               />
         })}
@@ -155,6 +156,7 @@ const Roles = ({ roles, type, users, handleAction, handleChecked }) => {
                   user={user}
                   actions={actions}
                   type="extended"
+                  statusesType="connectionStatuses"
                   // handleAction={actionName => handleAction(actionName)}
                 />
                 // <OrgProviderUserRow
@@ -210,6 +212,7 @@ const Roles = ({ roles, type, users, handleAction, handleChecked }) => {
                 type="extended"
                 index={index}
                 handleChecked={user => handleChecked(user)}
+                statusesType="connectionStatuses"
               />
               // <OrgProviderUserRow
               //   className=""

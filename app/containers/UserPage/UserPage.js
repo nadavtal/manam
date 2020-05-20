@@ -9,8 +9,8 @@ import {
 } from 'containers/App/selectors';
 import ToolBar from '../../components/ToolBar/ToolBar';
 import reducer from './reducer';
-import Basic from './Basic/Basic';
-import Extended from './Extended/Extended';
+// import Basic from 'components/Basic/Basic';
+// import Extended from './Extended/Extended';
 import { makeSelectUser } from './selectors';
 import * as actions from './actions'
 

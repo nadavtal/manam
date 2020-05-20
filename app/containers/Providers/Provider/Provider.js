@@ -30,22 +30,11 @@ import Projects from '../../Projects/Projects';
 import SideMenu from '../../../components/SideMenu/SideMenu';
 import {  MDBTabPane,
   MDBTabContent,
-  MDBNav,
-  MDBNavItem,
-  MDBNavLink,
   MDBIcon,
   MDBBtn,
   MDBSwitch,
-  MDBDropdown,
-  MDBDropdownToggle,
-  MDBDropdownMenu,
-  MDBDropdownItem,
   } from "mdbreact";
-import ToolBar from '../../../components/ToolBar/ToolBar';
-import Extended from '../../UserPage/Extended/Extended';
-import Basic from '../../UserPage/Basic/Basic';
-import UsersPage from '../../Users/index';
-import RolesDropDown from '../../../components/RolesDropDown/RolesDropDown'
+
 
 import { addOrganizationToRoles, getUserById, getRoleById, searchBy } from '../../../utils/dataUtils'
 import reducer from './reducer';
@@ -411,78 +400,110 @@ const ProviderPage = (props) => {
   else if (!selectedOrganization)
     return <div>NO SELECTED ORGNIZATION</div> 
   else return (
+         <div className="position-relative">
+           <SideMenu
+             menuType="providerMenu"
+             onMenuClick={name => handleMenuClick(name)}
+             onSubMenuClick={name => handleSubMenuClick(name)}
+             linkToProviderPage={provider_id =>
+               linkToProviderPage(provider_id)
+             }
+             organization={selectedOrganization}
+             provider={props.provider ? props.provider : null}
+             currentUser={props.currentUser}
+             currentUserRole={props.currentUserRole}
+             onFinalItemClick={(menuItem, menuType) => {
+               if (menuItem.org_id) changeWorkSpace(menuItem.org_id);
+               else if (menuItem.provider_id)
+                 linkToProviderPage(menuItem.provider_id);
+             }}
+           />
 
-    <div className="position-relative">
-        <SideMenu
-          menuType="providerMenu"
-          onMenuClick={(name) => handleMenuClick(name)}
-          onSubMenuClick={(name) => handleSubMenuClick(name)}
-          linkToProviderPage={(provider_id) => linkToProviderPage(provider_id)}
-          organization={selectedOrganization}
-          provider={props.provider ? props.provider : null}
-          currentUser={props.currentUser}
-          currentUserRole={props.currentUserRole}
-          onFinalItemClick={(menuItem, menuType) => {
-            if (menuItem.org_id) changeWorkSpace(menuItem.org_id)
-            else if (menuItem.provider_id) linkToProviderPage(menuItem.provider_id)
-          }}
-
-          />
-        
-        
-      <div className="classic-tabs">
-
-        {!props.loading ? <MDBTabContent className="pageContent" activeItem={activeItemClassicTabs3}>
-          {props.currentUser && props.currentUser.userInfo.general_status !== 'Active' ?
-            <div className="ml-5">
-              <h3 className="ml-5">
-                Please activate your user and provider accounts  
-              </h3>
-              <p className="ml-5">
-                fill in your personal info and organization info in the main menu
-              </p>
-            </div>
-            :
-           <> 
-            <MDBTabPane tabId={'Info'}>
-              <Basic
-                item={props.provider}
-                updateItem={data => handleAction('Update provider', data) }
-                dataType="updateProviderForm"
-                />
-            </MDBTabPane>
-            <MDBTabPane tabId="Bridges">
-              {selectedbridge ?
-              <>
-              <BridgePage
-                bridgeId={selectedbridge}
-                orgId={selectedOrganization.id}
-                type="providerPage"
-                />
-                <IconButtonToolTip
-                  className="leftTopCorner text-white mt-2"
-                  size="lg"
-                  iconName="chevron-left"
-                  toolTipType="info"
-                  toolTipPosition="right"
-                  // toolTipEffect="float"
-                  toolTipText="Back to bridges"
-                  onClickFunction={() => setSelectedbridge(null)}
-                  />
-              </>
-              :
-              props.bridges && props.bridges.length ?
-              <Projects
-                items={props.bridges.filter(bridge => bridge.organization_id == selectedOrganization)}
-                rootLink={props.match.url}
-                // onProjectClick={(orgId, bridgeId) => linkToBridgePage(orgId, bridgeId)}
-                onProjectClick={bridgeId => setSelectedbridge(bridgeId)}
-                />
-              : <div>No bridges yet...</div>
-              }
-            </MDBTabPane>
-            <MDBTabPane tabId="Messages">
-              {/* <TableFilters
+           <div className="classic-tabs">
+             {!props.loading ? (
+               <MDBTabContent
+                 className="pageContent"
+                 activeItem={activeItemClassicTabs3}
+               >
+                 {props.currentUser &&
+                 props.currentUser.userInfo.general_status !==
+                   'Active' ? (
+                   <div className="ml-5">
+                     <h3 className="ml-5">
+                       Please activate your user and provider accounts
+                     </h3>
+                     <p className="ml-5">
+                       fill in your personal info and organization info
+                       in the main menu
+                     </p>
+                   </div>
+                 ) : (
+                   <>
+                     <MDBTabPane tabId={'Info'}>
+                       <ManagementSection
+                         handleAction={(actionName, value) =>
+                           handleAction(actionName, value)
+                         }
+                         users={props.providerUsers}
+                         roles={props.providerRoles}
+                         company={props.provider}
+                         organizations={props.organizations}
+                         organizationsRoles={orgRolesBySelectedOrg()}
+                         organizationUsers={props.organizationUsers.filter(
+                           orgUser =>
+                             orgUser.organization_id ==
+                             selectedOrganization.id,
+                         )}
+                         type="general"
+                       />
+                       {/* <Basic
+                         item={props.provider}
+                         updateItem={data =>
+                           handleAction('Update provider', data)
+                         }
+                         dataType="updateProviderForm"
+                       /> */}
+                     </MDBTabPane>
+                     <MDBTabPane tabId="Bridges">
+                       {selectedbridge ? (
+                         <>
+                           <BridgePage
+                             bridgeId={selectedbridge}
+                             orgId={selectedOrganization.id}
+                             type="providerPage"
+                           />
+                           <IconButtonToolTip
+                             className="leftTopCorner text-white mt-2"
+                             size="lg"
+                             iconName="chevron-left"
+                             toolTipType="info"
+                             toolTipPosition="right"
+                             // toolTipEffect="float"
+                             toolTipText="Back to bridges"
+                             onClickFunction={() =>
+                               setSelectedbridge(null)
+                             }
+                           />
+                         </>
+                       ) : props.bridges && props.bridges.length ? (
+                         <Projects
+                           items={props.bridges.filter(
+                             bridge =>
+                               bridge.organization_id ==
+                               selectedOrganization,
+                           )}
+                           rootLink={props.match.url}
+                           // onProjectClick={(orgId, bridgeId) => linkToBridgePage(orgId, bridgeId)}
+                           onProjectClick={bridgeId =>
+                             setSelectedbridge(bridgeId)
+                           }
+                         />
+                       ) : (
+                         <div>No bridges yet...</div>
+                       )}
+                     </MDBTabPane>
+                     <MDBTabPane tabId="Messages">
+                       {/* <TableFilters
                 dataType={'messagesTable'}
                 data={props.messages}
                 // checkBoxFunction={(item) => this.addRemoveItem(item, task.dataType)}
@@ -491,109 +512,128 @@ const ProviderPage = (props) => {
                 tableName={'Messages'}
                 onRowClick={(id) => console.log(id)}
               /> */}
+                     </MDBTabPane>
+                     <MDBTabPane tabId="Schedule">
+                       <Calender />
+                     </MDBTabPane>
 
-                </MDBTabPane>
-            <MDBTabPane tabId="Schedule">
-              <Calender />
-
-            </MDBTabPane>
-         
-            <MDBTabPane tabId="Management">
-              <ManagementSection
-                  handleAction={(actionName, value) => handleAction(actionName, value)}
-                  users={props.providerUsers}
-                  roles={props.providerRoles}
-                  company={props.provider}
-                  organizations={props.organizations}
-                  organizationsRoles={orgRolesBySelectedOrg()}
-                  organizationUsers={props.organizationUsers.filter(orgUser => orgUser.organization_id == selectedOrganization.id)}
-                  type="provider"
-                />
-            </MDBTabPane>
-            <MDBTabPane tabId="Manage projects">
-              <div className='text-center mt-3 mb-5 d-flex justify-content-between'>
-                <h4>
-                  <strong>{props.provider.name} projects</strong>
-                </h4>
-                <MDBBtn
-                  color='info'
-                  rounded
-                  className='ml-3'
-                  onClick={() => toggleModal('createProject')}
-                >
-                  Submit new project <MDBIcon icon='image' className='ml-1' />
-                </MDBBtn>
-              </div>
-              {/* <Form
+                     <MDBTabPane tabId="Management">
+                       <ManagementSection
+                         handleAction={(actionName, value) =>
+                           handleAction(actionName, value)
+                         }
+                         users={props.providerUsers}
+                         roles={props.providerRoles}
+                         company={props.provider}
+                         organizations={props.organizations}
+                         organizationsRoles={orgRolesBySelectedOrg()}
+                         organizationUsers={props.organizationUsers.filter(
+                           orgUser =>
+                             orgUser.organization_id ==
+                             selectedOrganization.id,
+                         )}
+                         type="provider"
+                       />
+                     </MDBTabPane>
+                     <MDBTabPane tabId="Manage projects">
+                       <div className="text-center mt-3 mb-5 d-flex justify-content-between">
+                         <h4>
+                           <strong>
+                             {props.provider.name} projects
+                           </strong>
+                         </h4>
+                         <MDBBtn
+                           color="info"
+                           rounded
+                           className="ml-3"
+                           onClick={() => toggleModal('createProject')}
+                         >
+                           Submit new project{' '}
+                           <MDBIcon icon="image" className="ml-1" />
+                         </MDBBtn>
+                       </div>
+                       {/* <Form
                 formType="projectForm"
                 editMode="create"
                 createFunction= {(data) => createNewProject(data)}
               ></Form> */}
-              {/* <Projects></Projects> */}
+                       {/* <Projects></Projects> */}
+                     </MDBTabPane>
+                     <MDBTabPane tabId="Manage processes">
+                       <MDBSwitch
+                         checked={showProviderProcesses}
+                         onChange={() =>
+                           setsShowProviderProcesses(
+                             !showProviderProcesses,
+                           )
+                         }
+                         labelLeft=""
+                         labelRight={`Show ${
+                           showProviderProcesses
+                             ? 'process templates'
+                             : 'all processes'
+                         }`}
+                       />
+                       {showProviderProcesses ? (
+                         <AccordionTable
+                           data={props.projectsProcesses.filter(
+                             process =>
+                               process.organization_id ==
+                               selectedOrganization.id,
+                           )}
+                           rows={props.tasks}
+                           dataType="processes"
+                           // bridges={props.bridges}
+                           changePercentage={(task, value) =>
+                             changeTaskPercentage(task, value)
+                           }
+                           changeDate={(task, value) =>
+                             changeTaskDate(task, value)
+                           }
+                         />
+                       ) : (
+                         <Processes provider={props.provider} />
+                       )}
+                     </MDBTabPane>
+                     <MDBTabPane tabId="Organizations">
+                       <br />
+                       <TableFilters
+                         dataType={'organizationsTable'}
+                         data={props.organizations}
+                         checkBoxFunction={item => console.log(item)}
+                         isChecked={item => {
+                           return false;
+                         }}
+                         // providers={this.props.providers}
+                         tableName={'Organizations'}
+                         onRowClick={id => console.log(id)}
+                       />
+                     </MDBTabPane>
 
-
-
-            </MDBTabPane>
-            <MDBTabPane tabId="Manage processes">
-
-            <MDBSwitch
-                checked={showProviderProcesses}
-                onChange={() => setsShowProviderProcesses(!showProviderProcesses)}
-                labelLeft=""
-                labelRight={`Show ${showProviderProcesses ? 'process templates' : 'all processes'}`}
-                />
-              {showProviderProcesses?
-              <AccordionTable
-                  data={props.projectsProcesses.filter(process => process.organization_id == selectedOrganization.id)}
-                  rows={props.tasks}
-                  dataType="processes"
-                  // bridges={props.bridges}
-                  changePercentage={(task, value) => changeTaskPercentage(task, value)}
-                  changeDate={(task, value) => changeTaskDate(task, value)}
-                  />
-              :
-              <Processes
-                provider={props.provider}
-                />}
-
-            </MDBTabPane>
-            <MDBTabPane tabId="Organizations">
-              <br />
-              <TableFilters
-                dataType={'organizationsTable'}
-                data={props.organizations}
-                checkBoxFunction={(item) => console.log(item)}
-                isChecked={(item) => {return false}}
-                // providers={this.props.providers}
-                tableName={'Organizations'}
-                onRowClick={(id) => linkToOrgPage(id)}
-              />
-
-                </MDBTabPane>
-          
-            <MDBTabPane tabId="Settings">
-              <br />
-              <TableFilters
-                dataType={'organizationsTable'}
-                data={props.organizations}
-                checkBoxFunction={(item) => console.log(item)}
-                isChecked={(item) => {return false}}
-                // providers={this.props.providers}
-                tableName={'Organizations'}
-                onRowClick={(id) => linkToOrgPage(id)}
-              />
-
-                </MDBTabPane>
-            </>
-            }
-          </MDBTabContent>
-           : <strong>Getting {props.provider.name} data</strong>}
-      </div>
-      <br></br>
-
-
-    </div>
-    );
+                     <MDBTabPane tabId="Settings">
+                       <br />
+                       <TableFilters
+                         dataType={'organizationsTable'}
+                         data={props.organizations}
+                         checkBoxFunction={item => console.log(item)}
+                         isChecked={item => {
+                           return false;
+                         }}
+                         // providers={this.props.providers}
+                         tableName={'Organizations'}
+                         onRowClick={id => linkToOrgPage(id)}
+                       />
+                     </MDBTabPane>
+                   </>
+                 )}
+               </MDBTabContent>
+             ) : (
+               <strong>Getting {props.provider.name} data</strong>
+             )}
+           </div>
+           <br />
+         </div>
+       );
 }
 
 const mapStateToProps = createStructuredSelector({

@@ -8,8 +8,27 @@ import {
   getProviderById,
   getOrgById,
 } from '../../utils/dataUtils';
+import Basic from 'components/Basic/Basic'
 import StyledTableHeader from '../../components/StyledTableHeader';
 import action from '../Process/Action';
+let menuItems  = {
+  provider: [
+    { name: 'Roles' },
+    { name: 'Users' },
+    { name: 'Users - roles' },
+  ],
+  organization: [
+    { name: 'Roles' },
+    { name: 'In-house users' },
+    { name: 'Providers' },
+    { name: 'Providers users' },
+  ],
+  general: [
+    { name: 'Info' },
+    { name: 'Organizations' },
+
+  ]
+};
 const ManagementSection = ({
   handleAction,
   
@@ -29,37 +48,13 @@ const ManagementSection = ({
   //     ? localStorage.getItem('selectedComponent')
   //     : 'General roles',
   // );
-  const [selectedComponent, setSelectedComponent] = useState('Roles');
-  useEffect(() => {
-    // console.log('users', users)
-        // users = users.map(connection => {
-    //   // console.log(connection);
-    //   const role = getRoleById(connection.role_id, roles);
-    //   // const user = getUserById(connection.user_id, )
-    //   connection = { ...connection, ...role };
-    //   return connection;
-    // });
-    // console.log('users', users)
-    // setOrgUsers(users)
-    return () => {};
-  }, [users]);
+  console.log(menuItems[type])
+  const [selectedComponent, setSelectedComponent] = useState(menuItems[type][0].name);
+  // useEffect(() => {
+  //   setSelectedComponent(menuItems[type][0])
+  //   return () => {};
+  // }, [type]);
   //   const isSelected = selectedOrganization !== null && selectedOrganization !== undefined;
-  const menuItems = [
-    { name: 'Roles' },
-    { name: 'Users' },
-
-  ];
-  const organizationMenuItems = [
-    { name: 'Providers' },
-    // { name: 'Providers-users'}
-  ]
-  const providerMenuItems = [
-    // { name: 'Organization-roles' },
-    // { name: 'Organization-users' },
-    { name: 'Users - roles' },
-  ]
-  if (type === 'provider') menuItems.push(...providerMenuItems);
-  if (type === 'organization') menuItems.push(...organizationMenuItems);
 
   const actions = {
     'Roles': [{ name: `Create new role`, icon: 'plus', type: 'info' }],
@@ -128,7 +123,7 @@ const ManagementSection = ({
   if (type === 'organization') allRoles = roles;
 
   const handleChecked = (userRole) => {
-    console.log(userRole)
+    // console.log(userRole)
   }
   const SelectedComponent = ({ componentName }) => {
     switch (componentName) {
@@ -195,7 +190,7 @@ const ManagementSection = ({
         return inhouseUsers && inhouseUsers.length ? (
           <Roles
             roles={roles}
-            users={users}
+            users={inhouseUsers}
             type="inhouseUsers"
             handleAction={(actionName, val) => handleAction(actionName, val)}
           />
@@ -225,7 +220,7 @@ const ManagementSection = ({
           return <div>There are no user allocated</div>
         }
 
-      case 'Providers-users':
+      case 'Providers users':
         console.log(users)
         let providerUsers = users.filter(
           user => user.from_provider_id !== null,
@@ -236,19 +231,20 @@ const ManagementSection = ({
           //   console.log(user, providers)
           //   const provider = getProviderById(user.from_provider_id, providers);
           //   user['companyName'] = provider.name;
-          users.map(user => {
+          providerUsers.map(user => {
             console.log(user, providers)
             if (user.from_provider_id) {
               const provider = getProviderById(user.from_provider_id, providers);
               user['companyName'] = provider.name;
 
-            } else {
-              user['companyName'] = 'In-house';
-            }
+            } 
+            // else {
+            //   user['companyName'] = 'In-house';
+            // }
           });
           return <Roles
               roles={allRoles}
-              users={users}
+              users={providerUsers}
               type="providerUsers"
               handleAction={(actionName, val) => handleAction(actionName, val)}
             />
@@ -304,6 +300,7 @@ const ManagementSection = ({
         return providers && providers.length ? (
           <CompaniesTable
             companies={providers}
+            type="providers"
             // handleAction={(actionName, val) => handleAction(actionName, val)}
           />
         ) : (
@@ -313,12 +310,20 @@ const ManagementSection = ({
         return organizations && organizations.length ? (
           <CompaniesTable
             companies={organizations}
+            type="organization"
             // handleAction={(actionName, val) => handleAction(actionName, val)}
           />
         ) : (
           <div>There are no providers</div>
         );
-
+      case 'Info':
+        return <Basic
+          item={company}
+          updateItem={data =>
+            handleAction('Update provider', data)
+          }
+          dataType="updateProviderForm"
+        />
       default:
         return  <div>No menu item selected</div>
     }
@@ -334,7 +339,7 @@ const ManagementSection = ({
       />
       <div className="row">
         <div className="col-2 border-right border-dark">
-          {menuItems.map(item => (
+          {menuItems[type].map(item => (
             <h6
               key={item.name}
               className={`pl-5 py-3 ${

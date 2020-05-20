@@ -50,8 +50,8 @@ import './organization.css';
 import Processes from '../../Processes/Processes';
 import * as actions from './actions';
 import ToolBar from '../../../components/ToolBar/ToolBar';
-import Extended from '../../UserPage/Extended/Extended';
-import Basic from '../../UserPage/Basic/Basic';
+import Extended from '../../../components/Extended/Extended';
+import Basic from '../../../components/Basic/Basic';
 import { getOrganizationbyId } from '../../AppData/actions';
 import { createNewBridge } from '../../BridgePage/actions';
 import { createNewProject } from '../../Projects/actions';
@@ -77,11 +77,13 @@ const OrganizationPage = props => {
   const [showOrganizationProcesses, setsShowOrganizationProcesses] = useState();
   const [selectedProject, setSelectedProject] = useState({});
   const [selectedbridge, setSelectedbridge] = useState();
+  const [sideMenuOpen, setSideMenuOpen] = useState(false);
   let hasBridges = props.bridges.length ? true : false;
   let hasProcessesTemplates = props.processesTemplates.length ? true : false;
   let hasProcesses = props.projectsProcesses.length ? true : false;
   let hasProjects = props.projects.length ? true : false;
   let orgId;
+  let hasUsers;
 
   useEffect(() => {
     orgId = props.match.params.id;
@@ -95,10 +97,59 @@ const OrganizationPage = props => {
     hasProcesses = props.projectsProcesses.length ? true : false;
     hasProcessesTemplates = props.processesTemplates.length ? true : false;
     hasProjects = props.projects.length ? true : false;
+    hasUsers = props.organizationUsers.length ? true : false;
+    if (props.organization.general_status === 'Active') {
+      if ( hasBridges) setActiveItemClassicTabs3('Bridges') 
+      else setActiveItemClassicTabs3('Management')
+      
+    }
+    console.log(props.organization.general_status, props.currentUser.userInfo.general_status)
+    console.log(props.organization.general_status !== 'Active');
+    console.log(props.organizationUsers.length);
+    console.log(props.organization && props.organization.general_status !== 'Active' && props.currentUser && props.currentUser.userInfo.general_status == 'Active')
+    if (props.organization &&
+        props.organization.general_status == 'Active' && 
+        props.currentUser && 
+        props.currentUser.userInfo.general_status == 'Active'
+        ) 
+      {
+        if (props.organizationUsers.length == 1) {
+          props.onToggleAlert({
+            title: `All done! `,
+            // text: `${user.first_name} ${user.last_name} is allready allocated as ${role.name}`,
+            confirmButton: 'Got it',
+            // cancelButton: 'Cancel',
+            alertType: 'success',
+            icon: 'check-circle',
+            body: <div className="ml-5">
+                    <h3 className="ml-5">
+                      {`This is the 'Management' tab. this is where you manage all your users, roles and providers`} 
+                    </h3>
+                    {/* <p className="ml-5">
+                      You can allways access your organization info in the 'Info' tab in the side menu
+                    </p> */}
+                  </div>
+            ,
+            // onCloseFunction: () => {
+            //   // setSideMenuOpen(true)
+              
+            //   // setActiveItemClassicTabs3('info')
+            //   console.log(sideMenuOpen)
+            // },
+            confirmFunction: () => {
+              // setSideMenuOpen(true);
+              
+              // setActiveItemClassicTabs3('info')
+            }
+          });
+        }
+    
+    }
+  
   }, [props.organization]);
 
   useEffect(() => {
-    console.log(props.providersRoles, props.providers)
+    // console.log(props.providersRoles, props.providers)
     if (props.providersRoles.length && props.providers.length)
     addProviderToRoles(props.providersRoles, props.providers)
 
@@ -117,6 +168,81 @@ const OrganizationPage = props => {
     })
 
   }, [props.organizationUsers]);
+  useEffect(() => {
+    if (props.currentUser && props.currentUser.userInfo.general_status !== 'Active') {
+      props.onToggleAlert({
+        title: `Welcome ${props.currentUser.userInfo.first_name} ${props.currentUser.userInfo.last_name}`,
+        // text: `${user.first_name} ${user.last_name} is allready allocated as ${role.name}`,
+        confirmButton: 'Got it',
+        // cancelButton: 'Cancel',
+        alertType: 'success',
+        icon: 'door-open',
+        body: <div className="ml-5">
+                <h3 className="ml-5">
+                  Please activate your user account by filling in your personal info 
+                </h3>
+                <p className="ml-5">
+                  You can allways access your personal info in the side menu
+                </p>
+              </div>
+        ,
+        onCloseFunction: () => {
+          setSideMenuOpen(true)
+          console.log(sideMenuOpen)
+        },
+        confirmFunction: () => {
+          setSideMenuOpen(true);
+        }
+      });
+    }
+    // if (props.organization.general_status !== 'Active') setActiveItemClassicTabs3('Info')
+     else {
+       
+       if 
+        (props.organization.name &&
+        props.organization.general_status !== 'Active' && 
+        props.currentUser && 
+        props.currentUser.userInfo.general_status == 'Active'
+        ) 
+        {   
+
+        props.onToggleAlert({
+          title: `Great! `,
+          // text: `${user.first_name} ${user.last_name} is allready allocated as ${role.name}`,
+          confirmButton: 'Got it',
+          // cancelButton: 'Cancel',
+          alertType: 'success',
+          icon: 'check-circle',
+          body: <div className="ml-5">
+                  <h3 className="ml-5">
+                    {`This is the 'Info' tab. this is where you manage all your organization information`} 
+                  </h3>
+                  {/* <p className="ml-5">
+                    You can allways access your organization info in the 'Info' tab in the side menu
+                  </p> */}
+                </div>
+          ,
+          // onCloseFunction: () => {
+          //   // setSideMenuOpen(true)
+            
+          //   // setActiveItemClassicTabs3('info')
+          //   console.log(sideMenuOpen)
+          // },
+          confirmFunction: () => {
+            // setSideMenuOpen(true);
+            
+            // setActiveItemClassicTabs3('info')
+          }
+        });
+
+     }
+  
+  
+  }  
+    return () => {
+      
+    }
+  }, [props.currentUser])
   const toggleClassicTabs3 = tab => {
     // console.log(activeItemClassicTabs3, tab)
     if (activeItemClassicTabs3 !== tab) {
@@ -196,7 +322,7 @@ const OrganizationPage = props => {
           data: {
             editMode: 'Create',
             colWidth: 12,
-            roleTypes: props.roleTypes,
+            roleTypes: props.roleTypes.filter(roleType => roleType.id !== 2 && roleType.id!== 3),
           },
           confirmFunction: (data, event) => {
             data['organization_id'] = props.organization.id;
@@ -267,8 +393,11 @@ const OrganizationPage = props => {
               cancelButton: 'Cancel',
               // alertType: 'info',
               confirmFunction: () => {
-                console.log(data)
-                data['general_status'] = 'Awaiting confirmation'
+                console.log(data);
+                const fullName = props.currentUser.userInfo.first_name + ' ' + props.currentUser.userInfo.last_name;
+                data.created_by = fullName
+                data['general_status'] = 'Awaiting confirmation';
+
                 props.createNewOrganizationProvider(data, props.organization);
                 
 
@@ -446,6 +575,7 @@ const OrganizationPage = props => {
     <div className="position-relative">
       <SideMenu
         menuType="organizationMenu"
+        open={sideMenuOpen}
         onMenuClick={name => handleMenuClick(name)}
         onSubMenuClick={name => handleSubMenuClick(name)}
         organization={props.organization ? props.organization : null}
@@ -461,28 +591,11 @@ const OrganizationPage = props => {
             className="pageContent"
             activeItem={activeItemClassicTabs3}
           >
-            {props.currentUser && props.currentUser.userInfo.general_status !== 'Active' ?
-            <div className="ml-5">
-              <h3 className="ml-5">
-                Please activate your user and organization accounts  
-              </h3>
-              <p className="ml-5">
-                fill in your personal info and organization info in the main menu
-              </p>
-            </div>
-            :
-            // props.organization && props.organization.general_status !== 'Active' ?
-            // <div className="ml-5">
-            //   <h3 className="ml-5">
-            //     Please activate your organization account 
-            //   </h3>
-            //   <p className="ml-5">
-            //    fill in your organization info and organization info in the main menu
-            //   </p>
-            // </div>
-            // :
-            <>
-            {/* INFO */}
+            
+
+            {props.currentUser && props.currentUser.userInfo.general_status == 'Active' && (
+              <>
+ {/* INFO */}
             {activeItemClassicTabs3 == 'Info' && (
               <MDBTabPane tabId={'Info'}>
                 <Basic
@@ -686,7 +799,9 @@ const OrganizationPage = props => {
               />
             </MDBTabPane>
             </>
-            }
+            )}
+           
+         
           </MDBTabContent>
         ) : (
           <strong>Getting {props.organization.name} data</strong>

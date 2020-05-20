@@ -95,4 +95,39 @@ export const getAvailableRolesByUserId = (allRoles, accupiedRoles)  => {
   let availableRoles = allRoles.filter(role => !accupiedRoles.includes(role));
   return availableRoles
 }
+export const getAvailableUsersByRoleId = (roleId, userRoles)  => {
+  // console.log(allRoles, accupiedRoles)
+  let availableRoles = userRoles.filter(role => role.role_id !== roleId);
+  return availableRoles
+}
+
+export const searchAll = (val, data) => {
+  console.log(typeof(val))
+  let results = []
+
+  data.map(item => {
+    // console.log(item)
+    Object.keys(item).map(key => {
+      // console.log(key, item[key])
+      if ( typeof(val)  === 'string' 
+        && typeof(item[key])  === 'string' 
+        && item[key].includes(val)) {
+          console.log('Found string', key)
+          console.log(item)
+          results.push(item)
+        }
+      if ( typeof(item[key])  === 'number') {
+        
+        // const strVal = JSON.stringify(val)
+        const strKey = JSON.stringify(item[key])
+        if (strKey.includes(val)) {
+          console.log('Found numberp', key)
+          console.log(item)
+          results.push(item)
+        }
+      }
+    })
+  })
+  console.log(results)
+}
 

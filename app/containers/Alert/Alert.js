@@ -18,6 +18,7 @@ const AlertComponent = ({
 }) => {
   const [showButton, setShowButton] = useState(true);
   const [showMessage, setShowMessage] = useState(false);
+  console.log(alertData)
   const handleConfirmationClick = () => {
     if (alertData.confirmFunction) {
       alertData.confirmFunction()
@@ -38,11 +39,11 @@ const AlertComponent = ({
           className="screenTopCenter"
           variant={alertData && alertData.alertType ? alertData.alertType : 'primary'}
           dismissible
-          onClose={onToggleAlert}
+          onClose={alertData && alertData.onCloseFunction ? alertData.onCloseFunction : onToggleAlert}
         >
           {alertData && <>
             <Alert.Heading>
-              <MDBIcon icon="exclamation"
+              <MDBIcon icon={alertData.icon ? alertData.icon : "exclamation"}
                 className={`mr-3`}/>
               {alertData ? alertData.title : ''}
             </Alert.Heading>

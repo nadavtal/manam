@@ -9,7 +9,8 @@ import {
   makeSelectLoading,
   makeSelectCurrentUser,
   makeSelectStatuses,
-  makeSelectConnectionStatuses
+  makeSelectConnectionStatuses,
+  makeSelectCurrentUserRole
 } from 'containers/App/selectors';
 import { makeSelectOrganizationUsers } from 'containers/Organizations/Organization/selectors'
 import { toggleAlert, toggleModal } from 'containers/App/actions';
@@ -37,12 +38,15 @@ const key = 'userRow';
 
 function UserRow({
   user,
+  currentUserRole,
   orgUsers,
   checked,
   onClick,
   index,
   handleChecked,
   statuses,
+  connectionStatuses,
+  statusesType,
   roles,
   onToggleAlert,
   onUpdateOrgUser,
@@ -54,13 +58,8 @@ function UserRow({
 }) {
   // console.log(user);
   const [editMode, setEditMode] = useState(false);
- 
-  // const role = getRoleById(user.role_id, roles);
-  // const getStatusByName = statusName => {
-  //   Object.keys(statuses)
-  //   statuses.find(status => status.name === statusName)
-  // }
-  // console.log('role', role)
+  console.log(currentUserRole)
+
   let actions = [
     // { name: `Switch roles`, icon: 'random', type: 'info', selectOptionsType: 'role'},
     // { name: `Change status`, icon: 'sync', type: 'info', selectOptionsType: 'status'},
@@ -69,7 +68,7 @@ function UserRow({
     // { name: `Delete role`, icon: 'trash', type: 'error', confirmationMessageType: 'danger', confirmationMessage: 'Are you sure you want to delete '},
   ]
   if (type === 'extended') {
-    actions = [{ name: `Add role`, icon: 'plus', type: 'info'}, ...actions]
+    actions = [ ...actions, { name: `Add role`, icon: 'plus', type: 'info'}]
   }
   const handleAction = (actionName, val) => {
     console.log(actionName, val)
@@ -102,7 +101,7 @@ function UserRow({
         }
       case 'Change status':
         // const status = statuses.find(status => status.id === val)
-        const status = statuses[val]
+        const status = statusesType === 'connectionStatuses' ? connectionStatuses[val] : statuses[val]
         
         onToggleAlert({
           title: `${actionName} for ${user.first_name} ${user.last_name}`,
@@ -186,6 +185,8 @@ function UserRow({
 
   }
   if (type === 'simple') {
+    console.log(user.status)
+    console.log(statuses)
     return (
       <TableRow
         className={`row py-2 tableRow ${editMode && 'active'}`}
@@ -214,13 +215,27 @@ function UserRow({
         <div className="col-2">
           {editMode ? (
             <Select
-              value={user.status}
+              value={
+                statusesType === 'connectionStatuses'
+                  ? user.status
+                  : user.general_status
+              }
               className="fullWidth"
-              options={statuses}
+              options={
+                statusesType === 'connectionStatuses'
+                  ? connectionStatuses
+                  : statuses
+              }
               onChange={val => handleAction('Change status', val)}
             />
           ) : (
-            <Status status={statuses[user.status]} />
+            <Status
+              status={
+                statusesType === 'connectionStatuses'
+                  ? connectionStatuses[user.status]
+                  : statuses[user.status]
+              }
+            />
           )}
         </div>
         <div className="col-2">
@@ -238,6 +253,8 @@ function UserRow({
       </TableRow>
     );
   } else if (type === 'extended') {
+    console.log(user.status)
+    console.log(connectionStatuses)
     return (
       <TableRow
         className={`row py-2 tableRow ${editMode && 'active'}`}
@@ -259,7 +276,7 @@ function UserRow({
         )}
         {user.roleName ? (
           <div className="col-2">
-            {editMode ? (
+            {editMode && currentUserRole === 'Provider administrator'? (
               <Select
                 value={user.roleName}
                 options={roles}
@@ -281,13 +298,13 @@ function UserRow({
         <div className="col-1">
           {editMode ? (
             <Select
-              value={user.status}
+              value={statusesType === 'connectionStatuses' ? user.status : user.general_status}
               className="fullWidth"
-              options={statuses}
+              options={statusesType === 'connectionStatuses' ? connectionStatuses : statuses}
               onChange={val => handleAction('Change status', val)}
             />
           ) : (
-            <Status status={statuses[user.status]} />
+            <Status status={statusesType === 'connectionStatuses' ? connectionStatuses[user.status] : statuses[user.status]} />
           )}
         </div>
         <div className="col-1 d-flex align-items-center">
@@ -335,8 +352,10 @@ UserRow.propTypes = {
 };
 const mapStateToProps = createStructuredSelector({
   currentUser: makeSelectCurrentUser(),
+  currentUserRole: makeSelectCurrentUserRole(),
   loading: makeSelectLoading(),
   statuses: makeSelectStatuses(),
+  connectionStatuses: makeSelectConnectionStatuses(),
   orgUsers: makeSelectOrganizationUsers()
 });
 

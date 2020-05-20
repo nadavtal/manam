@@ -77,8 +77,9 @@ function UserInfoBox({
     colWidth: 6,
     formType:'userForm',
     confirmFunction: (data) => {
+      console.log(data)
       data['general_status'] = 'Active'
-      onUpdatedUser(data)
+      // onUpdatedUser(data)
     },
   })
   const showProfile = () => onToggleModal({

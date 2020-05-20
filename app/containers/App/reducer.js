@@ -58,13 +58,13 @@ export const initialState = {
     'Awaiting confirmation': {id: 3, name: 'Awaiting confirmation', color: 'danger'},
     'Confirmend': {id: 4, name: 'Confirmend', color: 'success'},
     'Inactive': {id: 5, name: 'Inactive', color: 'light'},
-    'Awaiting approvement': {id: 11, name: 'Awaiting approvement', color: 'danger'},
-    'Unapproved': {id: 23, name: 'Unapproved', color: 'dark'},
-    'Approved': {id: 13, name: 'Approved', color: 'success'},
-    'Inactive': {id: 14, name: 'Inactive', color: 'light'}
+    
+
   },
   connectionStatuses: {
-
+    'Awaiting approvement': {id: 11, name: 'Awaiting approvement', color: 'danger'},
+    'Approved': {id: 13, name: 'Approved', color: 'success'},
+    'Unapproved': {id: 23, name: 'Unapproved', color: 'dark'},
   },
   // statuses: [
   //   {id: 'Active', name: 'Active', color: 'orange'},
@@ -144,7 +144,7 @@ const appReducer = (state = initialState, action) =>
         localStorage.removeItem('currentUser')
         draft.currentUser = null;
         draft.modalOpen = false;
-        draft.alertOpen = false;
+        // draft.alertOpen = false;
 
         break;
 

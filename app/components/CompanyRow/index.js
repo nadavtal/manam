@@ -8,7 +8,8 @@ import { getRoleById, getOrganizationUser } from 'utils/dataUtils'
 import {
   makeSelectLoading,
   makeSelectCurrentUser,
-  makeSelectStatuses
+  makeSelectStatuses,
+  makeSelectConnectionStatuses
 } from 'containers/App/selectors';
 
 import { toggleAlert } from 'containers/App/actions';
@@ -31,8 +32,8 @@ function CompanyRow({
   
   checked,
   onClick,
-  // actions,
-  // handleAction,
+  connectionStatuses,
+  // statusesType,
   statuses,
   roles,
   onToggleAlert,
@@ -83,7 +84,7 @@ function CompanyRow({
         }
       case 'Change status':
         // const status = statuses.find(status => status.id === val)
-        const status = statuses[val]
+        const status = connectionStatuses[val]
         console.log(company)
         onToggleAlert({
           title: `${actionName} for ${company.name}`,
@@ -109,18 +110,19 @@ function CompanyRow({
       <div className="col-1" onClick={onClick}>{`${company.name}`}</div>
       <div className="col-1" onClick={onClick}>{`${company.contact_name}`}</div>
       <div className="col-3" onClick={onClick}>{company.remarks}</div>
-      <div className="col-2" onClick={onClick}>{company.email}</div>
+      <div className="col-2" onClick={onClick}>{company.region}</div>
       <div className="col-2" onClick={onClick}>{company.phone}</div>
       <div className="col-2">
         {editMode ? (
           <Select
             value={company.status}
             className="fullWidth"
-            options={statuses}
+            options={connectionStatuses}
             onChange={val => handleAction('Change status', val)}
           />
         ) : (
-          <Status status={statuses[company.status ? company.status : company.general_status]} />
+          // <Status status={statuses[company.status ? company.status : company.general_status]} />
+          <Status status={company.status ? connectionStatuses[company.status] : statuses[company.general_status]} />
         )}
       </div>
       <div className="col-1">
@@ -140,7 +142,7 @@ const mapStateToProps = createStructuredSelector({
   currentUser: makeSelectCurrentUser(),
   loading: makeSelectLoading(),
   statuses: makeSelectStatuses(),
-  
+  connectionStatuses: makeSelectConnectionStatuses(),
 });
 
 const mapDispatchToProps = dispatch => {

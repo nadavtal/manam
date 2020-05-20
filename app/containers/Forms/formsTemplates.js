@@ -1001,16 +1001,16 @@ export const forms = {
     //   validation: {},
     //   valid: true
     // },
-    // user_image: {
-    //   label: 'Profile image',
-    //   elementType: 'file',
-    //   elementConfig: {
+    user_image: {
+      label: 'Profile image',
+      elementType: 'file',
+      elementConfig: {
 
-    //   },
-    //   value: '',
-    //   validation: {},
-    //   valid: true
-    // },
+      },
+      value: '',
+      validation: {},
+      valid: true
+    },
 
   },
   'loginUserForm':  {
@@ -1306,6 +1306,20 @@ export const forms = {
       valid: true,
       touched: false,
       errMsg: 'Please enter phone!'
+    },
+    address: {
+      label: 'Address',
+      elementType: 'input',
+      elementConfig: {
+
+        type: 'textarea',
+        placeholder: 'Address'
+      },
+      value: '',
+
+      valid: true,
+      touched: false,
+
     },
     remarks: {
       label: 'Description',
@@ -3199,7 +3213,7 @@ export const forms = {
        
       },
 
-      value: false,
+      value: true,
       validation: {
         required: false
       },

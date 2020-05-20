@@ -17,7 +17,7 @@ import { findEntityBy } from '../AppData/actions';
 import { toggleAlert, toggleModal } from '../App/actions';
 import Overlay from '../../components/Overlay';
 import { MDBRow, MDBCol, MDBBtn } from 'mdbreact';
-import Select from '../../components/Select/Select';
+import { getAvailableUsersByRoleId } from 'utils/dataUtils'
 
 import './Forms.css';
 import { forms } from './formsTemplates';
@@ -294,6 +294,17 @@ const form = props => {
       }
       
     }
+
+    if (props.formType === 'organizaionUserAllocationForm' && inputIdetifier == 'role_id' 
+      && updatedForm.user_id) {
+      console.log(event)
+      console.log(props.users)
+      const availableUsers = getAvailableUsersByRoleId(event, props.users)  
+      console.log(availableUsers)
+      updatedForm.user_id.elementConfig.options = availableUsers
+
+    }
+
     // // check if valid
     if (updatedFormElement.validation)
       updatedFormElement.valid = checkValidity(
@@ -1045,7 +1056,7 @@ const form = props => {
 const mapStateToProps = createStructuredSelector({
   allUsers: makeSelectUsers(),
   foundResults: makeSelectFoundResults(),
-  roleTypes: makeSelectRoleTypes(),
+  // roleTypes: makeSelectRoleTypes(),
   modalOpen: makeSelectModalOpen(),
   alertOpen: makeSelectAlertOpen(),
   statuses: makeSelectStatuses(),

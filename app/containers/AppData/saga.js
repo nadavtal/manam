@@ -204,34 +204,36 @@ function* getOrganizationById(action) {
       apiUrl + 'organizations/' + action.id + '/projects',
     );
     // console.log(projects);
-    const processes = yield call(
-      request,
-      apiUrl +
-        'organizations/' +
-        action.id +
-        '/processes/' +
-        organization[0].name,
-    );
+    // const processes = yield call(
+    //   request,
+    //   apiUrl +
+    //     'organizations/' +
+    //     action.id +
+    //     '/processes/' +
+    //     organization[0].name,
+    // );
+    const processes = []
+    const projectsProcesses = []
     // console.log(processes);
-    const projectsProcesses = yield call(
-      request,
-      apiUrl + 'organizations/' + action.id + '/project-processes',
-    );
+    // const projectsProcesses = yield call(
+    //   request,
+    //   apiUrl + 'organizations/' + action.id + '/project-processes',
+    // );
     // console.log(projectsProcesses);
     const tasks = yield call(
       request,
       apiUrl + 'organizations/' + action.id + '/tasks',
     );
     // console.log(projectsProcesses);
-
-    const processesTasks = yield call(
-      request,
-      apiUrl +
-        'organizations/' +
-        action.id +
-        '/processes-tasks/' +
-        organization[0].name,
-    );
+    const processesTasks = []
+    // const processesTasks = yield call(
+    //   request,
+    //   apiUrl +
+    //     'organizations/' +
+    //     action.id +
+    //     '/processes-tasks/' +
+    //     organization[0].name,
+    // );
     // console.log(processes);
     const providers = yield call(
       request,
@@ -309,14 +311,16 @@ function* getProviderbyId(action) {
   try {
     // Call our request helper (see 'utils/request')
     const provider = yield call(request, apiUrl + 'providers/' + action.id);
-    const processes = yield call(
-      request,
-      apiUrl + 'providers/' + provider[0].name + '/processes',
-    );
-    const projectsProcesses = yield call(
-      request,
-      apiUrl + 'providers/' + provider[0].name + '/project-processes',
-    );
+    const processes = []
+    // const processes = yield call(
+    //   request,
+    //   apiUrl + 'providers/' + provider[0].name + '/processes',
+    // );
+    const projectsProcesses = []
+    // const projectsProcesses = yield call(
+    //   request,
+    //   apiUrl + 'providers/' + provider[0].name + '/project-processes',
+    // );
     const bridges = yield getProviderBridges(
       getProviderBridgesIds(projectsProcesses),
     );
@@ -326,10 +330,12 @@ function* getProviderbyId(action) {
       request,
       apiUrl + 'providers/' + provider[0].name + '/tasks',
     );
-    const processesTasks = yield call(
-      request,
-      apiUrl + 'providers/' + provider[0].name + '/processes-tasks',
-    );
+
+    const processesTasks = []
+    // const processesTasks = yield call(
+    //   request,
+    //   apiUrl + 'providers/' + provider[0].name + '/processes-tasks',
+    // );
     const organizations = yield call(
       request,
       apiUrl + 'providers/' + action.id + '/organizations',
@@ -1753,18 +1759,8 @@ function* updateOrganizationUser(action) {
   try {
     const results = yield call(request, url, args);
     console.log(results);
-    if (alertOpen) yield put(toggleAlert());
+    // if (alertOpen) yield put(toggleAlert());
     if (results) {
-      // const updatedOrgUser = {
-      //   ...action.user,
-      //   user_id: action.user.user_id,
-      //   role_id: action.role.id,
-      //   organization_id: action.user.organization_id,
-      //   remarks: action.user.remarks,
-      //   status: action.status? action.status.id : action.user.status,
-      //   from_provider_id: action.user.from_provider_id,
-      // };
-
       yield put(organizationUserUpdated(userRoleData));
       yield put(
         showNotification({
@@ -1819,7 +1815,7 @@ function* updateProviderUser(action) {
   try {
     const results = yield call(request, url, args);
     console.log(results);
-    if (alertOpen) yield put(toggleAlert());
+    // if (alertOpen) yield put(toggleAlert());
     if (results) {
       // const updatedOrgUser = {
       //   ...action.user,
@@ -1883,7 +1879,7 @@ function* updateProviderOrgConnection(action) {
   try {
     const results = yield call(request, url, args);
     console.log(results);
-    if (alertOpen) yield put(toggleAlert());
+    // if (alertOpen) yield put(toggleAlert());
     if (results) {
       // const updatedOrgUser = {
       //   ...action.user,
