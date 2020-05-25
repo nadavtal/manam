@@ -54,7 +54,8 @@ app.put("/organizations/:id", function(req, res){
       contact_name = '${org.contact_name}',
       phone = '${org.phone}',
       address = '${org.address}',
-      general_status = '${org.general_status}'
+      general_status = '${org.general_status}',
+      profile_image = '${org.profile_image}'
   WHERE id = ${req.params.id};`
 
   console.log(q)

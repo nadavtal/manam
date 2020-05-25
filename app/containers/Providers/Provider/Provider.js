@@ -10,6 +10,7 @@ import { makeSelectProvider, makeSelectProviderProjects, makeSelectProviderBridg
   makeSelectProviderTasks, makeSelectProviderUsers, getProviderBridges, makeSelectProviderRoles,
   makeSelectOrganizationUsers, makeSelectOrganizationRoles } from './selectors'
 import TableFilters from '../../TableFilters/TableFilters';
+import axios from 'axios';
 import BridgePage from 'containers/BridgePage/Loadable'
 import Processes from '../../Processes/Processes';
 import Calender from '../../Calender/Calender';
@@ -18,9 +19,9 @@ import ManagementSection from '../../Management/ManagementSection';
 import IconButtonToolTip from '../../../components/IconButtonToolTip/IconButtonToolTip'
 import { convertToMySqlDateFormat } from '../../../utils/dateTimeUtils';
 import { updateTask, createNewRole, registerNewProvUser, registerNewOrgUser, allocateUserToOrg, updateProvider,
-  getProviderbyId, logout, findEntityBy, createNewProviderUserAndThenAllocateToOrganization } from '../../AppData/actions';
+  getProviderbyId, logout, findEntityBy, createNewProviderUserAndThenAllocateToOrganization, updatedUser } from '../../AppData/actions';
 import { toggleModal, toggleAlert } from '../../App/actions';
-
+import {apiUrl} from 'containers/App/constants'
 import { createNewProject } from '../../Projects/actions';
 import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
@@ -59,22 +60,22 @@ const ProviderPage = (props) => {
   const [showProviderProcesses, setsShowProviderProcesses] = useState(true);
   const [selectedOrganization, setSelectedOrganization] = useState();
   const [selectedbridge, setSelectedbridge] = useState();
+  const [sideMenuOpen, setSideMenuOpen] = useState(false);
+  let hasBridges = props.bridges.length ? true : false;
 
   useEffect(() => {
     const providerId = props.match.params.id;
     props.getProvider(providerId)
-    console.log('[ProviderPage] all', props.location)
-
+    return () => localStorage.removeItem('activeItemClassicTabs3');
    
   }, [props.match.params.id]);
 
   useEffect(() => {
     if (props.organizations && props.organizations.length) {
       if (localStorage.getItem('orgId')) {
-        console.log(localStorage.getItem('orgId'))
-  
         setSelectedOrganization(props.organizations.find(org => org.id == localStorage.getItem('orgId')))
-      } else if( props.location.state && props.location.state.org_id) {
+      } 
+      else if( props.location.state && props.location.state.org_id) {
         console.log(props.location.state.org_id);
         console.log(props.organizations)
         const org = props.organizations.find(org => org.id == props.location.state.org_id);
@@ -83,12 +84,28 @@ const ProviderPage = (props) => {
           props.organizations.find(org => org.id == props.location.state.org_id)
         )
       }
-      
+     
       addOrganizationToRoles(props.organizationsRoles, props.organizations)
-
+      console.log('handleCurrentUserAndProviderStatus')
+      // handleCurrentUserAndProviderStatus()
     }
-    }, [props.provider, props.organizationsRoles, props.organizations]);
+    }, [props.provider]);
+    useEffect(() => {
+      hasBridges = props.bridges.length ? true : false;
+      if (props.provider.general_status === 'Active') {
+        if (hasBridges) setActiveItemClassicTabs3('Bridges');
+        else setActiveItemClassicTabs3('Management');
+      }
+      // console.log('handleCurrentUserAndOrgStatus')
+      // handleCurrentUserAndOrgStatus()
+    }, [props.provider.general_status, props.bridges]);
+  useEffect(() => {
+    console.log('handleCurrentUserAndProviderStatus')
+    handleCurrentUserAndProviderStatus();
 
+    return () => {};
+  }, [props.currentUser]);
+  
   const toggleClassicTabs3 = (tab) => {
     console.log(activeItemClassicTabs3, tab)
     if (activeItemClassicTabs3 !== tab) {
@@ -97,6 +114,107 @@ const ProviderPage = (props) => {
     }
   }
 
+  const handleCurrentUserAndProviderStatus = () => {
+    if (props.currentUser && props.currentUser.userInfo.general_status !== 'Active') {
+      setActiveItemClassicTabs3('Info')
+      props.onToggleAlert({
+        title: `Welcome ${props.currentUser.userInfo.first_name} ${
+          props.currentUser.userInfo.last_name
+        }`,
+        // text: `${user.first_name} ${user.last_name} is allready allocated as ${role.name}`,
+        confirmButton: 'Got it',
+        // cancelButton: 'Cancel',
+        alertType: 'success',
+        icon: 'door-open',
+        body: (
+          <div className="ml-5">
+            <h3 className="ml-5">
+              This is you 'Info' tab. 
+              Here you manage all you personal and provider information.
+            </h3>
+            <p className="ml-5">
+              Please fill in your personal and provider info to activate your account
+            </p>
+          </div>
+        ),
+        onCloseFunction: () => {
+          // setSideMenuOpen(true);
+          // console.log(sideMenuOpen);
+        },
+        confirmFunction: () => {
+          // setSideMenuOpen(true);
+        },
+      });
+    }   
+    // else if 
+    //   (props.provider.name &&
+    //   props.provider.general_status !== 'Active' && 
+    //   props.currentUser && 
+    //   props.currentUser.userInfo.general_status == 'Active'
+    //   ) 
+    //   {   
+    //   setActiveItemClassicTabs3('Info')
+    //   props.onToggleAlert({
+    //     title: `Great! `,
+    //     // text: `${user.first_name} ${user.last_name} is allready allocated as ${role.name}`,
+    //     confirmButton: 'Got it',
+    //     // cancelButton: 'Cancel',
+    //     alertType: 'success',
+    //     icon: 'check-circle',
+    //     body: (
+    //       <div className="ml-5">
+    //         <h3 className="ml-5">
+    //           {`This is the 'Info' tab. this is where you manage all your provider information`}
+    //         </h3>
+    //         {/* <p className="ml-5">
+    //               You can allways access your provider info in the 'Info' tab in the side menu
+    //             </p> */}
+    //       </div>
+    //     ),
+    //     // onCloseFunction: () => {
+    //     //   // setSideMenuOpen(true)
+
+    //     //   // setActiveItemClassicTabs3('info')
+    //     //   console.log(sideMenuOpen)
+    //     // },
+    //     confirmFunction: () => {
+    //       // setSideMenuOpen(true);
+    //       // setActiveItemClassicTabs3('info')
+    //     },
+    //   });
+
+    // }
+     else if (props.provider &&
+       props.provider.general_status == 'Active' && 
+       props.currentUser && 
+       props.currentUser.userInfo.general_status == 'Active'
+       ) 
+       {  
+       if (props.providerUsers.length == 1) {
+         props.onToggleAlert({
+           title: `All done! `,
+           // text: `${user.first_name} ${user.last_name} is allready allocated as ${role.name}`,
+           confirmButton: 'Got it',
+           // cancelButton: 'Cancel',
+           alertType: 'success',
+           icon: 'check-circle',
+           body: <div className="ml-5">
+                   <h3 className="ml-5">
+                     {`This is the 'Management' tab. this is where you manage all your users, roles and providers`} 
+                   </h3>
+ 
+                 </div>
+           ,
+ 
+           // confirmFunction: () => {
+ 
+           // }
+         });
+       }
+   
+     }
+     
+  }
   const userOrgRoles = () => {
     let roles = []
     props.currentUser.userOrganiztionRoles.map(role =>  {
@@ -244,6 +362,7 @@ const ProviderPage = (props) => {
 
   const handleAction = (name, value) => {
     console.log(name, value);
+    let url;
     switch (name) {
       case 'Roles':
         toggleClassicTabs3(name);
@@ -365,8 +484,54 @@ const ProviderPage = (props) => {
         break;
       case 'Update provider':
         value.general_status = 'Active'
-        props.updateProvider(value, props.provider.id)
+        props.onUpdateProvider(value)
         break;
+      case 'Update provider image':
+        // console.log(value)
+        url = `profile_images/provider/${props.provider.id}`;
+        // props.onUpdateImage('organization', props.organization, value)
+        let updatedProvider = {...props.provider}
+        if (props.provider.profile_image) {
+          axios.put(apiUrl + url, value, {
+          }).then(res => {
+              console.log(res)
+              updatedProvider.profile_image = res.data.name
+              props.onUpdateProvider(updatedProvider)
+          })
+        } else {
+          axios.post(apiUrl + url, value, {
+          }).then(res => {
+              console.log(res)
+              updatedProvider.profile_image = res.data.name
+              props.onUpdateProvider(updatedProvider)
+          })
+        }
+        break
+      case 'Update user':
+        value.general_status = 'Active'
+        props.onUpdateUser(value)
+        break;
+      case 'Update user image':
+        // console.log(value)
+        url = `profile_images/user/${props.currentUser.userInfo.id}`
+        let updatedUser = {...props.currentUser.userInfo}
+        if (props.currentUser.userInfo.profile_image) {
+          axios.put(apiUrl + url, value, {
+          }).then(res => {
+              console.log(res)
+              updatedUser.profile_image = res.data.name
+              props.onUpdateUser(updatedUser)
+          })
+        } else {
+          axios.post(apiUrl + url, value, {
+          }).then(res => {
+              console.log(res)
+              updatedUser.profile_image = res.data.name
+              props.onUpdateUser(updatedUser)
+          })
+        }
+        break;
+
       default:
         break;
     }
@@ -409,7 +574,7 @@ const ProviderPage = (props) => {
                linkToProviderPage(provider_id)
              }
              organization={selectedOrganization}
-             provider={props.provider ? props.provider : null}
+             company={props.provider ? props.provider : null}
              currentUser={props.currentUser}
              currentUserRole={props.currentUserRole}
              onFinalItemClick={(menuItem, menuType) => {
@@ -425,45 +590,38 @@ const ProviderPage = (props) => {
                  className="pageContent"
                  activeItem={activeItemClassicTabs3}
                >
-                 {props.currentUser &&
-                 props.currentUser.userInfo.general_status !==
-                   'Active' ? (
-                   <div className="ml-5">
-                     <h3 className="ml-5">
-                       Please activate your user and provider accounts
-                     </h3>
-                     <p className="ml-5">
-                       fill in your personal info and organization info
-                       in the main menu
-                     </p>
-                   </div>
-                 ) : (
-                   <>
-                     <MDBTabPane tabId={'Info'}>
-                       <ManagementSection
-                         handleAction={(actionName, value) =>
-                           handleAction(actionName, value)
-                         }
-                         users={props.providerUsers}
-                         roles={props.providerRoles}
-                         company={props.provider}
-                         organizations={props.organizations}
-                         organizationsRoles={orgRolesBySelectedOrg()}
-                         organizationUsers={props.organizationUsers.filter(
-                           orgUser =>
-                             orgUser.organization_id ==
-                             selectedOrganization.id,
-                         )}
-                         type="general"
-                       />
-                       {/* <Basic
+                 <MDBTabPane tabId={'Info'}>
+                   <ManagementSection
+                     handleAction={(actionName, value) =>
+                       handleAction(actionName, value)
+                     }
+                     users={props.providerUsers}
+                     roles={props.providerRoles}
+                     company={props.provider}
+                     organizations={props.organizations}
+                     organizationsRoles={orgRolesBySelectedOrg()}
+                     organizationUsers={props.organizationUsers.filter(
+                       orgUser =>
+                         orgUser.organization_id ==
+                         selectedOrganization.id,
+                     )}
+                     type="generalProvider"
+                     title="General info"
+                     currentUser={props.currentUser}
+                   />
+                   {/* <Basic
                          item={props.provider}
                          updateItem={data =>
                            handleAction('Update provider', data)
                          }
                          dataType="updateProviderForm"
                        /> */}
-                     </MDBTabPane>
+                 </MDBTabPane>
+
+                 {props.currentUser &&
+                 props.currentUser.userInfo.general_status ===
+                   'Active' && (
+                    <>
                      <MDBTabPane tabId="Bridges">
                        {selectedbridge ? (
                          <>
@@ -533,6 +691,7 @@ const ProviderPage = (props) => {
                              selectedOrganization.id,
                          )}
                          type="provider"
+                         title="Manage user and roles"
                        />
                      </MDBTabPane>
                      <MDBTabPane tabId="Manage projects">
@@ -625,7 +784,7 @@ const ProviderPage = (props) => {
                        />
                      </MDBTabPane>
                    </>
-                 )}
+                    )}
                </MDBTabContent>
              ) : (
                <strong>Getting {props.provider.name} data</strong>
@@ -668,7 +827,8 @@ const mapDispatchToProps = (dispatch) => {
     onCreateNewProject: data => {dispatch(createNewProject(data))},
     getProvider: (id) => dispatch(getProviderbyId(id)),
     onAllocateUser: (newProviderUser) => dispatch(actions.allocateUser(newProviderUser)),
-    updateProvider: (data, id) => dispatch(updateProvider(data,id)),
+    onUpdateProvider: (data, id) => dispatch(updateProvider(data,id)),
+    onUpdateUser: user => dispatch(updatedUser(user)),
     onUpdateTask: (task) => dispatch(updateTask(task)),
     onLogout: () => dispatch(logout()),
     createNewRole: (data) => dispatch(createNewRole(data)),

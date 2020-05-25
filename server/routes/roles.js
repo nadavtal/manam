@@ -71,10 +71,10 @@ app.get("/roles/provider/:providerId/:roleType", function(req, res){
 app.post("/roles", function(req, res){
   console.log('create role');
   const role = req.body
-  const q = `INSERT INTO tbl_roles ( name, description, organization_id, provider_id, type, visibility)
+  const q = `INSERT INTO tbl_roles ( name, description, organization_id, provider_id, type, role_type_id, visibility)
   VALUES
   ( '${role.name}','${role.description}', ${role.organization_id ? role.organization_id : null},
-  ${role.provider_id ? role.provider_id : null}, '${role.type}', '${role.visibility}');`
+  ${role.provider_id ? role.provider_id : null}, '${role.type}', ${role.role_type_id}, '${role.visibility}');`
   
   connection.query(q, function (error, results) {
   if (error) throw error;

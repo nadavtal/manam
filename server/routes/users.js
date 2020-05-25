@@ -152,7 +152,8 @@ app.post("/users/:id/roles", function(req, res){
 
  app.get("/users/:id/organization-roles", function(req, res){
   console.log('getting user organziation-roles', req.params.id);
-  var q = `SELECT o.id as org_id, ou.from_provider_id as prov_id, r.id as role_id, o.name as org_name, r.name as role_name, ou.remarks FROM tbl_organizations_users ou
+  var q = `SELECT o.id as org_id, ou.from_provider_id as prov_id, r.id as role_id, o.name as org_name, r.name as role_name, 
+  ou.remarks, r.type as role_type, r.role_type_id as role_type_id FROM tbl_organizations_users ou
   INNER JOIN tbl_organizations o
   ON ou.organization_id = o.id
   AND ou.user_id = ${req.params.id}
@@ -170,7 +171,8 @@ app.post("/users/:id/roles", function(req, res){
   console.log('getting user provider-roles', req.params.id);
 
   // var q = `SELECT * FROM db_3dbia.tbl_provider_users where user_id = ${req.params.id}`;
-  var q = `SELECT p.id as provider_id, r.id as role_id, p.name as provider_name, r.name as role_name, pu.remarks FROM tbl_provider_users pu
+  var q = `SELECT p.id as provider_id, r.id as role_id, p.name as provider_name, r.name as role_name, r.type as role_type, 
+  pu.remarks FROM tbl_provider_users pu
   INNER JOIN tbl_providers p
   ON pu.provider_id = p.id
   AND pu.user_id = ${req.params.id}
@@ -206,9 +208,9 @@ app.post("/users/:id/roles", function(req, res){
       remarks = '${user.remarks}',
       first_name = '${user.first_name}',
       last_name = '${user.last_name}',
-      user_image = '${user.user_image}',
       email = '${user.email}',
-      address = '${user.address}'
+      address = '${user.address}',
+      profile_image = '${user.profile_image}'
   WHERE id = ${req.params.id};`
 
   console.log(q)

@@ -114,6 +114,7 @@ export const searchAll = (val, data) => {
         && item[key].includes(val)) {
           console.log('Found string', key)
           console.log(item)
+          if (!results.includes(item))
           results.push(item)
         }
       if ( typeof(item[key])  === 'number') {
@@ -123,11 +124,25 @@ export const searchAll = (val, data) => {
         if (strKey.includes(val)) {
           console.log('Found numberp', key)
           console.log(item)
+          if (!results.includes(item))
           results.push(item)
         }
       }
     })
   })
-  console.log(results)
+  return results
+}
+export const sortBy = (field, data, reverse) => {
+  console.log(field, data)
+  if (reverse) {
+    data.sort((a,b) => (a[field] < b[field]) ? 1 : ((b[field] < a[field]) ? -1 : 0)); 
+
+  } else {
+    data.sort((a,b) => (a[field] > b[field]) ? 1 : ((b[field] > a[field]) ? -1 : 0)); 
+    
+  }
+  console.log(data)
+  return data
+
 }
 

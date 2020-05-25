@@ -119,12 +119,24 @@ const input = (props) => {
       break
     case('file'):
       // console.log(props)
-      inputElement =
+      inputElement = 
+      (
         <MDBFileInput
         btnTitle= {props.label}
         textFieldTitle={"Upload image"}
         getValue={props.changed}
         />
+        // <input
+        //   value={props.value}
+        //   {...props.elementconfig}
+        //   onChange={props.changed}
+        //   type="file"
+        //   name="file"
+        //   id="input-files"
+        //   class="form-control-file border"
+        // />
+      );
+        
 
       break
 

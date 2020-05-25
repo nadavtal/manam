@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
-import Actions from '../Actions'
+import Actions from '../Actions';
+import TextSearch from '../../components/TextSearch/TextSearch'
+
 const PageHeader = ({ 
     text,
     className,
@@ -11,18 +13,20 @@ const PageHeader = ({
     return (
       <div className={className}>
         <div className="col-4">
-          <div className="float-left" />
+          {/* <TextSearch
+            className="ml-3 mt-0"
+            value=""
+            onChange={val => handleAction('search', val)}
+          /> */}
         </div>
-        <div className="col-4  pt-2">
-          {text.toUpperCase()}
-        </div>
+        <div className="col-4  pt-2">{text.toUpperCase()}</div>
         <div className="col-4">
           <div className="float-right">
             {actions && (
               <Actions
                 actions={actions ? actions : []}
                 iconColor={iconColor ? iconColor : 'default'}
-                handleAction={(actionName) => handleAction(actionName) }
+                handleAction={actionName => handleAction(actionName)}
               />
             )}
           </div>

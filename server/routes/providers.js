@@ -1,7 +1,30 @@
 var express = require('express');
 var app = module.exports = express();
 const connection = require('../db.js');
-
+const fs = require("fs");
+const multer = require("multer");
+const upload = require("../middlewares/upload");
+const DIR = './resources/static/assets/uploads/';
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, DIR);
+//     },
+//     filename: (req, file, cb) => {
+//         const fileName = file.originalname.toLowerCase().split(' ').join('-');
+//         cb(null, Date.now() + '-' + fileName)
+//     }
+// });
+// const upload = multer({
+//     storage: storage,
+//     fileFilter: (req, file, cb) => {
+//         if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+//             cb(null, true);
+//         } else {
+//             cb(null, false);
+//             return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+//         }
+//     }
+// });
 //PROVIDERS ROUTES
 app.get("/providers", function(req, res){
   console.log('getting providers')
@@ -44,7 +67,21 @@ app.get("/providers/:id", function(req, res){
   var q = 'SELECT * FROM tbl_providers WHERE id = ' + req.params.id;
   connection.query(q, function (error, results) {
   if (error) throw error;
-
+  // console.log('results', results)
+  
+  // const provider = results[0]
+  // console.log(provider)
+  // console.log(JSON.parse(provider.profile_image))
+  
+  // // const buf = new Buffer(JSON.parse(provider.profile_image), "binary").toString('base64');
+  // const buff2 = Buffer.from(provider.profile_image, "binary").toString('base64')
+  // // console.log('buff2', buff2)
+  // const fileName = provider.name + '-profile_image' + '.jpg'
+  // console.log('fileName', fileName)
+  // fs.writeFileSync(
+  //   './resources/static/assets/tmp/' + fileName,
+  //   JSON.parse(provider.profile_image),
+  // );
   res.send(results);
   });
  });
@@ -80,13 +117,14 @@ app.put("/providers/:id", function(req, res){
   var q = `UPDATE tbl_providers
   SET name = '${provider.name}',
       remarks = '${provider.remarks}',
-      contact_name = '${provider.metric_system}',
+      contact_name = '${provider.contact_name}',
       region = '${provider.region}',
       website = '${provider.website}',
       email = '${provider.email}',
       address = '${provider.address}',
       phone = '${provider.phone}',
-      general_status = '${provider.general_status}'
+      general_status = '${provider.general_status}',
+      profile_image = '${provider.profile_image}'
   WHERE id = ${req.params.id};`
 
   console.log(q)
@@ -134,6 +172,58 @@ app.get("/providers/:id/users", function(req, res){
   res.send(results);
   });
 });
+app.put('/providers/:id/profile_image', upload.single('profileImg'), (req, res, next) => {
+  //   const url = req.protocol + '://' + req.get('host')
+  //   console.log('req.body', url)
+  //   console.log('req.body', req.body)
+    console.log('req.file', req.file)
+  //   const blob =  JSON.stringify(fs.readFileSync(
+  //     "./public/" + req.file.filename
+  //   ))
+    const data = fs.readFileSync(
+      './resources/static/assets/uploads/' + req.file.filename,
+    )
+
+    var q = `UPDATE tbl_providers SET profile_image = '${JSON.stringify(data)}'
+    WHERE id = ${req.params.id};`
+
+    // console.log(q)
+    connection.query(q, function (error, results) {
+    if (error) res.send(error);
+
+    res.send(results);
+    })
+  // connection.query(`INSERT INTO tbl_profile_images(data) VALUES(BINARY('${data}'))`, { data }, function(err, res) 
+  // connection.query(`INSERT INTO tbl_profile_images(data) VALUES(BINARY('${JSON.stringify(data)}'))`, function(err, res) 
+  // {
+  //   if (err) throw err;
+  //   console.log("BLOB data inserted!", res);
+  //   // Check to read it from DB:
+  //   connection.query("select * from `tbl_profile_images`", function(err, res) {
+  //     if (err) throw err;
+  //     const row = res[0];
+  //     // Got BLOB data:
+  //     const data = row.data;
+  //     console.log("BLOB data read!");
+  //     // Converted to Buffer:
+  //     const buf = Buffer.from(data, "binary").toString('base64');
+  //     // const buf2 = Buffer.allocUnsafe(data, "binary");
+  //     // const buf3 = Buffer.alloc(data, "binary");
+  //     // Write new file out:
+      
+
+  //     fs.writeFileSync("./tmp/" + req.file.filename , buf);
+  //     console.log("New file output:", req.file.filename);
+  //   });
+  // });
+});
+
+function readImageFile(file) {
+  // read binary data from a file:
+  const bitmap = fs.readFileSync(file);
+  const buf = Buffer.from(bitmap);
+  return buf;
+}
 
 app.get("/providers/:name/tasks", function(req, res){
   console.log('getting tasks by provider: '+ req.params.name);

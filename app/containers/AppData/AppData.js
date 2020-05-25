@@ -30,11 +30,11 @@ export function AppData({
   useInjectSaga({ key, saga });
   useEffect(() => {
     // console.log('[AppData.js] useEffect');
-    getProjects();
-    getProviders();
-    getUsers();
-    getOrganizations();
-    getRoles();
+    // getProjects();
+    // getProviders();
+    // getUsers();
+    // getOrganizations();
+    // getRoles();
     getRoleTypes();
   }, []);
 

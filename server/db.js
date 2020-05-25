@@ -1,15 +1,14 @@
 const mysql = require('mysql');
-
+const config = require('./config.js');
 var connection = mysql.createPool({
-  connectionLimit : 100,
-  host     : 'Vm1.manam.co.il',
-  user     : 'manam_3dbia',     // your root username
-  password: 'Manam12!@',
-  database : 'db_3dbia',
-  multipleStatements: true
+  ...config.pool,
+  host: config.HOST,
+  user: config.USER,
+  password: config.PASSWORD,
+  database: config.DB,
 });
 
 module.exports =  connection
 
-;
+
 

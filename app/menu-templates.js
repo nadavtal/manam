@@ -61,12 +61,7 @@ export const menus = {
     //   type: 'sub-menu',
     //   float: 'left'
     // },
-    {
-      name: 'Management',
-      icon: 'tasks',
-      type: 'sub-menu',
-      float: 'left',
-    },
+
     // {
     //   name: 'Manage projects',
     //   icon: 'project-diagram',
@@ -136,12 +131,12 @@ export const menus = {
       float: 'right',
       counter: true,
     },
-    {
-      name: 'Management',
-      icon: 'tasks',
-      type: 'sub-menu',
-      float: 'left',
-    },
+    // {
+    //   name: 'Management',
+    //   icon: 'tasks',
+    //   type: 'sub-menu',
+    //   float: 'left',
+    // },
     // {
     //   name: 'Manage projects',
     //   icon: 'project-diagram',

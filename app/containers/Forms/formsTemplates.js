@@ -1001,16 +1001,16 @@ export const forms = {
     //   validation: {},
     //   valid: true
     // },
-    user_image: {
-      label: 'Profile image',
-      elementType: 'file',
-      elementConfig: {
+    // user_image: {
+    //   label: 'Profile image',
+    //   elementType: 'file',
+    //   elementConfig: {
 
-      },
-      value: '',
-      validation: {},
-      valid: true
-    },
+    //   },
+    //   value: '',
+    //   validation: {},
+    //   valid: true
+    // },
 
   },
   'loginUserForm':  {

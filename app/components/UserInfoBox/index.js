@@ -9,14 +9,14 @@ import {
   makeSelectStatuses,
   makeSelectCurrentUserRole
 } from 'containers/App/selectors';
-import { MDBIcon, MDBBtn } from 'mdbreact';
+import { MDBIcon, MDBBtn, MDBAvatar } from 'mdbreact';
 import { toggleAlert, toggleModal } from 'containers/App/actions';
-import { updatedUser } from 'containers/AppData/actions';
+import { updatedUser, uploadFile } from 'containers/AppData/actions';
 import IconButtonToolTip from '../IconButtonToolTip/IconButtonToolTip'
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Status from 'components/Status';
-
+import FilesUploadComponent from 'components/FilesUploadComponent'
 
 import './UserInfoBox.css'
 
@@ -24,12 +24,13 @@ import './UserInfoBox.css'
 function UserInfoBox({
   currentUser,
   organization,
-  provider,
+  company,
   statuses,
   history = useHistory(),
   onToggleModal,
   handleAction,
   onUpdatedUser,
+  onUploadImage,
   currentUserRole
 }) {
   
@@ -47,6 +48,7 @@ function UserInfoBox({
     { name: `Edit role`, icon: 'edit', type: 'info'},
     { name: `Delete role`, icon: 'trash', type: 'error', confirmationMessageType: 'danger', confirmationMessage: 'Are you sure you want to delete '},
   ]
+  console.log(organization)
   const onHandleAction = (actionName, val) => {
     // console.log(actionName, val)
     switch (actionName) {
@@ -59,6 +61,9 @@ function UserInfoBox({
         handleAction();
         showProfile();
         
+        break
+      case 'Upload image':
+        console.log(val)
         break
       default:
         break
@@ -79,7 +84,9 @@ function UserInfoBox({
     confirmFunction: (data) => {
       console.log(data)
       data['general_status'] = 'Active'
-      // onUpdatedUser(data)
+      onUpdatedUser(data)
+      // onUploadImage(data.user_image[0])
+      
     },
   })
   const showProfile = () => onToggleModal({
@@ -101,11 +108,13 @@ function UserInfoBox({
   //   history.push('/users/'+currentUser.userInfo.id)
   // }
   const Wrapper = styled.div`
-    height: 8rem;
+    height: 9.5rem;
     position: relative;
-    padding: 1rem;
+    padding: .7rem;
     font-size: .8rem;
   `
+
+  const image = currentUser.userInfo.profile_image
   const UserRolesInfo = () => {
 
     return <div>
@@ -129,7 +138,7 @@ function UserInfoBox({
   }
   return (
     <Wrapper className={`border border-${status.color}`}>
-      {status.name == 'Active' && (
+      {/* {status.name == 'Active' && (
         <div className="rightTopCorner d-flex ">
           <IconButtonToolTip
             className="mr-2"
@@ -141,7 +150,6 @@ function UserInfoBox({
             onClickFunction={() => onHandleAction('Edit user info')}
           />
           <IconButtonToolTip
-            
             iconName="info"
             toolTipType="info"
             toolTipPosition="left"
@@ -150,9 +158,57 @@ function UserInfoBox({
             onClickFunction={() => onHandleAction('Show user info')}
           />
         </div>
-      )}
-      {/* <MDBIcon icon={'user'} size="2x" className="" /> */}
-      <div>
+      )} */}
+      <div className="text-left">
+        <div className="d-flex align-items-center mb-2"> 
+          <MDBAvatar
+            tag="img"
+            src={
+              image && image !== 'undefined' ?
+              require(`../../../resources/static/assets/tmp/${image}`) :
+              require(`../../images/LOGIN.jpg`)
+            }
+            alt="User Photo"
+            className="z-depth-1"
+          />
+          <span className="bold userInfoBoxTitle ml-2">
+          {currentUser.userInfo.first_name +
+            ' ' +
+            currentUser.userInfo.last_name}
+            </span>
+        </div>
+
+        {organization ? (
+          <>
+            <div>
+              <span className="bold">Organization: </span> {organization.name}
+            </div>
+            <div>
+              <span className="bold">Provider:</span> {company.name}
+            </div>
+          </>
+        ) : (
+          <div>
+            <span className="bold">Organization:</span> {company.name}
+          </div>
+        )}
+
+        {/* {organization && (
+          <div>
+            <span className="bold">Organization: </span> {organization.name}
+          </div>
+        )}
+        {company && (
+          <div>
+            <span className="bold">Provider:</span> {company.name}
+          </div>
+        )} */}
+        <div>
+          <span className="bold"> Role: </span>
+          {currentUserRole.role_name}
+        </div>
+      </div>
+      {/* <div>
         {status.name !== 'Active' ? (
           <MDBBtn 
             size="sm"
@@ -164,15 +220,15 @@ function UserInfoBox({
             <span className="bold">Name: </span> {currentUser.userInfo.first_name + ' ' + currentUser.userInfo.last_name}</div>
           {organization && <div>
             <span className="bold">Organization: </span> {organization.name}</div>}
-          {provider && <div>
-            <span className="bold">Provider:</span> {provider.name}</div>}
-          <div ><span className="bold"> Role:  </span>{currentUserRole}
+          {company && <div>
+            <span className="bold">Provider:</span> {company.name}</div>}
+          <div ><span className="bold"> Role:  </span>{currentUserRole.role_name}
            
            </div>
         </div>
           
         }
-      </div>
+      </div> */}
       <Status status={status} />
     </Wrapper>
   );
@@ -192,6 +248,7 @@ const mapDispatchToProps = dispatch => {
     onToggleAlert: alertData => dispatch(toggleAlert(alertData)),
     onToggleModal: modalData => dispatch(toggleModal(modalData)),
     onUpdatedUser: user => dispatch(updatedUser(user)),
+    onUploadImage: file => dispatch(uploadFile(file)),
   };
 };
 

@@ -3,7 +3,7 @@ import produce from 'immer';
 import * as actionTypes from './constants';
 import { TASK_UPDATED } from '../../AppData/constants';
 import { USER_ALLOCATED, NEW_ROLE_CREATED, PROV_ORG_CONNECTION_UPDATED, ORG_USER_UPDATED,
-  PROV_USER_UPDATED } from '../../App/constants';
+  PROV_USER_UPDATED, PROVIDER_UPDATED } from '../../App/constants';
 import { addProviderToRoles, getRoleById } from '../../../utils/dataUtils';
 
 export const initialState = {
@@ -32,7 +32,7 @@ const organizationReducer = (state = initialState, action) =>
     switch (action.type) {
 
       case actionTypes.PROVIDER_LOADED:
-        // console.log('PROVIDER_LOADED', action.data)
+        console.log('PROVIDER_LOADED', action.data)
         draft.bridges = action.data.bridges;
         draft.provider = action.data.provider;
         draft.processesTemplates = action.data.processes;
@@ -45,6 +45,8 @@ const organizationReducer = (state = initialState, action) =>
         draft.organizationUsers = action.data.organizationUsers;
         draft.organizationsRoles = action.data.organizationsRoles;
         break;
+      case PROVIDER_UPDATED:
+        draft.provider = action.data;
       case TASK_UPDATED:
         // console.log('TASK_UPDATED', action)
         let updatedTask = action.data;

@@ -14,9 +14,6 @@ import { GET_PROVIDER_BY_ID, LOGIN, LOGOUT } from '../AppData/constants'
 import { ORGANIZATION_LOADED } from '../Organizations/Organization/constants'
 import { PROVIDER_LOADED } from '../Providers/Provider/constants'
 import { updateProcessTasks } from '../Processes/actions';
-// localStorage.removeItem('currentUser')
-// localStorage.removeItem('currentUserRole');
-console.log(localStorage)
 // The initial state of the App
 export const initialState = {
   loading: false,
@@ -108,9 +105,10 @@ const appReducer = (state = initialState, action) =>
         break;
       case actionTypes.ROLE_SELECTED:
         // console.log('USERS_LOADED', action)
+        
         localStorage.removeItem('currentUserRole');
-        localStorage.setItem('currentUserRole', JSON.stringify(action.roleName))
-        draft.currentUserRole = action.roleName
+        localStorage.setItem('currentUserRole', JSON.stringify(action.role))
+        draft.currentUserRole = action.role
         break;
       case actionTypes.PROJECTS_LOADED:
         // console.log('PROJECTS_LOADED', action)

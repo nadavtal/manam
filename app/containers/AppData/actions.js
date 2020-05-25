@@ -23,6 +23,16 @@ export function getUsers() {
   };
 }
 
+export function uploadFile(entityType,entity, file) {
+
+  return {
+    type: actionTypes.UPLOAD_FILE,
+    entityType,
+    entity,
+    file,
+  };
+}
+
 export function updatedUser(user) {
   return {
     type: actionTypes.UPDATE_USER,
@@ -313,12 +323,7 @@ export function deleteRole(data) {
     data,
   };
 }
-export function allocateUser(data) {
-  return {
-    type: actionTypes.ALLOCATE_USER,
-    data,
-  };
-}
+
 export function createRoleType(data) {
   return {
     type: actionTypes.CREATE_ROLE_TYPE,

@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
@@ -17,9 +17,14 @@ const RoleRow = ({role, onUpdateRole}) => {
   const [editMode, setEditMode] = useState(false);
   const [roleName, setRoleName] = useState(role.name);
   const [roleDescription, setRoleDescription] = useState(role.description);
+
+  useEffect(() => {
+    setRoleName(role.name)
+
+  }, [role])  
  const actions = [
     { name: `Edit role`, icon: 'edit', type: 'info'},
-    { name: `Delete role`, icon: 'trash', type: 'error', confirmationMessageType: 'danger', confirmationMessage: 'Are you sure you want to delete '},
+    // { name: `Delete role`, icon: 'trash', type: 'error', confirmationMessageType: 'danger', confirmationMessage: 'Are you sure you want to delete '},
   ]
   // console.log(roleName)
   const handleAction = (actionName, val) => {
@@ -44,7 +49,7 @@ const RoleRow = ({role, onUpdateRole}) => {
     }
 
   }
-  return <TableRowWrapper className={`row pl-5 py-1 tableRow ${editMode && 'active'}`}>
+  return <TableRowWrapper className={`row text-center py-1 tableRow ${editMode && 'active'}`}>
     <div className="col-2">
       {editMode ? <MDBInput 
         value={roleName}
@@ -53,7 +58,7 @@ const RoleRow = ({role, onUpdateRole}) => {
         /> : roleName}
     </div>
     <div className="col-2">
-      {role.orgName ? role.orgName : role.provName ? role.provName : 'In-house'}
+      {role.companyName}
     </div>
     <div className="col-3">
       {editMode ? 

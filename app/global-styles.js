@@ -91,9 +91,7 @@ const GlobalStyle = createGlobalStyle`
     height: 3rem;
     margin-top: 3rem !important;
   }
-  .registrationProcess label {
-    margin-left: 4.5rem !important;
-  }
+
   .registrationProcess .Input input {
     border-bottom: none !important;
     color: grey;
@@ -119,6 +117,11 @@ const GlobalStyle = createGlobalStyle`
     height: 3rem;
     border-radius: 0 !important;
     background-color: ${theme.green} !important;
+  }
+
+  .managementSearch {
+    position: absolute !important;
+    top: -.5rem;
   }
 
   .leftTopCorner {

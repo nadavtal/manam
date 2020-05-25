@@ -33,7 +33,9 @@ const TextSearch = (props) => {
     timer = setTimeout(props.onChange(value), WAIT_INTERVAL);
 }
   return (
-    <MDBFormInline className="md-form">
+    <MDBFormInline 
+      className={`md-form ${props.className}`}
+      >
       <MDBIcon icon="search" />
       <input
         className="form-control form-control-sm ml-3 w-75"

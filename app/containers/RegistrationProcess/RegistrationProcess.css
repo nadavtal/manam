@@ -21,6 +21,9 @@
 .registrationProcess .steps-form-3 .active button{
     border: 2px solid darkorange !important;
 }
+.registrationProcess .login label{
+    margin-left: 4.5rem;
+}
 .registrationProcess .steps-form-3 .active i{
     color: darkorange;
 }
@@ -30,7 +33,7 @@
     background-size: cover;
     height: 100vh;
     max-height: 100vh;
-  }
+}
   
   /* #register .card {
     background-color: rgba(255, 255, 255, 0.85);

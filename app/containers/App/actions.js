@@ -53,6 +53,7 @@ export function userLoaded(userData) {
   };
 }
 
+
 /**
  * Dispatched when loading the repositories fails
  *
@@ -94,11 +95,11 @@ export function toggleAlert(data) {
     data: data
   };
 }
-export function roleSelected(roleName) {
+export function roleSelected(role) {
   
   return {
     type: actionTypes.ROLE_SELECTED,
-    roleName
+    role
   };
 }
 

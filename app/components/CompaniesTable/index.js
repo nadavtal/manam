@@ -9,24 +9,48 @@ import Actions from '../Actions';
 import Select from 'components/Select/Select';
 import CompanyRow from 'components/CompanyRow'
 import { createStructuredSelector } from 'reselect';
+import { MDBIcon } from 'mdbreact';
 import {
   makeSelectLoading,
   makeSelectCurrentUser,
   makeSelectStatuses
 } from 'containers/App/selectors';
-
+import { sortBy } from 'utils/dataUtils';
 
 const CompaniesTable = ({
   companies, 
   type,
   }) => {
   
+  const [activeFilter, setActiveFilter] = useState('name');
+  const [reverse, setReverse] = useState(false);
+
+  const SortTableHeaderItem = ({name, field}) => {
+
+    return <div
+      onClick={() => handleActiveFilter(field)}>
+      {name}
+      <MDBIcon 
+        // rotate={active == item.name ? '180' : ''} 
+        icon={'sort'} size="1x" className="float-right mt-1" 
+        />
+    </div>
+  }
+  const handleActiveFilter = (field) => {
+    if (field !== activeFilter) {
+      setActiveFilter(field)
+    } else {
+      setReverse(!reverse)
+    }
+  }
+
+  companies = sortBy(activeFilter, companies, reverse)
   return <div className="toggled">
     
     <TableHeader className="row py-1">
     
       <div className="col-1">
-        Name
+        <SortTableHeaderItem name="Name" field="name" />
       </div>
       <div className="col-1">
         Contact name
@@ -35,13 +59,15 @@ const CompaniesTable = ({
       remarks
       </div>
       <div className="col-2">
-        {type === 'organization' ?  'Metric sustem': 'Region'}
+        {type === 'organization' ?  
+          <SortTableHeaderItem name="Metric system" field="metric_system" /> : 
+          <SortTableHeaderItem name="Region" field="region" />}
       </div>
       <div className="col-2">
       phone
       </div>
       <div className="col-2">
-        Status
+        <SortTableHeaderItem name="Status" field="status" />
       </div>
       <div className="col-1">
         {/* <Actions 

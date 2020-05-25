@@ -195,6 +195,7 @@ export const getCurrentUserFullName = createSelector(
     (selectGlobal) => selectGlobal.currentUser.userInfo.first_name + ' ' + selectGlobal.currentUser.userInfo.last_name 
   )
 
+
 // export {
 //   selectGlobal,
 //   makeSelectCurrentUser,

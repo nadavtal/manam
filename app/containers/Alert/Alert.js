@@ -18,7 +18,7 @@ const AlertComponent = ({
 }) => {
   const [showButton, setShowButton] = useState(true);
   const [showMessage, setShowMessage] = useState(false);
-  console.log(alertData)
+  
   const handleConfirmationClick = () => {
     if (alertData.confirmFunction) {
       alertData.confirmFunction()

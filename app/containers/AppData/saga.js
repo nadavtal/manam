@@ -2,6 +2,7 @@ import { call, put, select, takeLatest, all } from 'redux-saga/effects';
 
 import * as actionTypes from './constants';
 import request from 'utils/request';
+import axios from 'axios';
 import {
   loadError,
   organizationsLoaded,
@@ -46,7 +47,7 @@ import {
   registerNewOrgUser,
   registerNewProvUser,
 } from './actions';
-import { getModalOpen, getAlertOpen, getStatuses } from '../App/selectors';
+import { getModalOpen, getAlertOpen, getStatuses, makeSelectRoleTypes } from '../App/selectors';
 
 function* getUsers(action) {
   // console.log('getUsers')
@@ -362,7 +363,12 @@ function* getProviderbyId(action) {
       request,
       apiUrl + 'providers/' + action.id + '/roles',
     );
-    // console.log(users)
+    const profile_image = yield call(
+      request,
+      apiUrl + 'profile_images/' + 'provider/' + action.id,
+    );
+    // if (profile_image[0] && profile_image[0].name ) provider[0].profile_image = profile_image[0].name
+
     // const arrangedUsers = arrangeUsersRoles(users)
     // console.log(arrangedUsers)
     // console.log(arrangeUsersRoles(users))
@@ -370,7 +376,7 @@ function* getProviderbyId(action) {
       providerLoaded({
         provider: provider[0],
         bridges,
-        // projects,
+        // profile_image: profile_image[0].name ,
         processes,
         organizations,
         processesTasks,
@@ -513,7 +519,7 @@ export function* login(action) {
         userProviderRoles,
         userOrganizationRoles,
       };
-      console.log(userData);
+      console.log('userData', userData);
       yield put(userLoaded(userData));
 
     }
@@ -684,6 +690,7 @@ function* addProvider(action) {
             'Automatic general role created when a new provider is created',
           provider_id: result.insertId,
           type: 'General',
+          role_type_id: 13,
           visibility: 'private'
         };
         const newGeneralRole = {
@@ -696,6 +703,7 @@ function* addProvider(action) {
             'Automatic role generated when a new provider is created',
           provider_id: result.insertId,
           type: 'Provider admin',
+          role_type_id: 3,
           visibility: 'public'
         };
         const newProviderAdminRole = {
@@ -803,19 +811,21 @@ function* addOrganization(action) {
   try {
     // Call our request helper (see 'utils/request')
     const result = yield call(request, url, args);
-    console.log(result);
+    
     if (result.insertId) {
       organization.id = result.insertId;
       //Find users with this mail
       // const users = yield call(request, apiUrl + 'users/email/'+ organization.email);
 
       yield put(organizationAdded(organization));
+      // const roleTypes = yield select(makeSelectRoleTypes())
       const generalRoleData = {
         name: 'General role',
         description:
           'Automatic role generated when a new organization is created',
         organization_id: result.insertId,
         type: 'General',
+        role_type_id: 13,
         visibility: 'private'
       };
       const newGeneralRole = {
@@ -828,6 +838,7 @@ function* addOrganization(action) {
           'Automatic role generated when a new organization is created',
         organization_id: result.insertId,
         type: 'Organization admin',
+        role_type_id: 2,
         visibility: 'private'
       };
       const newAdminRole = {
@@ -852,7 +863,7 @@ function* addOrganization(action) {
           );
         }
         const orgAdminRole = yield call(request, apiUrl + 'roles', newAdminRole);
-        console.log(orgAdminRole)
+        
         if (orgAdminRole.insertId) {
           orgAdminRoleData.id = orgAdminRole.insertId;
           
@@ -1672,19 +1683,22 @@ function* updateProvider(action) {
       method: 'PUT',
       body: JSON.stringify(action.data),
     };
-    const org = yield call(request, url, args);
-    console.log(org);
+    const results = yield call(request, url, args);
+    console.log(results);
     if (modalOpen) yield put(toggleModal());
-    yield put(
-      showNotification({
-        message: `${action.data.name} updated`,
-        title: `Success`,
-        icon: 'bell',
-        text: '',
-        autohide: 3000,
-      }),
-    );
-    yield put(providerUpdated(action.data));
+    if (results.affectedRows) {
+      yield put(
+        showNotification({
+          message: `${action.data.name} updated`,
+          title: `Success`,
+          icon: 'bell',
+          text: '',
+          autohide: 3000,
+        }),
+      );
+      yield put(providerUpdated(action.data));
+
+    }
   } catch (err) {
     yield put(loadError(err));
   }
@@ -1965,6 +1979,66 @@ function* updateUser(action) {
   }
 }
 
+function* uploadFile(action) {
+  console.log(action)
+  console.log(action.file.get("profileImg"))
+  let url
+  // console.log(typeof(action.file))
+  url = apiUrl + `profile_images/${action.entityType}/${action.entity.id}`;
+  console.log(url)
+  if (action.entity.profile_image) {
+    const updatedImage = yield call(axios.put(url, action.file, {}))
+    console.log(updatedImage)
+  //   axios.put(url, action.file, {
+  //   }).then(res => {
+  //     // yield put(organizationUpdated(action.entity))
+  //       console.log(res)
+  //       action.entity.profile_image = res.updatedData.name
+  //       // switch (action.entityType) {
+  //       //   case 'organization':
+  //       //     yield put(organizationUpdated(action.entity))
+  //       //     break;
+        
+  //       //   default:
+  //       //     break;
+  //       // }
+  //   })
+  // } else {
+  //   axios.post(url, action.file, {
+  //   }).then(res => {
+  //       console.log(res)
+  //       action.entity.profile_image = res.image.name
+  //       // yield put(organizationUpdated(action.entity))
+  //       // switch (action.entityType) {
+  //       //   case 'organization':
+  //       //     yield put(organizationUpdated(action.entity))
+  //       //     break;
+        
+  //       //   default:
+  //       //     break;
+  //       // }
+  //       // switch (action.entityType) {
+  //       //   case value:
+            
+  //       //     break;
+        
+  //       //   default:
+  //       //     break;
+  //       // }
+  //   })
+  }
+  // const args = {
+  //   method: 'POST',
+  //   profileImg: JSON.stringify(action.file.get("profileImg"))   
+  // };
+  // try {
+  //   const results = yield call(request, url, args);
+  //   console.log(results);
+  // } catch (err) {
+  //   console.log(err);
+  // }
+}
+
 export default function* addDataSaga() {
   // Watches for LOAD_REPOS actions and calls getRepos when one comes in.
   // By using `takeLatest` only the result of the latest API call is applied.
@@ -2015,4 +2089,5 @@ export default function* addDataSaga() {
   yield takeLatest(actionTypes.UPDATE_PROV_USER, updateProviderUser);
   yield takeLatest(actionTypes.UPDATE_PROV_ORG_CONNECTION, updateProviderOrgConnection);
   yield takeLatest(actionTypes.CREATE_PROV_USER_AND_ALLOCATE_TO_ORGANIZATION_USER, createNewProviderUserAndThenAllocateToOrganization);
+  yield takeLatest(actionTypes.UPLOAD_FILE, uploadFile);
 }

@@ -54,11 +54,12 @@ function UserRow({
   onToggleModal,
   type,
   onAddProviderUser,
-  onAddOrganizationUser
+  onAddOrganizationUser,
+  
 }) {
   // console.log(user);
   const [editMode, setEditMode] = useState(false);
-  console.log(currentUserRole)
+  // console.log(currentUserRole)
 
   let actions = [
     // { name: `Switch roles`, icon: 'random', type: 'info', selectOptionsType: 'role'},
@@ -185,27 +186,29 @@ function UserRow({
 
   }
   if (type === 'simple') {
-    console.log(user.status)
-    console.log(statuses)
+
     return (
       <TableRow
         className={`row py-2 tableRow ${editMode && 'active'}`}
         onClick={onClick}
       >
         <div className="col-2">
-          <MDBInput
-            label={`${user.first_name} ${user.last_name}`}
-            filled
-            type="checkbox"
-            id={`"checkbox${user.id}_${index}"`}
-            containerClass=""
-            checked={checked}
-            // onChange={() =>
-            //   selectedUser.id === user.id
-            //     ? setSelectedUser()
-            //     : setSelectedUser(user)
-            // }
-          />
+          {handleChecked ? 
+             <MDBInput
+             label={`${user.first_name} ${user.last_name}`}
+             filled
+             type="checkbox"
+             id={`checkbox${user.id ? user.id : user.user_id}_${index}`}
+             containerClass=""
+             checked={checked}
+             // onChange={() =>
+             //   selectedUser.id === user.id
+             //     ? setSelectedUser()
+             //     : setSelectedUser(user)
+             // }
+           /> :
+           <span>{user.first_name} {user.last_name}</span>}
+         
         </div>
         <div className="col-2">{user.email}</div>
         <div className="col-3">{user.remarks}</div>
@@ -253,30 +256,40 @@ function UserRow({
       </TableRow>
     );
   } else if (type === 'extended') {
-    console.log(user.status)
-    console.log(connectionStatuses)
+    // console.log(user.status)
+    // console.log(connectionStatuses)
     return (
       <TableRow
         className={`row py-2 tableRow ${editMode && 'active'}`}
         onClick={onClick}
       >
         <div className="col-2">
-          <MDBInput
-            label={`${user.first_name} ${user.last_name}`}
-            filled
-            type="checkbox"
-            id={`"checkbox${user.id}_${index}"`}
-            containerClass=""
-            checked={checked}
-            onChange={() => handleChecked(user)}
-          />
+          {handleChecked ? (
+            <MDBInput
+              label={`${user.first_name} ${user.last_name}`}
+              filled
+              type="checkbox"
+              id={`checkbox${user.id ? user.id : user.user_id}_${index}`}
+              containerClass=""
+              checked={checked}
+              // onChange={() =>
+              //   selectedUser.id === user.id
+              //     ? setSelectedUser()
+              //     : setSelectedUser(user)
+              // }
+            />
+          ) : (
+            <span>
+              {user.first_name} {user.last_name}
+            </span>
+          )}
         </div>
         {user.companyName && (
           <div className="col-1">{user.companyName}</div>
         )}
         {user.roleName ? (
           <div className="col-2">
-            {editMode && currentUserRole === 'Provider administrator'? (
+            {editMode && currentUserRole === 'Provider administrator' ? (
               <Select
                 value={user.roleName}
                 options={roles}
@@ -298,13 +311,27 @@ function UserRow({
         <div className="col-1">
           {editMode ? (
             <Select
-              value={statusesType === 'connectionStatuses' ? user.status : user.general_status}
+              value={
+                statusesType === 'connectionStatuses'
+                  ? user.status
+                  : user.general_status
+              }
               className="fullWidth"
-              options={statusesType === 'connectionStatuses' ? connectionStatuses : statuses}
+              options={
+                statusesType === 'connectionStatuses'
+                  ? connectionStatuses
+                  : statuses
+              }
               onChange={val => handleAction('Change status', val)}
             />
           ) : (
-            <Status status={statusesType === 'connectionStatuses' ? connectionStatuses[user.status] : statuses[user.status]} />
+            <Status
+              status={
+                statusesType === 'connectionStatuses'
+                  ? connectionStatuses[user.status]
+                  : statuses[user.status]
+              }
+            />
           )}
         </div>
         <div className="col-1 d-flex align-items-center">

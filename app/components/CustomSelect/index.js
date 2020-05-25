@@ -16,12 +16,15 @@ const createSelectOptionsArray = (options, value, disabled) => {
 }
 
 const createSelectOption = (option, incomingValue, disabled) => {
-  // console.log('createSelectOption: ', incomingValue, option)
+  console.log('createSelectOption: ', incomingValue, option)
   let name = '';
 
   if (option.first_name) {
     name = option.first_name + ' ' + option.last_name
-  } else name = option.name
+  } 
+  else if (option.name) name = option.name
+  else name = option
+
   
   let text = name;
   if (option.importance) {
@@ -60,10 +63,10 @@ const createSelectOption = (option, incomingValue, disabled) => {
 
 
 const CustomSelect = ({options, label, multiple, search, onChange, value}) => {
-  // console.log(options)
+  console.log(options)
   
   let selectOptions = createSelectOptionsArray(options, value)
-  // console.log(selectOptions)
+  console.log(selectOptions)
   
   const handleSelected = (event) => {
     if (event.length) {
@@ -72,7 +75,7 @@ const CustomSelect = ({options, label, multiple, search, onChange, value}) => {
       if (!multiple) {
         if (event[0] != value) {
           // console.log('FIRE NON MULTIPLE', event[0])
-          onChange(+event)
+          onChange(event)
         }
       } else {
         // console.log(value)

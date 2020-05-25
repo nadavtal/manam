@@ -183,8 +183,9 @@ const form = props => {
     // console.log(updatedFormElement)
     if (      
       updatedForm[inputIdetifier].elementType === 'date' ||
-      updatedForm[inputIdetifier].elementType === 'file' ||
+      
       updatedForm[inputIdetifier].elementType === 'select') {
+       
         // console.log('SELECT', event, typeof(event))
         // console.log(updatedForm[inputIdetifier])
         // if (updatedForm[inputIdetifier].elementConfig.multiple) {
@@ -194,17 +195,23 @@ const form = props => {
         //   updatedFormElement.value = event;
 
         // }
-        updatedFormElement.value = event;
+        // updatedFormElement.value = event;
     // } else if (
     //    updatedForm[inputIdetifier].elementType === 'select') {
     //     console.log('select', typeof(event), event, updatedForm[inputIdetifier])
     //     if (typeof(event) === 'object') {
     //       updatedFormElement.value = [...updatedFormElement.value, ...event]
     //     } else {
-    //       updatedFormElement.value = event;
+          updatedFormElement.value = +event;
 
     //     }
-    } else if (
+    } else if (updatedForm[inputIdetifier].elementType === 'file') {
+      console.log(event);
+      // updatedFormElement.value = event.currentTarget.value;
+      updatedFormElement.value = event;
+    } 
+    
+    else if (
       updatedForm[inputIdetifier].elementType === 'selectMultiple') {
      
         updatedFormElement.value = [...updatedFormElement.value, ...event]
@@ -909,7 +916,7 @@ const form = props => {
               } 
               else {
                 const overlayConfig = {
-                  msg: `This email is assigned to provider: ${results.provider.name}`,
+                  msg: `This name is assigned to provider: ${results.provider.name}`,
                   actionText: `Do you want to allocate ${results.provider.name} to your providers?`,
                   btnText: 'Allocate',
                   cancelFunction: () => {

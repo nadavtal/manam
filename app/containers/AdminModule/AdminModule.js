@@ -847,7 +847,7 @@ const AdminModule = (props) => {
       // console.log(action)
     })    
     // console.log(actions['Role actions'])
-    return <RoleWrapper className="row  pl-5 py-1">
+    return <RoleWrapper className="row  text-center py-1">
       <div className="col-1">
         {employerOrg && employerOrg.name}
       </div>
@@ -883,7 +883,7 @@ const AdminModule = (props) => {
 
   const UserRoles = ({roles}) => {
     return <div className="toggled">
-      <TableHeader className="row  pl-5 py-1">
+      <TableHeader className="row  text-center py-1">
         <div className="col-1">
           Organization
         </div>
@@ -936,7 +936,7 @@ const AdminModule = (props) => {
 
   const PageHeader = ({text, isSelected}) => {
     return (
-      <div className="row pl-5 py-1 green-gradient">
+      <div className="row text-center py-1 green-gradient">
         <div className="col-4">
           <div className="float-left">
           
@@ -961,7 +961,7 @@ const AdminModule = (props) => {
   const SectionHeader = ({sectioName, isSelected}) => {
     
     return (
-      <div className="row pl-5 py-1 #ffebee red lighten-5">
+      <div className="row text-center py-1 #ffebee red lighten-5">
         <div className="col-4">
           <h5 className="bold align-items-center mt-2">
             {sectioName} 
@@ -993,7 +993,7 @@ const AdminModule = (props) => {
                 isSelected={isSelected}/>
               
                       
-              <TableHeader className="row pl-5 py-1">
+              <TableHeader className="row text-center py-1">
                 <div className="col-1">
                   ID
                 </div>
@@ -1156,7 +1156,7 @@ const AdminModule = (props) => {
             <PageHeader text={'manage providers users'}
               isSelected={isSelected}
             />              
-              <TableHeader className="row pl-5 py-1">
+              <TableHeader className="row text-center py-1">
                 <div className="col-1">
                   ID
                 </div>

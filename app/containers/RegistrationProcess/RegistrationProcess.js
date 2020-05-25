@@ -70,75 +70,9 @@ const RegistrationProcess = ({
   const [showOverlay, setShowOverlay] = useState(false);
   useEffect(() => {
     if (currentUser) {
-      console.log(currentUser)
-      console.log('userSystemRoles', currentUser.userSystemRoles);
-      console.log('userOrganiztionRoles', currentUser.userOrganiztionRoles);
-      console.log('userProviderRoles', currentUser.userProviderRoles);
-      console.log('providerOrganizations', providerOrganizations);
-
-      if (currentUser.userSystemRoles && currentUser.userSystemRoles.length) {
-        history.push('./admin');
-        onRoleSelected(currentUser.userSystemRoles[0].role_name)
-      } else {
-        //If user has on organization role and no provider roles
-        if (
-          currentUser.userOrganiztionRoles.length == 1 &&
-          currentUser.userProviderRoles.length == 0
-        ) {
-          console.log('//If user has on organization role and no provider roles')
-          history.push(
-            './organizations/' + currentUser.userOrganiztionRoles[0].org_id,
-          );
-          onRoleSelected(currentUser.userOrganiztionRoles[0].role_name)
-        }
-  
-        //If user has no organization roles and one provider roles
-        else if (
-          !currentUser.userOrganiztionRoles.length &&
-          currentUser.userProviderRoles.length == 1
-        ) {
-          console.log('//If user has no organization roles and one provider roles')
-          history.push(
-            './providers/' + currentUser.userProviderRoles[0].provider_id,
-          );
-          onRoleSelected(currentUser.userProviderRoles[0].role_name)
-        }
-  
-        // If user has 1 organization role and 1 provider role
-        else if (
-          currentUser.userProviderRoles.length == 1 &&
-          currentUser.userOrganiztionRoles.length == 1
-        ) {
-          //If org and provider are connected
-          if (
-            currentUser.userProviderRoles[0].provider_id ==
-            currentUser.userOrganiztionRoles[0].prov_id
-          ) {
-            console.log('// If user has 1 organization role and 1 provider role and are connected')
-            history.push({
-              pathname:
-                './providers/' + currentUser.userProviderRoles[0].provider_id,
-              search: '?query=abc',
-              state: { org_id: currentUser.userOrganiztionRoles[0].org_id },
-            });
-            onRoleSelected(currentUser.userOrganiztionRoles[0].role_name)
-          }
-          // setprovider(currentUser.userProviderRoles[0])
-          // getProviderOrganizations(currentUser.userProviderRoles[0].provider_id)
-        } else {
-          setPageTitle(
-            `Welcome ${
-              currentUser.userInfo.first_name
-                ? currentUser.userInfo.first_name
-                : ''
-            }  ${
-              currentUser.userInfo.last_name ? currentUser.userInfo.last_name : ''
-            }`,
-          );
-          handleNextPrevClick2(3, 2);
-        }
-
-      }
+      
+      handleCurrentUser()
+ 
     }
     return;
   }, [currentUser]);
@@ -163,6 +97,73 @@ const RegistrationProcess = ({
     { name: 'Provider', formType: 'providerForm' },
     { name: 'Organization', formType: 'organizationForm' },
   ];
+  const handleCurrentUser = () => {
+    console.log(currentUser)
+    console.log('userSystemRoles', currentUser.userSystemRoles);
+    console.log('userOrganiztionRoles', currentUser.userOrganiztionRoles);
+    console.log('userProviderRoles', currentUser.userProviderRoles);
+    console.log('providerOrganizations', providerOrganizations);
+    // If User has system roles, redirect to admin
+   if (currentUser.userSystemRoles && currentUser.userSystemRoles.length) {
+      history.push('./admin');
+      onRoleSelected(currentUser.userSystemRoles[0])
+    } 
+    else {
+      //If user has one organization role and no provider roles
+      if (
+        currentUser.userOrganiztionRoles.length == 1 &&
+        currentUser.userProviderRoles.length == 0
+      ) {        
+        history.push(
+          './organizations/' + currentUser.userOrganiztionRoles[0].org_id,
+        );
+        onRoleSelected(currentUser.userOrganiztionRoles[0])
+      }
+
+      //If user has no organization roles and one provider roles
+      else if (
+        !currentUser.userOrganiztionRoles.length &&
+        currentUser.userProviderRoles.length == 1
+      ) {
+        console.log('//If user has no organization roles and one provider roles')
+        history.push(
+          './providers/' + currentUser.userProviderRoles[0].provider_id,
+        );
+        onRoleSelected(currentUser.userProviderRoles[0])
+      }
+
+      // If user has 1 organization role and 1 provider role
+      else if (
+        currentUser.userProviderRoles.length == 1 &&
+        currentUser.userOrganiztionRoles.length == 1
+      ) {
+        //If org and provider are connected
+        if (
+          currentUser.userProviderRoles[0].provider_id ==
+          currentUser.userOrganiztionRoles[0].prov_id
+        ) {
+          console.log('// If user has 1 organization role and 1 provider role and are connected')
+          history.push({
+            pathname:
+              './providers/' + currentUser.userProviderRoles[0].provider_id,
+            search: '?query=abc',
+            state: { org_id: currentUser.userOrganiztionRoles[0].org_id },
+          });
+          onRoleSelected(currentUser.userOrganiztionRoles[0])
+        }
+        // setprovider(currentUser.userProviderRoles[0])
+        // getProviderOrganizations(currentUser.userProviderRoles[0].provider_id)
+      } else {
+        setPageTitle(
+          `Welcome 
+          ${currentUser.userInfo.first_name ? currentUser.userInfo.first_name : ''}  
+          ${currentUser.userInfo.last_name ? currentUser.userInfo.last_name : ''  }`,
+        );
+        handleNextPrevClick2(3, 2);
+      }
+
+    }
+  }
   const swapFormActive = a => param => e => {
     setActive({
       ['formActivePanel' + a]: param,
@@ -210,6 +211,7 @@ const RegistrationProcess = ({
   };
 
   const handleOrgClick = orgName => {
+    console.log(orgName)
     const orgRoles = currentUser.userOrganiztionRoles.filter(
       role => role.org_name == orgName,
     );
@@ -222,7 +224,7 @@ const RegistrationProcess = ({
           pathname: './organizations/' + orgRoles[0].org_id,
           role: orgRoles[0].role_name
         });
-        onRoleSelected(orgRoles[0].role_name)
+        onRoleSelected(orgRoles[0])
       } else {
         //Check for user provider with selected organization
         const orgProviders = currentUser.userProviderRoles.filter(
@@ -239,7 +241,7 @@ const RegistrationProcess = ({
               role: orgRoles[0].role_name
             },
           });
-          onRoleSelected(orgRoles[0].role_name)
+          onRoleSelected(orgRoles[0])
         }
         else {
           setOrganization(orgName);
@@ -288,14 +290,14 @@ const RegistrationProcess = ({
       role: role.role_name
     });
     }
-    onRoleSelected(role.role_name)
+    onRoleSelected(role)
   };
 
   const handleProviderClick = provider => {
     console.log(provider)
     // const orgId = currentUser.userOrganiztionRoles.find(orgRole => orgRole.org_name == organization).org_id
     // console.log(orgId);
-    onRoleSelected(provider.role_name)
+    onRoleSelected(provider)
     history.push({
       pathname:
         './providers/' + provider.provider_id,
@@ -307,30 +309,34 @@ const RegistrationProcess = ({
     });
   };
 
+  const getIndependantProviderRoles = () => {
+    const organizationRolesIds = currentUser.userOrganiztionRoles.map(orgRole => orgRole.role_id);
+    // console.log(organizationRolesIds);
+    const inHouseProviderRoles = currentUser.userProviderRoles.filter(provRole => {
+
+      return !organizationRolesIds.includes(provRole.role_id)
+    })
+    return inHouseProviderRoles
+  }
   const OrgNames = ({ user }) => {
     // if (user.userOrganiztionRoles && user.userOrganiztionRoles.length){
-    console.log(user.userOrganiztionRoles)
+    // console.log(user.userOrganiztionRoles)
     let orgNames = [];
     user.userOrganiztionRoles.forEach(role => {
       if (!orgNames.includes(role.org_name)) orgNames.push(role.org_name);
     });
+    if (orgNames.length == 1) handleOrgClick(orgNames[0])
     // orgNames = orgNames.map((org, index) => { return {id: index+1, name: org}})
     // console.log(orgNames);
     return (
-    
       <>
-        {/* <CustomSelect
-        label={'Choose organization'}
-        multiple={false}
-        search={true}
-        options={orgNames}
-        value={''}
-        onChange={orgName => {
-          console.log(orgName)
-          handleOrgClick(orgName)
-        }}
-      /> */}
-        <h5>Choose organization</h5>
+        <CustomSelect
+          options={orgNames}
+          onChange={orgName => handleOrgClick(orgName)
+          }
+        />
+     
+        {/* <h5>Choose organization</h5> */}
         {/* <ul>
         {orgNames.map((orgName, index) => (
           <li onClick={() => {
@@ -341,7 +347,7 @@ const RegistrationProcess = ({
         ))
         }
         </ul> */}
-        {orgNames.map((orgName, index) => (
+        {/* {orgNames.map((orgName, index) => (
 
           <HoverableWrapper
             key={index}
@@ -359,7 +365,7 @@ const RegistrationProcess = ({
           >
             <h5>{orgName}</h5>
           </HoverableWrapper>
-        ))}
+        ))} */}
       </>
     );
     // }
@@ -372,12 +378,17 @@ const RegistrationProcess = ({
     const inHouseRoles = orgRoles.filter(orgRole => !orgRole.prov_id)
     const providerRoles = orgRoles.filter(orgRole => orgRole.prov_id)
     console.log(orgRoles);
+    const orgRolesSelect = orgRoles.map(role => {
+      return {id: role.role_id, name: role.role_name}
+    })
     return (
       <>
 
         <h5 className="text-center">Found {orgRoles.length} roles by {organization}</h5>
         <p className="text-center">Please choose a role</p>
-        {orgRoles.map((role, index) => (
+        <CustomSelect options={orgRolesSelect}
+          onChange={roleId => handleOrgRoleClick(orgRoles.find(role => role.role_id == roleId))}/>
+        {/* {orgRoles.map((role, index) => (
           <HoverableWrapper
             key={index}
             bgColor="hsla(10, 100%, 48%, 0.343)"
@@ -394,7 +405,7 @@ const RegistrationProcess = ({
           >
             <h5>{`${role.role_name}`}</h5>
           </HoverableWrapper>
-        ))}
+        ))} */}
       </>
     );
     // }
@@ -403,12 +414,8 @@ const RegistrationProcess = ({
     // if (user.userProviderRoles && user.userProviderRoles.length){
     console.log(currentUser.userOrganiztionRoles)
     console.log(currentUser.userProviderRoles);
-    const organizationRolesIds = currentUser.userOrganiztionRoles.map(orgRole => orgRole.role_id);
-    console.log(organizationRolesIds);
-    const inHouseProviderRoles = currentUser.userProviderRoles.filter(provRole => {
-
-      return !organizationRolesIds.includes(provRole.role_id)
-    })
+    const inHouseProviderRoles = getIndependantProviderRoles()
+    
     console.log(inHouseProviderRoles)
     //Get organization Roles by org name
     // const orgRolesByOrgName = currentUser.userOrganiztionRoles.filter(role => role.org_name == organization)
@@ -423,13 +430,9 @@ const RegistrationProcess = ({
     //   }
     // )
     // console.log(providersByOrgRoles)
-    return (
-      <>
-        
-    
+    if (inHouseProviderRoles.length) 
+      return <>   
         <h5 className="mt-3">{`Providers`}</h5>
-        {/* <p className="text-left">Please choose a role</p> */}
-        {/* {console.log('userProviderRoles' , userProviderRoles())} */}
         {inHouseProviderRoles.map((prov, index) => (
           <>
             <HoverableWrapper
@@ -479,7 +482,7 @@ const RegistrationProcess = ({
           </> 
        ))}
       </>
-    );
+    else return ''
     // }
   };
 
@@ -491,7 +494,7 @@ const RegistrationProcess = ({
         </div>
 
         <MDBRow className="justify-content-center no-gutters bg-white m-2">
-          {/* <MDBCol md="2" className="pl-5 pl-md-0 pb-5"> */}
+          {/* <MDBCol md="2" className="text-center pl-md-0 pb-5"> */}
           {/* <MDBStepper icon vertical>
                     {steps.map((step, index) => <MDBStep
                         key={index}
@@ -507,7 +510,7 @@ const RegistrationProcess = ({
 
           <MDBCol md="12">
             {active.formActivePanel3 === 1 && (
-              <MDBCol md="12" className="login ">
+              <MDBCol md="12" className="login">
                 {formModeState == 'register' ? (
                   <Form
                     formType={'registerUserForm'}
@@ -577,11 +580,6 @@ const RegistrationProcess = ({
             )}
             {active.formActivePanel3 === 2 && (
               <MDBCol md="12" className="basic_info">
-                {/* <h4>{`Welcome ${
-                    currentUser.userInfo.first_name ? currentUser.userInfo.first_name : ''
-                  }  ${
-                    currentUser.userInfo.last_name ? currentUser.userInfo.last_name : ''
-                  }`}</h4> */}
                 <Header text={`${steps[1].name}`} />
                 {formModeState == 'register' ? (
                   accoutTypes.map(account => (
@@ -799,7 +797,7 @@ export function mapDispatchToProps(dispatch) {
     onRegisterUser: data => dispatch(registerUser(data)),
     onRegisterProvider: data => dispatch(registerProvider(data)),
     onRegisterOrg: data => dispatch(registerOrg(data)),
-    onRoleSelected: roleName => dispatch(roleSelected(roleName)),
+    onRoleSelected: role => dispatch(roleSelected(role)),
     getProviderOrganizations: providerId =>
       dispatch(getProviderOrganizations(providerId)),
   };
