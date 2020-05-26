@@ -19,7 +19,7 @@ export function allocateUser(data) {
 }
 
 export function providerLoaded(data) {
-  console.log('providerLoaded', data)
+ 
   return {
     type: actionTypes.PROVIDER_LOADED,
     data,

@@ -48,7 +48,7 @@ function UserInfoBox({
     { name: `Edit role`, icon: 'edit', type: 'info'},
     { name: `Delete role`, icon: 'trash', type: 'error', confirmationMessageType: 'danger', confirmationMessage: 'Are you sure you want to delete '},
   ]
-  console.log(organization)
+
   const onHandleAction = (actionName, val) => {
     // console.log(actionName, val)
     switch (actionName) {

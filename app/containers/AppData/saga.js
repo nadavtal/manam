@@ -1778,11 +1778,11 @@ function* updateOrganizationUser(action) {
       yield put(organizationUserUpdated(userRoleData));
       yield put(
         showNotification({
-          title: `${action.user.first_name} ${action.user.last_name} updated `,
-          message: ``,
-          icon: 'bell',
-          text: 'A confimation email has been sent',
-          autohide: 3000,
+          message: `${action.user.first_name} ${action.user.last_name} updated `,
+          type: `success`,
+          // icon: 'bell',
+          // text: 'A confimation email has been sent',
+          // autohide: 3000,
         }),
       );
 

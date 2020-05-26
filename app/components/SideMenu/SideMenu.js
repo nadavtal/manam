@@ -5,7 +5,7 @@ import './webslidemenu02.css';
 import './color-skins/white-red.css';
 // import './color-skins/white-orange.css';
 // import './dropdown-effects/fade-down.css';
-import { MDBIcon, MDBBtn, MDBInput, MDBSwitch } from 'mdbreact';
+import { MDBIcon, MDBBtn, MDBAvatar, MDBSwitch } from 'mdbreact';
 import { menus } from '../../menu-templates';
 import UserInfoBox from 'components/UserInfoBox'
 // import CSSTransition from 'react-transition-group/CSSTransition';
@@ -26,19 +26,19 @@ const SideMenu = ({
   const [showSideMenu, setShowSideMenu] = useState(open ? open : false)
 
   useEffect(() => {
-    console.log(currentUser)
+   
     if (currentUser.userInfo.general_status !== 'Active') {
       setShowSideMenu(true)
     }
 
   }, [currentUser])
   useEffect(() => {
-    console.log(open)
+
     setShowSideMenu(open)
 
   }, [open])
   useEffect(() => {
-    console.log(currentUserRole)
+
     
 
   }, [currentUserRole])
@@ -59,20 +59,47 @@ const SideMenu = ({
   };
   const MenuItem = ({ item }) => {
 
-    return <span onClick={() => {
-        // console.log(item.name)
-        onMenuClick(item.name);
-        active == item.name ? setActive() : setActive(item.name);
-        !item.children && toggleSideNav()
+    return (
+      <span
+        onClick={() => {
+          // console.log(item.name)
+          onMenuClick(item.name);
+          active == item.name ? setActive() : setActive(item.name);
+          !item.children && toggleSideNav();
         }}
-        className={active == item.name ? 'active' : ''}
-        >
-        <MDBIcon  icon={item.icon} size="2x" className="" />
-        {item.counter && <span className="counter mt-4">2</span>}
-        {item.name}
-        
-        {item.children && <MDBIcon rotate={active == item.name ? '180' : ''} icon={'chevron-down'} size="1x" className="float-right mt-1" />}
-      </span>     
+        className={`d-flex align-items-center ${
+          active == item.name ? 'active' : ''
+        }`}
+      >
+        {item.image ? <>
+          <MDBAvatar
+            tag="img"
+            src={require(`../../../resources/static/assets/tmp/${
+              item.image
+            }`)}
+            alt="User Photo"
+            className="z-depth-1"
+          />
+          <span className="bold userInfoBoxTitle ml-2">{`${company.name} ${item.name}`}</span>
+        </> : <>
+          <MDBIcon icon={item.icon} size="2x" className="" />
+          <span className="">{item.name}</span>
+        </>}
+        {item.counter && <span className="counter float-right mt-1 ml-2">2</span>}
+        <div className="float-right mt-1 ml-2">
+          {item.children && (
+            <MDBIcon
+              rotate={active == item.name ? '180' : ''}
+              icon={'chevron-down'}
+              size="1x"
+              
+            />
+          )}
+
+        </div>
+
+      </span>
+    );     
    
   };
 
@@ -187,11 +214,11 @@ const SideMenu = ({
                     icon: 'info',
                     type: 'sub-menu',
                     float: 'left',
+                    // image: company.profile_image
                   }}
                 />
               </li>
-              {console.log(currentUser.userInfo.general_status == 'Active' &&
-              company.general_status == 'Active')}
+             
             {currentUser.userInfo.general_status == 'Active' &&
               company.general_status == 'Active' &&
               menu.map(item => {

@@ -2,8 +2,9 @@ import React from 'react';
 
 import Circle from './Circle';
 import Wrapper from './Wrapper';
+import MsgWrapper from './MsgWrapper';
 
-const LoadingIndicator = () => (
+const LoadingIndicator = ({ msg }) => <>
   <Wrapper>
     <Circle />
     <Circle rotate={30} delay={-1.1} />
@@ -17,7 +18,12 @@ const LoadingIndicator = () => (
     <Circle rotate={270} delay={-0.3} />
     <Circle rotate={300} delay={-0.2} />
     <Circle rotate={330} delay={-0.1} />
+
+    
   </Wrapper>
-);
+  <MsgWrapper>
+   {msg}
+  </MsgWrapper>
+</>;
 
 export default LoadingIndicator;

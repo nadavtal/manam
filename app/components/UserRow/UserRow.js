@@ -1,10 +1,11 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
 import { getRoleById, getOrganizationUser } from 'utils/dataUtils'
+import  useOutsideAlerter  from 'utils/customHooks/useOutsideClick';
 import {
   makeSelectLoading,
   makeSelectCurrentUser,
@@ -59,8 +60,12 @@ function UserRow({
 }) {
   // console.log(user);
   const [editMode, setEditMode] = useState(false);
-  // console.log(currentUserRole)
-
+  const wrapperRef = useRef(null);
+  const clickedOutSide = useOutsideAlerter(wrapperRef);
+  if (editMode && clickedOutSide) {
+    console.log('clickedOutSide', clickedOutSide)
+    setEditMode(false)
+  }
   let actions = [
     // { name: `Switch roles`, icon: 'random', type: 'info', selectOptionsType: 'role'},
     // { name: `Change status`, icon: 'sync', type: 'info', selectOptionsType: 'status'},
@@ -262,6 +267,7 @@ function UserRow({
       <TableRow
         className={`row py-2 tableRow ${editMode && 'active'}`}
         onClick={onClick}
+        ref={wrapperRef}
       >
         <div className="col-2">
           {handleChecked ? (

@@ -80,6 +80,13 @@ export function loadError(error) {
     error,
   };
 }
+export function toggleLoadingSpinner(msg) {
+ 
+  return {
+    type: actionTypes.TOGGLE_LOADING,
+    msg,
+  };
+}
 
 export function toggleModal(modalData) {
  

@@ -28,14 +28,14 @@ let menuItems  = {
   ],
   generalOrg: [
     { name: 'User Info' },
-    { name: 'Organization Info' ,roleTypes: [2, 3]},
-    { name: 'Providers' },
+    { name: 'Organization Info', roleTypes: [2, 3]},
+    { name: 'Providers', roleTypes: [2, 3] },
 
   ],
   generalProvider: [
     { name: 'User Info' },
-    { name: 'Provider Info' },
-    { name: 'Organizations' },
+    { name: 'Provider Info', roleTypes: [2, 3] },
+    { name: 'Organizations', roleTypes: [2, 3] },
 
   ]
 };
@@ -292,8 +292,8 @@ const ManagementSection = ({
               onChange={val => handleSearch(val, providerUsers)}
             />
             <Roles
-                roles={searchResults ? searchResults : providerUsers}
-                users={providerUsers}
+                // roles={providerUsers}
+                users={searchResults ? searchResults : providerUsers}
                 type="providerUsers"
                 handleAction={(actionName, val) => handleAction(actionName, val)}
               />
@@ -409,6 +409,7 @@ const ManagementSection = ({
               updateItem={data => handleAction('Update user', data)}
               uploadImage={data => handleAction('Update user image', data)}
               dataType="userForm"
+              
               // url={`profile_images/user/${currentUser.userInfo.id}`}
             />
             <br/>
@@ -449,8 +450,7 @@ const ManagementSection = ({
       <div className="row">
         <div className="col-2 border-right border-dark">
           {menuItems[type].map(item => {
-            console.log(currentUserRole)
-            console.log(item)
+
             if (item.roleTypes) {
               if (item.roleTypes.includes(currentUserRole.role_type_id)) {
                 return (

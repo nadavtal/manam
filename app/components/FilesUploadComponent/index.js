@@ -12,16 +12,21 @@ const FilesUploadComponent = ({
   onUploadImage,
   url
 }) => {
-  const [profileImg, setProfileImg] = useState('')
+  const [profileImg, setProfileImg] = useState()
+  const [errMsg, setErrMsg] = useState('');
+  const [valid, setValid] = useState(false);
   // console.log(apiUrl + url)
   const onFileChange = (e) => {
-    setProfileImg(e.target.files[0])
+    if (e.target.files[0]) {
+      setProfileImg(e.target.files[0])
+      setValid(true)
+    }
   }
   const onSubmit = (e) => {
     e.preventDefault()
     const formData = new FormData()
     // console.log(formData, typeof(formData))
-    
+    // console.log(profileImg)
     formData.append('profileImg', profileImg);
     
     console.log(formData)
@@ -31,18 +36,19 @@ const FilesUploadComponent = ({
   return (
     <div className="container">
       <div className="row">
-        <form 
-          onSubmit={onSubmit}
-          enctype="multipart/form-data">
-     
+        <form onSubmit={onSubmit} encType="multipart/form-data" className="">
           <div className="form-group">
-            <input type="file" 
-            onChange={onFileChange}/>
+            <input type="file" onChange={onFileChange} />
           </div>
           <div className="form-group">
-            <button className="btn btn-primary" type="submit">
-              Upload
-            </button>
+            {valid ? 
+              <button className="btn btn-primary" type="submit">
+                  Upload
+                </button>            
+            : 
+             <div>{errMsg}</div>
+            }
+            
           </div>
         </form>
       </div>

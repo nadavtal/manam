@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { updateTask, registerNewOrgUser, addProvider, createNewRole, findEntityBy, logout,
  updateOrg, updatedUser } from '../../AppData/actions';
-import { toggleModal, toggleAlert } from '../../App/actions';
+import { toggleModal, toggleAlert, toggleLoadingSpinner } from '../../App/actions';
 import { createStructuredSelector } from 'reselect';
 import {apiUrl} from 'containers/App/constants'
 import {
@@ -441,18 +441,22 @@ const OrganizationPage = props => {
         // props.onUpdateImage('organization', props.organization, value)
         let updatedOrg = {...props.organization}
         if (props.organization.profile_image) {
+          props.toggleLoadingSpinner(`Updating ${props.organization.name} image`)
           axios.put(apiUrl + url, value, {
           }).then(res => {
               console.log(res)
               updatedOrg.profile_image = res.data.name
-              props.updateOrganization(updatedOrg)
+              props.updateOrganization(updatedOrg);
+              props.toggleLoadingSpinner()
           })
         } else {
+          props.toggleLoadingSpinner(`Creating ${props.organization.name} image`)
           axios.post(apiUrl + url, value, {
           }).then(res => {
               console.log(res)
               updatedOrg.profile_image = res.data.name
-              props.updateOrganization(updatedOrg)
+              props.updateOrganization(updatedOrg);
+              props.toggleLoadingSpinner()
           })
         }
         break
@@ -465,18 +469,22 @@ const OrganizationPage = props => {
         url = `profile_images/user/${props.currentUser.userInfo.id}`
         let updatedUser = {...props.currentUser.userInfo}
         if (props.currentUser.userInfo.profile_image) {
+          props.toggleLoadingSpinner(`Updating ${props.currentUser.userInfo.first_name} image`)
           axios.put(apiUrl + url, value, {
           }).then(res => {
               console.log(res)
               updatedUser.profile_image = res.data.name
               props.onUpdateUser(updatedUser)
+              props.toggleLoadingSpinner()
           })
         } else {
+          props.toggleLoadingSpinner(`Creating ${props.currentUser.userInfo.first_name} image`)
           axios.post(apiUrl + url, value, {
           }).then(res => {
               console.log(res)
               updatedUser.profile_image = res.data.name
               props.onUpdateUser(updatedUser)
+              props.toggleLoadingSpinner()
           })
         }
         break;
@@ -610,7 +618,7 @@ const OrganizationPage = props => {
         onFinalItemClick={(menuItem, menuType) => {}}
       />
       <div className="classic-tabs">
-        {!props.loading ? (
+        {!props.loading && (
           <MDBTabContent
             className="pageContent"
             activeItem={activeItemClassicTabs3}
@@ -852,8 +860,6 @@ const OrganizationPage = props => {
                 </>
               )}
           </MDBTabContent>
-        ) : (
-          <strong>Getting {props.organization.name} data</strong>
         )}
       </div>
     </div>
@@ -897,6 +903,7 @@ const mapDispatchToProps = dispatch => {
     createNewOrganizationProvider: (provider, organization) => dispatch(addProvider(provider, organization)),
     onLogout: () => dispatch(logout()),
     findEntity: (type, value) => dispatch(findEntityBy(type, value)),
+    toggleLoadingSpinner: (msg) => dispatch(toggleLoadingSpinner(msg)),
   };
 };
 

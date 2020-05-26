@@ -17,6 +17,7 @@ import { updateProcessTasks } from '../Processes/actions';
 // The initial state of the App
 export const initialState = {
   loading: false,
+  loadingMessage: '',
   error: false,
   currentUser: localStorage.getItem('currentUser') ? JSON.parse(localStorage.getItem('currentUser')) : '',
   currentUserRole: localStorage.getItem('currentUserRole') ? JSON.parse(localStorage.getItem('currentUserRole')) : '',
@@ -281,12 +282,14 @@ const appReducer = (state = initialState, action) =>
         break;
       case GET_ORGANIZATION_BY_ID:
         draft.loading = true
+        draft.loadingMessage = 'Getting Organization data'
         break;
       case ORGANIZATION_LOADED:
         draft.loading = false
         break;
       case GET_PROVIDER_BY_ID:
-        draft.loading = true
+        draft.loading = true;
+        draft.loadingMessage = 'Getting Provider data'
         break;
       case PROVIDER_LOADED:
         draft.loading = false
@@ -294,6 +297,12 @@ const appReducer = (state = initialState, action) =>
       case actionTypes.ORGANIZATION_ADDED:
         // draft.newOrg = {org: action.org, users: action.users};
         draft.organizations = [...state.organizations,action.org];
+        
+        break;
+      case actionTypes.TOGGLE_LOADING:
+        // draft.newOrg = {org: action.org, users: action.users};
+        draft.loading = !state.loading;
+        draft.loadingMessage = action.msg
         
         break;
       case actionTypes.ORGANIZATION_UPDATED:

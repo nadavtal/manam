@@ -20,7 +20,7 @@ import IconButtonToolTip from '../../../components/IconButtonToolTip/IconButtonT
 import { convertToMySqlDateFormat } from '../../../utils/dateTimeUtils';
 import { updateTask, createNewRole, registerNewProvUser, registerNewOrgUser, allocateUserToOrg, updateProvider,
   getProviderbyId, logout, findEntityBy, createNewProviderUserAndThenAllocateToOrganization, updatedUser } from '../../AppData/actions';
-import { toggleModal, toggleAlert } from '../../App/actions';
+import { toggleModal, toggleAlert, toggleLoadingSpinner } from '../../App/actions';
 import {apiUrl} from 'containers/App/constants'
 import { createNewProject } from '../../Projects/actions';
 import { useInjectReducer } from 'utils/injectReducer';
@@ -76,17 +76,14 @@ const ProviderPage = (props) => {
         setSelectedOrganization(props.organizations.find(org => org.id == localStorage.getItem('orgId')))
       } 
       else if( props.location.state && props.location.state.org_id) {
-        console.log(props.location.state.org_id);
-        console.log(props.organizations)
         const org = props.organizations.find(org => org.id == props.location.state.org_id);
-        console.log(org)
         setSelectedOrganization(
           props.organizations.find(org => org.id == props.location.state.org_id)
         )
       }
      
       addOrganizationToRoles(props.organizationsRoles, props.organizations)
-      console.log('handleCurrentUserAndProviderStatus')
+      
       // handleCurrentUserAndProviderStatus()
     }
     }, [props.provider]);
@@ -96,12 +93,10 @@ const ProviderPage = (props) => {
         if (hasBridges) setActiveItemClassicTabs3('Bridges');
         else setActiveItemClassicTabs3('Management');
       }
-      // console.log('handleCurrentUserAndOrgStatus')
-      // handleCurrentUserAndOrgStatus()
+
     }, [props.provider.general_status, props.bridges]);
   useEffect(() => {
-    console.log('handleCurrentUserAndProviderStatus')
-    handleCurrentUserAndProviderStatus();
+    
 
     return () => {};
   }, [props.currentUser]);
@@ -191,6 +186,7 @@ const ProviderPage = (props) => {
        ) 
        {  
        if (props.providerUsers.length == 1) {
+         setActiveItemClassicTabs3('Management') 
          props.onToggleAlert({
            title: `All done! `,
            // text: `${user.first_name} ${user.last_name} is allready allocated as ${role.name}`,
@@ -492,18 +488,22 @@ const ProviderPage = (props) => {
         // props.onUpdateImage('organization', props.organization, value)
         let updatedProvider = {...props.provider}
         if (props.provider.profile_image) {
+          props.toggleLoadingSpinner(`Updating ${props.provider.name} image`)
           axios.put(apiUrl + url, value, {
           }).then(res => {
               console.log(res)
               updatedProvider.profile_image = res.data.name
               props.onUpdateProvider(updatedProvider)
+              props.toggleLoadingSpinner()
           })
         } else {
+          props.toggleLoadingSpinner(`Creating ${props.provider.name} image`)
           axios.post(apiUrl + url, value, {
           }).then(res => {
               console.log(res)
               updatedProvider.profile_image = res.data.name
-              props.onUpdateProvider(updatedProvider)
+              props.onUpdateProvider(updatedProvider);
+              props.toggleLoadingSpinner()
           })
         }
         break
@@ -516,18 +516,22 @@ const ProviderPage = (props) => {
         url = `profile_images/user/${props.currentUser.userInfo.id}`
         let updatedUser = {...props.currentUser.userInfo}
         if (props.currentUser.userInfo.profile_image) {
+          props.toggleLoadingSpinner(`Updating ${props.currentUser.userInfo.first_name} image`)
           axios.put(apiUrl + url, value, {
           }).then(res => {
               console.log(res)
               updatedUser.profile_image = res.data.name
               props.onUpdateUser(updatedUser)
+              props.toggleLoadingSpinner('')
           })
         } else {
+          props.toggleLoadingSpinner(`Creating ${props.currentUser.userInfo.first_name} image`)
           axios.post(apiUrl + url, value, {
           }).then(res => {
               console.log(res)
               updatedUser.profile_image = res.data.name
               props.onUpdateUser(updatedUser)
+              props.toggleLoadingSpinner('')
           })
         }
         break;
@@ -559,10 +563,10 @@ const ProviderPage = (props) => {
   const orgRolesBySelectedOrg = () => {
     return props.organizationsRoles.filter(orgRole => orgRole.organization_id == selectedOrganization.id)
   }
-  console.log('selectedOrganization', selectedOrganization)
-  if (!props.currentUser) 
+
+  if (!props.loading && !props.currentUser) 
     return <div>NO CURRENT USER</div> 
-  else if (!selectedOrganization)
+  else if (!props.loading && !selectedOrganization)
     return <div>NO SELECTED ORGNIZATION</div> 
   else return (
          <div className="position-relative">
@@ -585,11 +589,12 @@ const ProviderPage = (props) => {
            />
 
            <div className="classic-tabs">
-             {!props.loading ? (
+             {!props.loading && (
                <MDBTabContent
                  className="pageContent"
                  activeItem={activeItemClassicTabs3}
-               >
+               >  
+
                  <MDBTabPane tabId={'Info'}>
                    <ManagementSection
                      handleAction={(actionName, value) =>
@@ -608,6 +613,7 @@ const ProviderPage = (props) => {
                      type="generalProvider"
                      title="General info"
                      currentUser={props.currentUser}
+                     currentUserRole={props.currentUserRole}
                    />
                    {/* <Basic
                          item={props.provider}
@@ -619,49 +625,49 @@ const ProviderPage = (props) => {
                  </MDBTabPane>
 
                  {props.currentUser &&
-                 props.currentUser.userInfo.general_status ===
-                   'Active' && (
-                    <>
-                     <MDBTabPane tabId="Bridges">
-                       {selectedbridge ? (
-                         <>
-                           <BridgePage
-                             bridgeId={selectedbridge}
-                             orgId={selectedOrganization.id}
-                             type="providerPage"
-                           />
-                           <IconButtonToolTip
-                             className="leftTopCorner text-white mt-2"
-                             size="lg"
-                             iconName="chevron-left"
-                             toolTipType="info"
-                             toolTipPosition="right"
-                             // toolTipEffect="float"
-                             toolTipText="Back to bridges"
-                             onClickFunction={() =>
-                               setSelectedbridge(null)
+                   props.currentUser.userInfo.general_status ===
+                     'Active' && (
+                     <>
+                       <MDBTabPane tabId="Bridges">
+                         {selectedbridge ? (
+                           <>
+                             <BridgePage
+                               bridgeId={selectedbridge}
+                               orgId={selectedOrganization.id}
+                               type="providerPage"
+                             />
+                             <IconButtonToolTip
+                               className="leftTopCorner text-white mt-2"
+                               size="lg"
+                               iconName="chevron-left"
+                               toolTipType="info"
+                               toolTipPosition="right"
+                               // toolTipEffect="float"
+                               toolTipText="Back to bridges"
+                               onClickFunction={() =>
+                                 setSelectedbridge(null)
+                               }
+                             />
+                           </>
+                         ) : props.bridges && props.bridges.length ? (
+                           <Projects
+                             items={props.bridges.filter(
+                               bridge =>
+                                 bridge.organization_id ==
+                                 selectedOrganization,
+                             )}
+                             rootLink={props.match.url}
+                             // onProjectClick={(orgId, bridgeId) => linkToBridgePage(orgId, bridgeId)}
+                             onProjectClick={bridgeId =>
+                               setSelectedbridge(bridgeId)
                              }
                            />
-                         </>
-                       ) : props.bridges && props.bridges.length ? (
-                         <Projects
-                           items={props.bridges.filter(
-                             bridge =>
-                               bridge.organization_id ==
-                               selectedOrganization,
-                           )}
-                           rootLink={props.match.url}
-                           // onProjectClick={(orgId, bridgeId) => linkToBridgePage(orgId, bridgeId)}
-                           onProjectClick={bridgeId =>
-                             setSelectedbridge(bridgeId)
-                           }
-                         />
-                       ) : (
-                         <div>No bridges yet...</div>
-                       )}
-                     </MDBTabPane>
-                     <MDBTabPane tabId="Messages">
-                       {/* <TableFilters
+                         ) : (
+                           <div>No bridges yet...</div>
+                         )}
+                       </MDBTabPane>
+                       <MDBTabPane tabId="Messages">
+                         {/* <TableFilters
                 dataType={'messagesTable'}
                 data={props.messages}
                 // checkBoxFunction={(item) => this.addRemoveItem(item, task.dataType)}
@@ -670,124 +676,124 @@ const ProviderPage = (props) => {
                 tableName={'Messages'}
                 onRowClick={(id) => console.log(id)}
               /> */}
-                     </MDBTabPane>
-                     <MDBTabPane tabId="Schedule">
-                       <Calender />
-                     </MDBTabPane>
+                       </MDBTabPane>
+                       <MDBTabPane tabId="Schedule">
+                         <Calender />
+                       </MDBTabPane>
 
-                     <MDBTabPane tabId="Management">
-                       <ManagementSection
-                         handleAction={(actionName, value) =>
-                           handleAction(actionName, value)
-                         }
-                         users={props.providerUsers}
-                         roles={props.providerRoles}
-                         company={props.provider}
-                         organizations={props.organizations}
-                         organizationsRoles={orgRolesBySelectedOrg()}
-                         organizationUsers={props.organizationUsers.filter(
-                           orgUser =>
-                             orgUser.organization_id ==
-                             selectedOrganization.id,
-                         )}
-                         type="provider"
-                         title="Manage user and roles"
-                       />
-                     </MDBTabPane>
-                     <MDBTabPane tabId="Manage projects">
-                       <div className="text-center mt-3 mb-5 d-flex justify-content-between">
-                         <h4>
-                           <strong>
-                             {props.provider.name} projects
-                           </strong>
-                         </h4>
-                         <MDBBtn
-                           color="info"
-                           rounded
-                           className="ml-3"
-                           onClick={() => toggleModal('createProject')}
-                         >
-                           Submit new project{' '}
-                           <MDBIcon icon="image" className="ml-1" />
-                         </MDBBtn>
-                       </div>
-                       {/* <Form
+                       <MDBTabPane tabId="Management">
+                         <ManagementSection
+                           handleAction={(actionName, value) =>
+                             handleAction(actionName, value)
+                           }
+                           users={props.providerUsers}
+                           roles={props.providerRoles}
+                           company={props.provider}
+                           organizations={props.organizations}
+                           organizationsRoles={orgRolesBySelectedOrg()}
+                           organizationUsers={props.organizationUsers.filter(
+                             orgUser =>
+                               orgUser.organization_id ==
+                               selectedOrganization.id,
+                           )}
+                           type="provider"
+                           title="Manage user and roles"
+                           currentUser={props.currentUser}
+                           currentUserRole={props.currentUserRole}
+                         />
+                       </MDBTabPane>
+                       <MDBTabPane tabId="Manage projects">
+                         <div className="text-center mt-3 mb-5 d-flex justify-content-between">
+                           <h4>
+                             <strong>
+                               {props.provider.name} projects
+                             </strong>
+                           </h4>
+                           <MDBBtn
+                             color="info"
+                             rounded
+                             className="ml-3"
+                             onClick={() => toggleModal('createProject')}
+                           >
+                             Submit new project{' '}
+                             <MDBIcon icon="image" className="ml-1" />
+                           </MDBBtn>
+                         </div>
+                         {/* <Form
                 formType="projectForm"
                 editMode="create"
                 createFunction= {(data) => createNewProject(data)}
               ></Form> */}
-                       {/* <Projects></Projects> */}
-                     </MDBTabPane>
-                     <MDBTabPane tabId="Manage processes">
-                       <MDBSwitch
-                         checked={showProviderProcesses}
-                         onChange={() =>
-                           setsShowProviderProcesses(
-                             !showProviderProcesses,
-                           )
-                         }
-                         labelLeft=""
-                         labelRight={`Show ${
-                           showProviderProcesses
-                             ? 'process templates'
-                             : 'all processes'
-                         }`}
-                       />
-                       {showProviderProcesses ? (
-                         <AccordionTable
-                           data={props.projectsProcesses.filter(
-                             process =>
-                               process.organization_id ==
-                               selectedOrganization.id,
-                           )}
-                           rows={props.tasks}
-                           dataType="processes"
-                           // bridges={props.bridges}
-                           changePercentage={(task, value) =>
-                             changeTaskPercentage(task, value)
+                         {/* <Projects></Projects> */}
+                       </MDBTabPane>
+                       <MDBTabPane tabId="Manage processes">
+                         <MDBSwitch
+                           checked={showProviderProcesses}
+                           onChange={() =>
+                             setsShowProviderProcesses(
+                               !showProviderProcesses,
+                             )
                            }
-                           changeDate={(task, value) =>
-                             changeTaskDate(task, value)
-                           }
+                           labelLeft=""
+                           labelRight={`Show ${
+                             showProviderProcesses
+                               ? 'process templates'
+                               : 'all processes'
+                           }`}
                          />
-                       ) : (
-                         <Processes provider={props.provider} />
-                       )}
-                     </MDBTabPane>
-                     <MDBTabPane tabId="Organizations">
-                       <br />
-                       <TableFilters
-                         dataType={'organizationsTable'}
-                         data={props.organizations}
-                         checkBoxFunction={item => console.log(item)}
-                         isChecked={item => {
-                           return false;
-                         }}
-                         // providers={this.props.providers}
-                         tableName={'Organizations'}
-                         onRowClick={id => console.log(id)}
-                       />
-                     </MDBTabPane>
+                         {showProviderProcesses ? (
+                           <AccordionTable
+                             data={props.projectsProcesses.filter(
+                               process =>
+                                 process.organization_id ==
+                                 selectedOrganization.id,
+                             )}
+                             rows={props.tasks}
+                             dataType="processes"
+                             // bridges={props.bridges}
+                             changePercentage={(task, value) =>
+                               changeTaskPercentage(task, value)
+                             }
+                             changeDate={(task, value) =>
+                               changeTaskDate(task, value)
+                             }
+                           />
+                         ) : (
+                           <Processes provider={props.provider} />
+                         )}
+                       </MDBTabPane>
+                       <MDBTabPane tabId="Organizations">
+                         <br />
+                         <TableFilters
+                           dataType={'organizationsTable'}
+                           data={props.organizations}
+                           checkBoxFunction={item => console.log(item)}
+                           isChecked={item => {
+                             return false;
+                           }}
+                           // providers={this.props.providers}
+                           tableName={'Organizations'}
+                           onRowClick={id => console.log(id)}
+                         />
+                       </MDBTabPane>
 
-                     <MDBTabPane tabId="Settings">
-                       <br />
-                       <TableFilters
-                         dataType={'organizationsTable'}
-                         data={props.organizations}
-                         checkBoxFunction={item => console.log(item)}
-                         isChecked={item => {
-                           return false;
-                         }}
-                         // providers={this.props.providers}
-                         tableName={'Organizations'}
-                         onRowClick={id => linkToOrgPage(id)}
-                       />
-                     </MDBTabPane>
-                   </>
-                    )}
+                       <MDBTabPane tabId="Settings">
+                         <br />
+                         <TableFilters
+                           dataType={'organizationsTable'}
+                           data={props.organizations}
+                           checkBoxFunction={item => console.log(item)}
+                           isChecked={item => {
+                             return false;
+                           }}
+                           // providers={this.props.providers}
+                           tableName={'Organizations'}
+                           onRowClick={id => linkToOrgPage(id)}
+                         />
+                       </MDBTabPane>
+                     </>
+                   )}
                </MDBTabContent>
-             ) : (
-               <strong>Getting {props.provider.name} data</strong>
              )}
            </div>
            <br />
@@ -837,6 +843,8 @@ const mapDispatchToProps = (dispatch) => {
     onCreateNewProviderUserAndOrganizationUser: (newUser, organization, provider) => dispatch(createNewProviderUserAndThenAllocateToOrganization(newUser, organization, provider)),
     allocateUserToOrg: (user, org, role_id, roleName, remarks, provider_id) => dispatch(allocateUserToOrg({user, org, role_id, roleName, remarks, provider_id})),
     findEntity: (type, value) => dispatch(findEntityBy(type, value)),
+    toggleLoadingSpinner: (msg) => dispatch(toggleLoadingSpinner(msg)),
+
   };
 }
 

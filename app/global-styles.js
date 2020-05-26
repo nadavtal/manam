@@ -60,9 +60,14 @@ const GlobalStyle = createGlobalStyle`
   }
 
   .tableRow .select-dropdown {
-    font-size: .8rem !important;
+    // min-width: 7rem;
+    font-size: .7rem !important;
     margin: 0 !important;
     border-bottom: 1px solid blue !important;
+  }
+  .tableRow .dropdown-content {
+    min-width: 7rem;
+
   }
   .tableRow .md-form {
       margin-top: 0 !important;

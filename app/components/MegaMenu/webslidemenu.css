@@ -128,7 +128,7 @@ video {
 }
 .iconMenu .counter{
   
-  top: -15px
+  /* top: -15px */
 }
 .wsmenu>.wsmenu-list>li>span, .wsmenu>.wsmenu-list>li>span {
   display: block;

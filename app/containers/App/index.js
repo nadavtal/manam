@@ -28,6 +28,7 @@ import AppData from '../AppData/AppData'
 
 import AdminModule from '../AdminModule/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
+import SpinnerMessage from 'components/SpinnerMessage';
 import Modal from '../Modal/Modal'
 import Messages from '../Messages/Messages';
 import Notification from '../../components/Toast/Toast';
@@ -97,7 +98,7 @@ export default function App() {
         <Notification
           type="info"
           />
-          
+        <SpinnerMessage />
       <GlobalStyle />
     </AppWrapper>
   );

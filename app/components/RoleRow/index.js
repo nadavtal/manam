@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from 'react';
+import React, { memo, useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
@@ -6,7 +6,7 @@ import TableRowWrapper from "../TableRow";
 import IconButtonToolTip from "../IconButtonToolTip/IconButtonToolTip";
 import Actions from '../Actions';
 import { MDBInput, MDBBtn } from "mdbreact";
-
+import  useOutsideAlerter  from 'utils/customHooks/useOutsideClick';
 import { toggleAlert } from 'containers/App/actions';
 import { updateRole } from 'containers/AppData/actions';
 import {
@@ -17,7 +17,12 @@ const RoleRow = ({role, onUpdateRole}) => {
   const [editMode, setEditMode] = useState(false);
   const [roleName, setRoleName] = useState(role.name);
   const [roleDescription, setRoleDescription] = useState(role.description);
-
+  const wrapperRef = useRef(null);
+  const clickedOutSide = useOutsideAlerter(wrapperRef);
+  if (editMode && clickedOutSide) {
+    console.log('clickedOutSide', clickedOutSide)
+    setEditMode(false)
+  }
   useEffect(() => {
     setRoleName(role.name)
 
@@ -49,7 +54,8 @@ const RoleRow = ({role, onUpdateRole}) => {
     }
 
   }
-  return <TableRowWrapper className={`row text-center py-1 tableRow ${editMode && 'active'}`}>
+  return <TableRowWrapper className={`row text-center py-1 tableRow ${editMode && 'active'}`}
+    ref={wrapperRef}>
     <div className="col-2">
       {editMode ? <MDBInput 
         value={roleName}

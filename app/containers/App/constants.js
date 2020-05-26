@@ -52,6 +52,7 @@ export const PROV_ORG_CONNECTION_UPDATED = 'App/PROV_ORG_CONNECTION_UPDATED';
 export const PROV_USER_UPDATED = 'App/PROV_USER_UPDATED';
 export const USER_UPDATED = 'App/USER_UPDATED';
 export const ROLE_SELECTED = 'App/ROLE_SELECTED';
+export const TOGGLE_LOADING = 'App/TOGGLE_LOADING';
 
 
 export const apiUrl = 'http://localhost:3000/api/v1/';

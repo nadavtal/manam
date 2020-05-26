@@ -93,7 +93,7 @@
     "ip": "1.1.5",
     "jsonwebtoken": "^8.5.1",
     "lodash": "4.17.11",
-    "mdbreact": "./mdbreact-4.25.3.tgz",
+    "mdbreact": "./mdbreact-4.27.0.tgz",
     "minimist": "1.2.0",
     "moment": "^2.24.0",
     "multer": "^1.4.2",

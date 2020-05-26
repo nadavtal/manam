@@ -66,6 +66,11 @@ export const makeSelectLoading = () =>
     selectGlobal,
     globalState => globalState.loading,
   );
+export const makeSelectLoadingMessage = () =>
+  createSelector(
+    selectGlobal,
+    globalState => globalState.loadingMessage,
+  );
 
 export const makeSelectError = () =>
   createSelector(

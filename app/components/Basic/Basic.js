@@ -16,8 +16,8 @@ import FilesUploadComponent from '../FilesUploadComponent'
 
 const PV2 = (props) => {
   const image = props.item.profile_image;
-  console.log(image)
-  console.log(props.item)
+  // console.log(image)
+  // console.log(props.item)
   return (
     <div id="profile-v2" className="mb-5">
       <MDBContainer fluid>
@@ -30,19 +30,17 @@ const PV2 = (props) => {
                 </h5>
               </MDBView>
               <MDBCardBody className="text-center">
-                
                 <MDBAvatar
                   tag="img"
-                  src={image && image !== 'undefined' ? 
-                  require(`../../../resources/static/assets/tmp/${image}`) :
-                  require(`../../images/LOGIN.jpg`)}
+                  src={
+                    image && image !== 'undefined'
+                      ? require(`../../../resources/static/assets/tmp/${image}`)
+                      : require(`../../images/LOGIN.jpg`)
+                  }
                   alt="User Photo"
                   className="z-depth-1 mb-3 mx-auto"
                 />
 
-                <p className="text-muted">
-                  <small>Profile photo will be changed automatically</small>
-                </p>
                 <MDBRow center>
                   <FilesUploadComponent
                     onUploadImage={formData => props.uploadImage(formData)}
